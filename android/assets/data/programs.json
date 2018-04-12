@@ -1,0 +1,296 @@
+{
+  "apps": [
+    {
+      "name": "BASIC",
+      "filePath": "",
+      "fileType": "",
+      "iconPath": "icons/basic2.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Diagnostic ROM",
+      "filePath": "roms/test108j.rom",
+      "fileType": "ROM",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Dbug Demo",
+      "filePath": "tapes/rotozoom.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Audio Benchmark",
+      "filePath": "tapes/4bAudioBenchmark.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "L'Aigle D'Or",
+      "filePath": "tapes/AIGLE.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Barbitoric",
+      "filePath": "disks/barbitoric.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Blake's 7",
+      "filePath": "disks/B7en-1.1.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Damsel in Distress",
+      "displayName": "Damsel in\nDistress",
+      "filePath": "tapes/DAMSEL.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Defence Force",
+      "filePath": "tapes/DEFENDER.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Delta Four",
+      "filePath": "tapes/delta4.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Dracula's Revenge",
+      "filePath": "tapes/DRACULA.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Ghost Gobler",
+      "filePath": "tapes/GOBBLER.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "The Hellion",
+      "filePath": "tapes/hellion.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Impossible Mission",
+      "filePath": "tapes/im10.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "IRQBench 1.7",
+      "filePath": "tapes/IrqBench1.7.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Manic Miner",
+      "filePath": "tapes/MANICMINER.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Magnetix",
+      "filePath": "disks/MAGNETIX.DSK",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "N.A.B.D.C",
+      "filePath": "tapes/NABDC_2016-07-12.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Odelight",
+      "filePath": "tapes/ODELIGHT.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Oricium",
+      "filePath": "tapes/Oricium12.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Psychiatric",
+      "filePath": "tapes/PSY.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Pulsoids",
+      "filePath": "disks/pulsoids.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Pushing The Envelope",
+      "displayName": "Pushing\nThe Envelope",
+      "filePath": "disks/PushingTheEnvelope.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Quintessential",
+      "filePath": "disks/vip4.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Rambo",
+      "filePath": "disks/rambo.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Ripped",
+      "filePath": "disks/ripped.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Secret Du Tombeau",
+      "displayName": "Secret Du\nTombeau",
+      "filePath": "tapes/tombjeu.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Sound Tracker",
+      "filePath": "disks/STRACKER.DSK",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Space 1999",
+      "filePath": "disks/space1999-en.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "StormLord",
+      "filePath": "tapes/Storm.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "The Ultra",
+      "filePath": "tapes/ULTRA.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Trouble In Store",
+      "displayName": "Trouble\nIn Store",
+      "filePath": "tapes/TROUBLE.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Welcome",
+      "filePath": "tapes/welcome.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Xenon 1",
+      "filePath": "tapes/Xenon1.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "ZipNZap",
+      "filePath": "tapes/ZIPNZAP.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Zorgon's Revenge",
+      "filePath": "tapes/Zorgons.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+  ]
+}
