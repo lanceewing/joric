@@ -237,8 +237,7 @@ public class Memory {
    * given initial state data into that address range. This state data is intended to be
    * used for things such as ROM images (e.g. char, kernel, basic).
    * 
-   * @param chip The chip to map at the given address rang
-    // TODO: For now we'll always treat this as ROM.e.
+   * @param chip The chip to map at the given address range.
    * @param startAddress The start of the address range.
    * @param endAddress The end of the address range.
    * @param state byte array containing initial state (can be null).
