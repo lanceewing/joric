@@ -12,6 +12,7 @@ public class DesktopLauncher {
     LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
     config.width = 540;
     config.height = 960;
+    config.title = "JOric  v0.1";
     new LwjglApplication(new JOric(new ConfirmHandler() {
 
       @Override
