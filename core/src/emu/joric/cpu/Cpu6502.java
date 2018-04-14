@@ -163,18 +163,19 @@ public class Cpu6502 extends BaseChip {
   private static final int FETCH_DIS_SP       = 41;
   private static final int FETCH_IAH_PC       = 42;
   private static final int FETCH_IAL_PC       = 43;
-  private static final int FETCH_P_SP         = 44;
-  private static final int FETCH_PCH_SP       = 45;
-  private static final int FETCH_PCL_SP       = 46;
+  private static final int FETCH_INC_PC       = 44;  // Fetch using PC and then does increment PC.
+  private static final int FETCH_P_SP         = 45;
+  private static final int FETCH_PCH_SP       = 46;
+  private static final int FETCH_PCL_SP       = 47;
 
-  private static final int STORE_DATA_ADL     = 47;
-  private static final int STORE_DATA_BA      = 48;
-  private static final int STORE_DATA_BAL     = 49;
-  private static final int STORE_DATA_EA      = 50;
-  private static final int STORE_DATA_SP      = 51;
-  private static final int STORE_P_SP         = 52;
-  private static final int STORE_PCH_SP       = 53;
-  private static final int STORE_PCL_SP       = 54;
+  private static final int STORE_DATA_ADL     = 48;
+  private static final int STORE_DATA_BA      = 49;
+  private static final int STORE_DATA_BAL     = 50;
+  private static final int STORE_DATA_EA      = 51;
+  private static final int STORE_DATA_SP      = 52;
+  private static final int STORE_P_SP         = 53;
+  private static final int STORE_PCH_SP       = 54;
+  private static final int STORE_PCL_SP       = 55;
 
   /**
    * This static lookup table holds the decoding details of all of the 6502's
@@ -184,7 +185,7 @@ public class Cpu6502 extends BaseChip {
    * the action to take for a particular cycle. T0 is always the fetch.
    */
   private static int INSTRUCTION_DECODE_MATRIX[][] = {
-    {BRK, FETCH_DIS_PC, STORE_PCH_SP, STORE_PCL_SP, STORE_P_SP, FETCH_ADL_FFFE, FETCH_ADH_FFFF, EXECUTE_LAST}, // BRK
+    {BRK, FETCH_INC_PC, STORE_PCH_SP, STORE_PCL_SP, STORE_P_SP, FETCH_ADL_FFFE, FETCH_ADH_FFFF, EXECUTE_LAST}, // BRK
     {ORA, FETCH_BAL_PC, FETCH_DIS_BAL_X, FETCH_ADL_BAL, FETCH_ADH_BAL, FETCH_DATA_EA, EXECUTE_LAST}, // ORA - (Indirect, X)
     {}, // -
     {}, // -
@@ -1156,12 +1157,16 @@ public class Cpu6502 extends BaseChip {
     }
   }
 
+  private long totalCycles;
+  
   /**
    * Emulates a machine cycle. There should be exactly one read or one write
    * per cycle, even in scenarios where the fetched data is discarded.
    */
   public void emulateCycle() {
     int action = 0;
+    
+    totalCycles++;
     
     if (currentInstructionStep < numOfInstructionSteps) {
       // Get the action for the current cycle of the instruction.
@@ -1446,7 +1451,8 @@ public class Cpu6502 extends BaseChip {
           break;
 
         case FETCH_DIS_PC:              // Fetches using PC but doesn't increment PC.
-          // Program counter is highly unlikely to be pointing at I/O (BRK, PLA, PLP. RTS, RTI)
+          // Program counter is highly unlikely to be pointing at I/O (PLA, PLP. RTS, RTI, IRQ, NMI)
+          //memoryMap[programCounter].readMemory(programCounter);
           break;
 
         case FETCH_DIS_SP:
@@ -1464,14 +1470,20 @@ public class Cpu6502 extends BaseChip {
           indirectAddressLow = memoryMap[programCounter].readMemory(programCounter);
           programCounter++;
           break;
-
+          
+        case FETCH_INC_PC:
+          // Fetch using PC, discard data, then increment PC.
+          memoryMap[programCounter].readMemory(programCounter);
+          programCounter++;
+          break;
+          
         case FETCH_P_SP:
           // No I/O in the stack page (RTI)
           stackPointer = ((stackPointer + 1) & 0xFF);
           processorStatusRegister = mem[stackPointer + 0x100];
           unpackPSR();
           break;
-
+          
         case FETCH_PCH_SP:
           // No I/O in the stack page (RTS, RTI)
           stackPointer = ((stackPointer + 1) & 0xFF);
@@ -1690,6 +1702,8 @@ public class Cpu6502 extends BaseChip {
   public String getRegisterStatus() {
     StringBuffer regBuf = new StringBuffer();
 
+    regBuf.append(totalCycles);
+    regBuf.append(":  ");
     regBuf.append("PC=");
     regBuf.append(addLeadingZeroes(Integer.toHexString(programCounter), 4));
     regBuf.append(",A=");
