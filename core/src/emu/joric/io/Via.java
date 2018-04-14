@@ -5,12 +5,7 @@ import emu.joric.memory.MemoryMappedChip;
 import emu.joric.snap.Snapshot;
 
 /**
- * This class emulates a 6522 VIA IO/timer chip. It does not emulate input latching 
- * or any control line features since the Oric's usage of these are restricted to 
- * such features as the Serial Bus, RS232 and Tape R/W. These are features not 
- * normally emulated since it would usually require emulation at a level that is 
- * finer than cycle based. And besides, in the case of tapes and disks, there are 
- * much faster ways for an emulator to load the images than to rely on the VIA.
+ * This class emulates a 6522 VIA IO/timer chip.
  * 
  * @author Lance Ewing
  */
@@ -107,15 +102,14 @@ public class Via extends MemoryMappedChip {
   protected int dataDirectionRegisterA;     // Reg 3
   
   // Timer 1
-  protected int timer1CounterLow;           // Reg 4 READ
-  protected int timer1CounterHigh;          // Reg 5
-  protected int timer1LatchLow;             // Reg 6 READ-WRITE / Reg 4 WRITE
-  protected int timer1LatchHigh;            // Reg 7
+  protected int timer1Counter;
+  protected int timer1Latch;
+  protected boolean timer1Loaded;
   
   // Timer 2
-  protected int timer2LatchLow;             // Reg 8 WRITE
-  protected int timer2CounterLow;           // Reg 8 READ
-  protected int timer2CounterHigh;          // Reg 9
+  protected int timer2Counter;
+  protected int timer2Latch;
+  protected boolean timer2Loaded;
   
   // Shift Register
   protected int shiftRegister;              // Reg 10
@@ -144,12 +138,12 @@ public class Via extends MemoryMappedChip {
   
   /**
    * This flag is set to true when timer1 is operating in the one shot mode and
-   * has just reached zero.
+   * has just decremented through zero, i.e. is 0xFFFF.
    */
   private boolean timer1HasShot;
   
   /**
-   * True when timer2 has just reached zero.
+   * True when timer2 has just reached zero when in one shot mode.
    */
   private boolean timer2HasShot;
   
@@ -159,7 +153,7 @@ public class Via extends MemoryMappedChip {
   private boolean autoResetIrq;
   
   /**
-   * The CPU that the VIC 20 is using. This is where VIA 2 IRQ signals will be sent.
+   * The CPU that the Oric is using. This is where the VIA IRQ signals will be sent.
    */
   private Cpu6502 cpu6502;
   
@@ -171,7 +165,7 @@ public class Via extends MemoryMappedChip {
   /**
    * Constructor for VIA6522.
    * 
-   * @param cpu6502 The CPU that the VIC 20 is using. This is where VIA 2 IRQ signals will be sent.
+   * @param cpu6502 The CPU that the Oric is using. This is where VIA IRQ signals will be sent.
    * @param keyboard The Keyboard from which we get the current keyboard state from.
    * @param snapshot Optional snapshot of the machine state to start with.
    */
@@ -215,35 +209,38 @@ public class Via extends MemoryMappedChip {
         dataDirectionRegisterA = value;
         updatePortAPins();
         break;
-  
-      case VIA_REG_4: // Timer 1 low-order counter
-        timer1LatchLow = value;
+        
+      case VIA_REG_4: // Timer 1 low-order counter (WRITE sets low-order latch)
+        //timer1LatchLow = value;
+        timer1Latch = (timer1Latch & 0xFF00 | (value & 0xFF));
         break;
   
       case VIA_REG_5: // Timer 1 high-order counter
-        timer1LatchHigh = value;
-        timer1CounterHigh = value;
-        timer1CounterLow = timer1LatchLow;
+        timer1Latch = (timer1Latch & 0xFF) | ((value << 8) & 0xFF00);
+        timer1Counter = timer1Latch;
+        timer1Loaded= true;          // Informs emulateCycle that the timer was load this cycle.
         interruptFlagRegister &= TIMER1_RESET;
         updateIFRTopBit();
         timer1HasShot = false;
         break;
   
       case VIA_REG_6: // Timer 1 low-order latches
-        timer1LatchLow = value;
+        timer1Latch = (timer1Latch & 0xff00 | (value & 0xFF));
         break;
   
       case VIA_REG_7: // Timer 1 high-order latches
-        timer1LatchHigh = value;
+        timer1Latch = (timer1Latch & 0xFF) | ((value << 8) & 0xFF00);
+        interruptFlagRegister &= TIMER1_RESET;
+        updateIFRTopBit();
         break;
   
       case VIA_REG_8: // Timer 2 low-order counter
-        timer2LatchLow = value;
+        timer2Latch = (value & 0xFF);
         break;
   
       case VIA_REG_9: // Timer 2 high-order counter
-        timer2CounterHigh = value;
-        timer2CounterLow = timer2LatchLow;
+        timer2Counter = timer2Latch | ((value << 8) & 0xFF00);
+        timer2Loaded = true;  // Informs emulateCycle that the timer was load this cycle.
         interruptFlagRegister &= TIMER2_RESET;
         updateIFRTopBit();
         timer2HasShot = false;
@@ -267,8 +264,6 @@ public class Via extends MemoryMappedChip {
   
       case VIA_REG_12: // Peripheral Control Register.
         peripheralControlRegister = value;
-        
-        // peripheralControlRegister: 110 1 110 1
         
         // 1. CA1 Control
         // Bit 0 of the Peripheral Control Register selects the active transition of the input signal
@@ -406,19 +401,16 @@ public class Via extends MemoryMappedChip {
     switch (address & 0x000F) {
       case VIA_REG_0: // ORB/IRB
         if ((auxiliaryControlRegister & PORTB_INPUT_LATCHING) == 0) {
-          // If you read a pin on IRB and the pin is set to be an input (with
-          // latching
+          // If you read a pin on IRB and the pin is set to be an input (with latching
           // disabled), then you will read the current state of the corresponding
           // PB pin.
           value = getPortBPins() & (~dataDirectionRegisterB);
         } else {
-          // If you read a pin on IRB and the pin is set to be an input (with
-          // latching
+          // If you read a pin on IRB and the pin is set to be an input (with latching
           // enabled), then you will read the actual IRB.
           value = inputRegisterB & (~dataDirectionRegisterB);
         }
-        // If you read a pin on IRB and the pin is set to be an output, then you
-        // will
+        // If you read a pin on IRB and the pin is set to be an output, then you will
         // actually read ORB, which contains the last value that was written to
         // port B.
         value = value | (outputRegisterB & dataDirectionRegisterB);
@@ -450,33 +442,33 @@ public class Via extends MemoryMappedChip {
       case VIA_REG_3: // DDRA
         value = dataDirectionRegisterA;
         break;
-  
+        
       case VIA_REG_4: // Timer 1 low-order counter
-        value = timer1CounterLow;
+        value = (timer1Counter & 0xFF);
         interruptFlagRegister &= TIMER1_RESET;
         updateIFRTopBit();
         break;
   
       case VIA_REG_5: // Time 1 high-order counter
-        value = timer1CounterHigh;
+        value = ((timer1Counter >> 8) & 0xFF);
         break;
   
       case VIA_REG_6: // Timer 1 low-order latches
-        value = timer1LatchLow;
+        value = (timer1Latch & 0xFF);
         break;
   
       case VIA_REG_7: // Timer 1 high-order latches
-        value = timer1LatchHigh;
+        value = ((timer1Latch >> 8) & 0xFF);
         break;
   
       case VIA_REG_8: // Timer 2 low-order counter
-        value = timer2CounterLow;
+        value = (timer2Counter & 0xFF);
         interruptFlagRegister &= TIMER2_RESET;
         updateIFRTopBit();
         break;
   
       case VIA_REG_9: // Timer 2 high-order counter
-        value = timer2CounterHigh;
+        value = ((timer2Counter >> 8) & 0xFF);
         break;
   
       case VIA_REG_10: // Shift register
@@ -536,13 +528,16 @@ public class Via extends MemoryMappedChip {
     buf.append(Integer.toBinaryString(auxiliaryControlRegister));
     buf.append("\n");
     buf.append("timer1 latch: ");
-    buf.append(Integer.toHexString((timer1LatchHigh << 8) + timer1LatchLow));
+    buf.append(Integer.toHexString(timer1Latch));
     buf.append("\n");
     buf.append("timer1 counter: ");
-    buf.append(Integer.toHexString((timer1CounterHigh << 8) + timer1CounterLow));
+    buf.append(Integer.toHexString(timer1Counter));
+    buf.append("\n");
+    buf.append("timer2 latch: ");
+    buf.append(Integer.toHexString(timer2Latch));
     buf.append("\n");
     buf.append("timer2 counter: ");
-    buf.append(Integer.toHexString((timer2CounterHigh << 8) + timer2CounterLow));
+    buf.append(Integer.toHexString(timer2Counter));
     buf.append("\n");
     buf.append("interruptEnableRegister: ");
     buf.append(Integer.toHexString(interruptEnableRegister));
@@ -593,65 +588,63 @@ public class Via extends MemoryMappedChip {
    * Emulates a single cycle of this VIA chip.
    */
   public void emulateCycle() {
-    // Decrement the 2 timers.
-    if (timer1Mode == ONE_SHOT) {
-      // Timed interrupt each time T1 is loaded (one shot)
-      timer1CounterLow--;
-      if (timer1CounterLow < 0) {
-        timer1CounterHigh--;
-        if (timer1CounterHigh < 0) {
-          // Counter continues to count down from 0xFFFF
-          timer1CounterHigh = 0xFF;
-          timer1CounterLow = 0xFF;
-
+    // IMPORTANT NOTE: If the timer 1 latch is set to 2 during cycle T0, then on T1 it
+    // would have a value of 2, then T2 a value of 1, T3 a value of 0, T4 a value of 0xFFFF
+    // and then T5 back to a value of 2 again. So it isn't just 2 cycles it counts but 
+    // N + 2 (the interrupt happens at N + 1.5 cycles).
+    
+    if (!timer1Loaded) {
+      // Check if counter was at 0xFFFF at the start of this cycle.
+      if (timer1Counter == 0xFFFF) {
+        if (timer1Mode == ONE_SHOT) {
+          // Timed interrupt each time T1 is loaded (one shot). 
           // Set the interrupt flag only if the timer has been reloaded.
           if (!timer1HasShot) {
             interruptFlagRegister |= TIMER1_SET;
             updateIFRTopBit();
             timer1HasShot = true;
           }
+          
+          // Counter continues to count down from 0xFFFF.
+          timer1Counter = 0xFFFE;
+          
         } else {
-          timer1CounterLow = 0xFF;
-        }
-      }
-    } else {
-      // Continuous interrupts (free-running)
-      timer1CounterLow--;
-      if (timer1CounterLow < 0) {
-        timer1CounterHigh--;
-        if (timer1CounterHigh < 0) {
-          // Reload from latches and generate interrupt.
-          timer1CounterHigh = timer1LatchHigh;
-          timer1CounterLow = timer1LatchLow;
+          // Continuous interrupts (free-running).
+          // Reload from latches and raise interrupt.
+          timer1Counter = timer1Latch;
           interruptFlagRegister |= TIMER1_SET;
           updateIFRTopBit();
           timer1HasShot = true;
-        } else {
-          timer1CounterLow = 0xFF;
         }
       }
+      else {
+        // Decrement by one, wrapping around to 0XFFFF after zero.
+        timer1Counter = (timer1Counter - 1) & 0xFFFF;
+      }
+    } else {
+      timer1Loaded = false;
     }
 
-    if (timer2Mode == ONE_SHOT) {
-      // Timed interrupt (one shot)
-      timer2CounterLow--;
-      if (timer2CounterLow < 0) {
-        timer2CounterHigh--;
-        if (timer2CounterHigh < 0) {
-          // Countinues to count down from 0xFFFF
-          timer2CounterHigh = 0xFF;
-          timer2CounterLow = 0xFF;
-
-          // Set the interrupt flag only if the timer has been reloaded.
-          if (!timer2HasShot) {
-            interruptFlagRegister |= TIMER2_SET;
-            updateIFRTopBit();
-            timer2HasShot = true;
-          }
-        } else {
-          timer2CounterLow = 0xFF;
+    if (!timer2Loaded) {
+      if (timer2Mode == ONE_SHOT) {
+        // Note: Timer 2 does not behaviour in the same way with regards to when the 
+        // interrupt occurs. For Timer 1, it is when the value is 0xFFFF, but for 
+        // timer 2, it is when the counter is 0x0000.
+        
+        if (!timer2HasShot && (timer2Counter == 0)) {
+          interruptFlagRegister |= TIMER2_SET;
+          updateIFRTopBit();
+          timer2HasShot = true;
         }
+        
+        // Decrement by one, wrapping around to 0XFFFF after zero.
+        timer2Counter = (timer2Counter - 1) & 0xFFFF;
+        
+      } else {
+        // TODO: PB6 pulse counting.
       }
+    } else {
+      timer2Loaded = false;
     }
 
     // Shift the shift register.
@@ -721,11 +714,6 @@ public class Via extends MemoryMappedChip {
    * @return the current values of the Port B pins.
    */
   protected int getPortBPins() {
-    // TODO: 
-    // PB3 - Line back from the keyboard scan.
-    //this.viaPortB = this.kbdKeyPressed ? 255 : 247;
-    //val = this.viaDDRB & this.viaORB | ~this.viaDDRB & this.viaPortB;
-    
     //    Port B
     //    The lowest three bits are used to supply the row when looking at the keyboard
     //    Bit 3 of port B is set to 1 when a key is pressed
@@ -733,7 +721,6 @@ public class Via extends MemoryMappedChip {
     //    the printer will expect data to be present on port A.
     //    Bit 6 controls the relay circuit on the cassette socket.
     //    Bit 7 connects to the cassette output circuitry
-
     
     if (keyboard.isKeyPressed(outputRegisterB & 0x07)) {
       return 0x08 | (portBPins & 0xF7);
@@ -742,32 +729,6 @@ public class Via extends MemoryMappedChip {
       return portBPins & 0xF7;
     }
   }
-  
-  
-  
-//  /**
-//   * Returns the current values of the Port A pins.
-//   *
-//   * @return the current values of the Port A pins.
-//   */
-//  protected int getPortAPins() {
-//    return keyboard.scanKeyboardRow(~super.getPortBPins());
-//  }
-//  
-//  /**
-//   * Returns the current values of the Port B pins.
-//   *
-//   * @return the current values of the Port B pins.
-//   */
-//  protected int getPortBPins() {
-//    // The bottom 7 bits are for the keyboard column scan.
-//    int value = (keyboard.scanKeyboardColumn(~super.getPortAPins()) & 0x7F);
-//    
-//    // The top bit is for the joystick right signal.
-//    value |= (joystick.getJoystickState() & 0x80);
-//    
-//    return value;
-//  }
   
   /**
    * @return the ca2
@@ -802,15 +763,13 @@ public class Via extends MemoryMappedChip {
     updatePortAPins();
     
     // Timer 1
-    timer1CounterLow = snapshot.getMemoryArray()[0x0304];
-    timer1CounterHigh = snapshot.getMemoryArray()[0x0305];
-    timer1LatchLow = snapshot.getMemoryArray()[0x0306];
-    timer1LatchHigh = snapshot.getMemoryArray()[0x0307];
+    timer1Counter = (snapshot.getMemoryArray()[0x0305] << 8) | (snapshot.getMemoryArray()[0x0304]);
+    timer1Latch = (snapshot.getMemoryArray()[0x0307] << 8) | (snapshot.getMemoryArray()[0x0306]);
     
     // Timer 2
-    timer2LatchLow = snapshot.getVia1Timer2LatchLow();
-    timer2CounterLow = snapshot.getVia1Timer2CounterLow();
-    timer2CounterHigh = snapshot.getMemoryArray()[0x0309];
+    // TODO: Timer 2 latch.
+    //timer2Latch = snapshot.getVia1Timer2LatchLow();
+    timer2Counter = (snapshot.getMemoryArray()[0x0309] << 8) | (snapshot.getVia1Timer2CounterLow());
     
     // Shift Register
     shiftRegister = snapshot.getMemoryArray()[0x911A];
