@@ -29,7 +29,7 @@ public class Ula extends BaseChip {
   }; 
   
   /**
-   * An array of two Frames, one being the one that the VIC is currently writing to,
+   * An array of two Frames, one being the one that the ULA is currently writing to,
    * the other being the last one that was completed and ready to blit.
    */
   private Frame[] frames;
@@ -261,7 +261,7 @@ public class Ula extends BaseChip {
   }
   
   /**
-   * Represents the data for one VIC frame.
+   * Represents the data for one ULA frame.
    */
   class Frame {
     
