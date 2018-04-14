@@ -176,7 +176,6 @@ public class Cpu6502 extends BaseChip {
   private static final int STORE_PCH_SP       = 53;
   private static final int STORE_PCL_SP       = 54;
 
-
   /**
    * This static lookup table holds the decoding details of all of the 6502's
    * instructions. It is this array that allows the class to emulate at the
@@ -616,7 +615,7 @@ public class Cpu6502 extends BaseChip {
    * The address to branch to for a branch instruction.
    */
   private int branchAddress;
-
+  
   /**
    * Constructor for CPU6502.
    * 
@@ -1129,7 +1128,8 @@ public class Cpu6502 extends BaseChip {
          break;
 
       case IRQ:
-         // This flag should be set 3 cycles ago, but it shouldn't matter too much.
+         // This flag should be set 3 cycles ago, but it shouldn't matter too much, because its
+         // only checked on instruction completion, so setting it partway through IRQ steps is fine.
          interruptDisableFlag = true;
          programCounter = (effectiveAddressHigh | effectiveAddressLow);
          // IRQ signals occur on a low level, so it is the responsibility of
@@ -1162,7 +1162,7 @@ public class Cpu6502 extends BaseChip {
    */
   public void emulateCycle() {
     int action = 0;
-
+    
     if (currentInstructionStep < numOfInstructionSteps) {
       // Get the action for the current cycle of the instruction.
       action = instructionSteps[currentInstructionStep];
@@ -1174,6 +1174,7 @@ public class Cpu6502 extends BaseChip {
           inputDataLatch = ((inputDataLatch & 0x80) == 0? inputDataLatch : inputDataLatch - 0x100);
           branchAddress = ((programCounter + inputDataLatch) & 0xFFFF);
           if ((programCounter & 0xFF00) == (branchAddress & 0xFF00)) {
+            // Destination address within same page, so skip next instruction step.
             programCounter = branchAddress;
             currentInstructionStep++;
           }
@@ -1190,7 +1191,7 @@ public class Cpu6502 extends BaseChip {
           programCounter++;
           // Execute the branch test.
           executeInstruction();
-          // Skip next two cycles if branch is not taken.
+          // Skip next two instruction steps if branch is not taken.
           if (!branchFlag) {
             currentInstructionStep += 2;
           }
@@ -1366,6 +1367,7 @@ public class Cpu6502 extends BaseChip {
           else {
             // Page boundary not crossed, so the data is okay.
             inputDataLatch = memory.readMemory(baseAddressHigh | baseAddressLow);
+            // Skip next step in instruction because it isn't needed.
             currentInstructionStep++;
           }
           break;
@@ -1381,6 +1383,7 @@ public class Cpu6502 extends BaseChip {
           else {
             // Page boundary not crossed, so the data is okay.
             inputDataLatch = memory.readMemory(baseAddressHigh | baseAddressLow);
+            // Skip next step in instruction because it isn't needed.
             currentInstructionStep++;
           }
           break;
@@ -1545,14 +1548,10 @@ public class Cpu6502 extends BaseChip {
         // No interrupts, so proceed to next instruction.
         instructionRegister = memoryMap[programCounter].readMemory(programCounter);
         programCounter++;
-        if (instructionRegister > 0xFF) {
-          System.out.println("TRAP");
-        }
         instructionSteps = INSTRUCTION_DECODE_MATRIX[instructionRegister];
       }
       else {
         // An interrupt occurred.
-        // TODO: Needs to check interrupt disabled flag!! (and also for EXECUTE_LAST)
         instructionSteps = ((interruptStatus & S_NMI) == 0? IRQ_STEPS : NMI_STEPS);
       }
 
