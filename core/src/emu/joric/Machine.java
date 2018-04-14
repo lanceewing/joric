@@ -161,6 +161,8 @@ public class Machine {
         frameComplete |= ula.emulateSkipCycle();
         cpu.emulateCycle();
         via.emulateCycle();
+        microdisc.emulateCycle();
+        psg.emulateCycle();
       } while (!frameComplete);
     } else {
       do {
