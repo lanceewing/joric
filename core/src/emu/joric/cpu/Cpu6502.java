@@ -540,7 +540,7 @@ public class Cpu6502 extends BaseChip {
   // The individual flag values.
   private boolean negativeResultFlag;
   private boolean overflowFlag;
-  private boolean breakCommandFlag;
+  private boolean breakCommandFlag;   // TODO: Break flag apparently edoesn't exist as such. It only exists on the stack.
   private boolean decimalModeFlag;
   private boolean interruptDisableFlag;
   private boolean zeroResultFlag;
@@ -793,19 +793,20 @@ public class Cpu6502 extends BaseChip {
     
     switch(instructionSteps[0]) {
       case ADC:
-        // TODO: I'm not convinced ADC is 100% correct. There are bugs in some games that point in this direction.
         op1 = accumulator;
         op2 = inputDataLatch;
         if (decimalModeFlag) {
-          zeroResultFlag = ((op1 + op2 + (carryFlag ? 1 : 0)) & 0xFF) == 0;
-          tmp = (op1 & 0x0F) + (op2 & 0x0F) + (carryFlag ? 1 : 0);
-          accumulator   = tmp < 0x0A ? tmp : tmp + 6;
-          tmp = (op1 & 0xF0) + (op2 & 0xF0) + (tmp & 0xF0);
-          negativeResultFlag = ((byte)tmp) < 0;
-          overflowFlag = ((op1 ^ tmp) & ~(op1 ^ op2) & 0x80) != 0;
-          tmp = (accumulator & 0x0F) | (tmp < 0xA0 ? tmp : tmp + 0x60);
-          carryFlag = (tmp >= 0x100);
-          accumulator = tmp & 0xFF;
+          int lo, hi;
+          lo = (op1 & 0x0f) + (op2 & 0x0f) + (carryFlag ? 1 : 0);
+          if ((lo & 0xff) > 9) lo += 6;
+          hi = (op1 >> 4) + (op2 >> 4) + (lo > 15 ? 1 : 0);
+          if ((hi & 0xff) > 9) hi += 6;
+          tmp = (hi << 4) | (lo & 0x0f);
+          accumulator = tmp & 0xff;
+          carryFlag = (hi > 15);
+          zeroResultFlag = (accumulator == 0);
+          overflowFlag = false;       // BCD never sets overflow flag
+          negativeResultFlag = false; // BCD is never negative on NMOS 6502
         }
         else {       // binary mode
           tmp = op1 + op2 + (carryFlag ? 1 : 0);
@@ -867,7 +868,7 @@ public class Cpu6502 extends BaseChip {
 
       case BRK:
         interruptDisableFlag = true;
-        breakCommandFlag = true;
+        breakCommandFlag = true;  // TODO: This flag does not exist as such. It is only pushed onto the stack.
         programCounter = (effectiveAddressHigh | effectiveAddressLow);
         break;
 
@@ -983,7 +984,7 @@ public class Cpu6502 extends BaseChip {
 
       case PHP:
         packPSR();
-        dataBusBuffer = processorStatusRegister;
+        dataBusBuffer = processorStatusRegister | 0x10;   // BRK flag exists only on the stack.
         break;
 
       case PLA:
@@ -1019,17 +1020,20 @@ public class Cpu6502 extends BaseChip {
         break;
 
       case SBC:
-        // TODO: Also not convinced SBC is 100% correct.
         op1 = accumulator;
         op2 = inputDataLatch;
         if (decimalModeFlag) {
-          tmp = (op1 & 0x0F) - (op2 & 0x0F) - (carryFlag ? 0 : 1);
-          accumulator = (tmp & 0x10) == 0 ? tmp : tmp - 6;
-          tmp = (op1 & 0xF0) - (op2 & 0xF0) - (accumulator & 0x10);
-          accumulator = (accumulator & 0x0F) | ((tmp & 0x100)==0 ? tmp : tmp - 0x60);
-          tmp = op1 - op2 - (carryFlag ? 0 : 1);
-          setFlagBorrow(tmp);
-          setNZ(tmp);
+          int lo, hi;
+          lo = (op1 & 0x0F) - (op2 & 0x0F) - (carryFlag ? 0 : 1);
+          if ((lo & 0x10) != 0) lo -= 6;
+          hi = (op1 >> 4) - (op2 >> 4) - ((lo & 0x10) != 0 ? 1 : 0);
+          if ((hi & 0x10) != 0) hi -= 6;
+          tmp = (hi << 4) | (lo & 0x0F);
+          accumulator = tmp & 0xFF;
+          carryFlag = ((hi & 0xFF) < 15);
+          zeroResultFlag = (accumulator == 0);
+          overflowFlag = false;       // BCD never sets overflow flag
+          negativeResultFlag = false; // BCD is never negative on NMOS 6502
           
         } else {  // binary mode
           tmp = op1 - op2 - (carryFlag ? 0 : 1);
@@ -1123,19 +1127,20 @@ public class Cpu6502 extends BaseChip {
 
       /* These are not instructions but this engine treats them as such */
       case NMI:
-         programCounter = (effectiveAddressHigh | effectiveAddressLow);
-         // NMI signals occur on the negative transition only, so we need to reset.
-         interruptStatus &= ~S_NMI;
-         break;
+        interruptDisableFlag = true;
+        programCounter = (effectiveAddressHigh | effectiveAddressLow);
+        // NMI signals occur on the negative transition only, so we need to reset.
+        interruptStatus &= ~S_NMI;
+        break;
 
       case IRQ:
-         // This flag should be set 3 cycles ago, but it shouldn't matter too much, because its
-         // only checked on instruction completion, so setting it partway through IRQ steps is fine.
-         interruptDisableFlag = true;
-         programCounter = (effectiveAddressHigh | effectiveAddressLow);
-         // IRQ signals occur on a low level, so it is the responsibility of
-         // the external hardware device to reset it.
-         break;
+        // This flag should be set 3 cycles ago, but it shouldn't matter too much, because its
+        // only checked on instruction completion, so setting it partway through IRQ steps is fine.
+        interruptDisableFlag = true;
+        programCounter = (effectiveAddressHigh | effectiveAddressLow);
+        // IRQ signals occur on a low level, so it is the responsibility of
+        // the external hardware device to reset it.
+        break;
 
       case TRAP:
         // A Trap pretends to be 6502 subroutine, allowing the emulator to hook non-standard features into the emulation.
@@ -1157,7 +1162,30 @@ public class Cpu6502 extends BaseChip {
     }
   }
 
+  // TODO: Decide whether to keep this long term. Its here mainly for timing debugging at present.
   private long totalCycles;
+  
+  /**
+   * Steps through a single instruction. Used mainly for unit tests and debugging CPU.
+   */
+  public void step() {
+    // Keep emulating cycles until the instruction changes.
+    do {
+      emulateCycle();
+    } while (currentInstructionStep > 1);
+  }
+  
+  /**
+   * Steps through the given number of instructions. Used mainly for unit tsts and
+   * debugging the CPU.
+   * 
+   * @param numberOfInstructions The number of instructions to step.
+   */
+  public void step(int numberOfInstructions) {
+    for (int i=0; i<numberOfInstructions; i++) {
+      step();
+    }
+  }
   
   /**
    * Emulates a machine cycle. There should be exactly one read or one write
@@ -1452,6 +1480,7 @@ public class Cpu6502 extends BaseChip {
 
         case FETCH_DIS_PC:              // Fetches using PC but doesn't increment PC.
           // Program counter is highly unlikely to be pointing at I/O (PLA, PLP. RTS, RTI, IRQ, NMI)
+          // TODO: Apparently it does fetch data using PC, but having this here affects the sound. ?!
           //memoryMap[programCounter].readMemory(programCounter);
           break;
 
@@ -1526,7 +1555,7 @@ public class Cpu6502 extends BaseChip {
         case STORE_P_SP:
           // No I/O in the stack page (BRK)
           packPSR();
-          mem[stackPointer + 0x100] = processorStatusRegister;
+          mem[stackPointer + 0x100] = (processorStatusRegister | (instructionRegister == 0? 0x10 : 0)); // BRK flag only exists on stack.
           stackPointer = ((stackPointer - 1) & 0xFF);
           break;
 
@@ -1661,7 +1690,7 @@ public class Cpu6502 extends BaseChip {
     StringBuffer insBuf = new StringBuffer();
     insBuf.append(getRegisterStatus());
     insBuf.append("\n");
-    insBuf.append(Integer.toHexString(start));
+    insBuf.append(String.format("%04X", start));
     insBuf.append(":    ");
     insBuf.append(instructionNames[instructionInfo[insNum]]);
     insBuf.append(" ");
@@ -1702,7 +1731,7 @@ public class Cpu6502 extends BaseChip {
   public String getRegisterStatus() {
     StringBuffer regBuf = new StringBuffer();
 
-    regBuf.append(totalCycles);
+    regBuf.append(String.format("%010d", totalCycles));
     regBuf.append(":  ");
     regBuf.append("PC=");
     regBuf.append(addLeadingZeroes(Integer.toHexString(programCounter), 4));
@@ -1735,7 +1764,7 @@ public class Cpu6502 extends BaseChip {
     flagBuf.append(negativeResultFlag? "N" : "-");
     flagBuf.append(overflowFlag? "O" : "-");
     flagBuf.append("E");
-    flagBuf.append(breakCommandFlag? "B" : "-");
+    //flagBuf.append(breakCommandFlag? "B" : "-");
     flagBuf.append(decimalModeFlag? "D" : "-");
     flagBuf.append(interruptDisableFlag? "I" : "-");
     flagBuf.append(zeroResultFlag? "Z" : "-");
@@ -1791,7 +1820,11 @@ public class Cpu6502 extends BaseChip {
   public int getIndexRegisterY() { return indexRegisterY; }
   public void setIndexRegisterY(int value) { indexRegisterY = value; }
   public int getStackPointer() { return stackPointer; }
+  public void setStackPointer(int value) { stackPointer = value; }
   public int getProgramCounter() { return programCounter; }
+  public void setProgramCounter(int value) { programCounter = value; }
+  public int getProcessorStatus() { packPSR(); return processorStatusRegister; }
+  public void setProcessorStatus(int value) { processorStatusRegister = value; unpackPSR(); }
   public int getInstructionRegister() { return instructionRegister; }
   public boolean getCarryFlag() { return carryFlag; }
   public void setCarryFlag(boolean value) { carryFlag = value; }
@@ -1802,7 +1835,16 @@ public class Cpu6502 extends BaseChip {
   public boolean getOverflowFlag() { return overflowFlag; }
   public void setOverflowFlag(boolean value) { overflowFlag = value; }
   public boolean getDecimalModeFlag() { return decimalModeFlag; }
+  public void setDecimalModeFlag(boolean value) { decimalModeFlag = value; }
   public boolean getInterruptDisableFlag() { return interruptDisableFlag; }
+  public void setInterruptDisableFlag(boolean value) { interruptDisableFlag = value; }
+  public boolean getBreakCommandFlag() { return this.breakCommandFlag; }
+  public void setBreakCommandFlag(boolean value) { breakCommandFlag = value; }
+  public void stackPush(int value) { mem[stackPointer + 0x100] = value; stackPointer = ((stackPointer - 1) & 0xFF); }
+  public int stackPeek() { return mem[0x100 + stackPointer + 1]; }
+  public int stackPop() { stackPointer = ((stackPointer + 1) & 0xFF); return mem[stackPointer + 0x100]; }
+  public boolean isNmiAsserted() { return (interruptStatus & S_NMI) != 0; }
+  public boolean isIrqAsserted() { return (interruptStatus & S_IRQ) != 0; }
   
   /**
    * Sets the debug mode on or off depending on the parameter.

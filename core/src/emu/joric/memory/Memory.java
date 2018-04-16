@@ -58,6 +58,27 @@ public class Memory {
   private int[] microdiscRom;
   
   /**
+   * Constructor for Memory. Mainly available for unit testing.
+   * 
+   * @param cpu The CPU that will access this Memory.
+   * @param snapshot Optional snapshot of the machine state to start with.
+   * @param allRam true if memory should be initialised to all RAM; otherwise false.
+   */
+  public Memory(Cpu6502 cpu, Snapshot snapshot, boolean allRam) {
+    if (snapshot != null) {
+      this.mem = snapshot.getMemoryArray();
+    } else {
+      this.mem = new int[65536];
+    }
+    this.memoryMap = new MemoryMappedChip[65536];
+    this.cpu = cpu;
+    cpu.setMemory(this);
+    if (allRam) {
+      mapChipToMemory(new RamChip(), 0x0000, 0xFFFF);
+    }
+  }
+  
+  /**
    * Constructor for Memory.
    * 
    * @param cpu The CPU that will access this Memory.
@@ -67,16 +88,9 @@ public class Memory {
    * @param snapshot Optional snapshot of the machine state to start with.
    */
   public Memory(Cpu6502 cpu, Ula ula, Via via, Disk microdisc, Snapshot snapshot) {
-    if (snapshot != null) {
-      this.mem = snapshot.getMemoryArray();
-    } else {
-      this.mem = new int[65536];
-    }
-    this.memoryMap = new MemoryMappedChip[65536];
-    initOricMemory(ula, via, microdisc);
-    cpu.setMemory(this);
+    this(cpu, snapshot, false);
     ula.setMemory(this);
-    this.cpu = cpu;
+    initOricMemory(ula, via, microdisc);
   }
 
   /**

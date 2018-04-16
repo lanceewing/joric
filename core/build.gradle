@@ -9,3 +9,8 @@ sourceSets.main.java.srcDirs = [ "src/" ]
 eclipse.project {
     name = appName + "-core"
 }
+
+dependencies {
+    // Adds a remote binary dependency only for local tests.
+    testCompile 'junit:junit:4.12'
+}
