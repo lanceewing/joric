@@ -167,10 +167,6 @@ public abstract class CpuBaseTestCase {
       cpu6502.setOverflowFlag(true);
     }
 
-    public boolean getBreakFlag() {
-      return cpu6502.getBreakCommandFlag();
-    }
-
     public void setNegativeFlag() {
       cpu6502.setNegativeResultFlag(true);
     }
@@ -221,14 +217,6 @@ public abstract class CpuBaseTestCase {
 
     public int stackPop() {
       return cpu6502.stackPop();
-    }
-
-    public void setBreakFlag() {
-      cpu6502.setBreakCommandFlag(true);
-    }
-
-    public void clearBreakFlag() {
-      cpu6502.setBreakCommandFlag(false);
     }
 
     public void clearDecimalModeFlag() {

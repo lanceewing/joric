@@ -27,7 +27,6 @@ public class CpuTest extends CpuBaseTestCase {
         assertFalse(cpu.getZeroFlag());
         assertFalse(cpu.getIrqDisableFlag());
         assertFalse(cpu.getDecimalModeFlag());
-        assertFalse(cpu.getBreakFlag());
         assertFalse(cpu.getOverflowFlag());
         assertFalse(cpu.getNegativeFlag());
     }
@@ -203,23 +202,19 @@ public class CpuTest extends CpuBaseTestCase {
         assertEquals(0x27, cpu.getProcessorStatus());
         cpu.setDecimalModeFlag();
         assertEquals(0x2f, cpu.getProcessorStatus());
-        cpu.setBreakFlag();
-        assertEquals(0x3f, cpu.getProcessorStatus());
         cpu.setOverflowFlag();
-        assertEquals(0x7f, cpu.getProcessorStatus());
+        assertEquals(0x6f, cpu.getProcessorStatus());
         cpu.setNegativeFlag();
-        assertEquals(0xff, cpu.getProcessorStatus());
+        assertEquals(0xEf, cpu.getProcessorStatus());
 
         cpu.clearCarryFlag();
-        assertEquals(0xfe, cpu.getProcessorStatus());
+        assertEquals(0xEe, cpu.getProcessorStatus());
         cpu.clearZeroFlag();
-        assertEquals(0xfc, cpu.getProcessorStatus());
+        assertEquals(0xEc, cpu.getProcessorStatus());
         cpu.clearIrqDisableFlag();
-        assertEquals(0xf8, cpu.getProcessorStatus());
+        assertEquals(0xE8, cpu.getProcessorStatus());
         cpu.clearDecimalModeFlag();
-        assertEquals(0xf0, cpu.getProcessorStatus());
-        cpu.clearBreakFlag();
-        assertEquals(0xe0, cpu.getProcessorStatus());
+        assertEquals(0xE0, cpu.getProcessorStatus());
         cpu.clearOverflowFlag();
         assertEquals(0xa0, cpu.getProcessorStatus());
         cpu.clearNegativeFlag();
@@ -233,7 +228,6 @@ public class CpuTest extends CpuBaseTestCase {
         assertFalse(cpu.getZeroFlag());
         assertFalse(cpu.getIrqDisableFlag());
         assertFalse(cpu.getDecimalModeFlag());
-        assertFalse(cpu.getBreakFlag());
         assertFalse(cpu.getOverflowFlag());
         assertFalse(cpu.getNegativeFlag());
 
@@ -243,7 +237,6 @@ public class CpuTest extends CpuBaseTestCase {
         assertFalse(cpu.getZeroFlag());
         assertFalse(cpu.getIrqDisableFlag());
         assertFalse(cpu.getDecimalModeFlag());
-        assertFalse(cpu.getBreakFlag());
         assertFalse(cpu.getOverflowFlag());
         assertFalse(cpu.getNegativeFlag());
 
@@ -253,7 +246,6 @@ public class CpuTest extends CpuBaseTestCase {
         assertFalse(cpu.getZeroFlag());
         assertFalse(cpu.getIrqDisableFlag());
         assertFalse(cpu.getDecimalModeFlag());
-        assertFalse(cpu.getBreakFlag());
         assertFalse(cpu.getOverflowFlag());
         assertTrue(cpu.getNegativeFlag());
 
@@ -263,7 +255,6 @@ public class CpuTest extends CpuBaseTestCase {
         assertTrue(cpu.getZeroFlag());
         assertFalse(cpu.getIrqDisableFlag());
         assertFalse(cpu.getDecimalModeFlag());
-        assertFalse(cpu.getBreakFlag());
         assertFalse(cpu.getOverflowFlag());
         assertTrue(cpu.getNegativeFlag());
 
@@ -274,7 +265,6 @@ public class CpuTest extends CpuBaseTestCase {
         assertTrue(cpu.getZeroFlag());
         assertFalse(cpu.getIrqDisableFlag());
         assertFalse(cpu.getDecimalModeFlag());
-        assertFalse(cpu.getBreakFlag());
         assertTrue(cpu.getOverflowFlag());
         assertTrue(cpu.getNegativeFlag());
 
@@ -285,7 +275,6 @@ public class CpuTest extends CpuBaseTestCase {
         assertTrue(cpu.getZeroFlag());
         assertFalse(cpu.getIrqDisableFlag());
         assertFalse(cpu.getDecimalModeFlag());
-        assertTrue(cpu.getBreakFlag());
         assertTrue(cpu.getOverflowFlag());
         assertTrue(cpu.getNegativeFlag());
 
@@ -297,7 +286,6 @@ public class CpuTest extends CpuBaseTestCase {
         assertTrue(cpu.getZeroFlag());
         assertFalse(cpu.getIrqDisableFlag());
         assertTrue(cpu.getDecimalModeFlag());
-        assertTrue(cpu.getBreakFlag());
         assertTrue(cpu.getOverflowFlag());
         assertTrue(cpu.getNegativeFlag());
 
@@ -309,7 +297,6 @@ public class CpuTest extends CpuBaseTestCase {
         assertTrue(cpu.getZeroFlag());
         assertTrue(cpu.getIrqDisableFlag());
         assertTrue(cpu.getDecimalModeFlag());
-        assertTrue(cpu.getBreakFlag());
         assertTrue(cpu.getOverflowFlag());
         assertTrue(cpu.getNegativeFlag());
 
@@ -319,7 +306,6 @@ public class CpuTest extends CpuBaseTestCase {
         assertFalse(cpu.getZeroFlag());
         assertFalse(cpu.getIrqDisableFlag());
         assertFalse(cpu.getDecimalModeFlag());
-        assertFalse(cpu.getBreakFlag());
         assertFalse(cpu.getOverflowFlag());
         assertFalse(cpu.getNegativeFlag());
 
@@ -329,7 +315,6 @@ public class CpuTest extends CpuBaseTestCase {
         assertFalse(cpu.getZeroFlag());
         assertFalse(cpu.getIrqDisableFlag());
         assertFalse(cpu.getDecimalModeFlag());
-        assertFalse(cpu.getBreakFlag());
         assertFalse(cpu.getOverflowFlag());
         assertFalse(cpu.getNegativeFlag());
     }
@@ -408,8 +393,6 @@ public class CpuTest extends CpuBaseTestCase {
 
         cpu.step();
         assertTrue(cpu.getIrqDisableFlag()); // Should have been set by the IRQ
-        assertFalse(cpu.getBreakFlag());
-
     }
 
     @Test
@@ -567,8 +550,6 @@ public class CpuTest extends CpuBaseTestCase {
         cpu.assertNmi();
 
         cpu.step();
-        assertFalse(cpu.getBreakFlag());
-
     }
 
     @Test

@@ -537,10 +537,9 @@ public class Cpu6502 extends BaseChip {
    */
   private int processorStatusRegister;
 
-  // The individual flag values.
+  // The individual flag values. There are only 6 flags that physically exist. B flag does not (only on the stack).
   private boolean negativeResultFlag;
   private boolean overflowFlag;
-  private boolean breakCommandFlag;   // TODO: Break flag apparently edoesn't exist as such. It only exists on the stack.
   private boolean decimalModeFlag;
   private boolean interruptDisableFlag;
   private boolean zeroResultFlag;
@@ -721,7 +720,6 @@ public class Cpu6502 extends BaseChip {
     processorStatusRegister =
       (negativeResultFlag ? 0x80 : 0) |
       (overflowFlag ? 0x40 : 0) | 0x20 |
-      (breakCommandFlag ? 0x10 : 0) |
       (decimalModeFlag ? 8 : 0) |
       (interruptDisableFlag ? 4 : 0) |
       (zeroResultFlag ? 2 : 0) |
@@ -734,7 +732,6 @@ public class Cpu6502 extends BaseChip {
   private void unpackPSR() {
     negativeResultFlag = ((processorStatusRegister & 0x80) != 0);
     overflowFlag = ((processorStatusRegister & 0x40) != 0);
-    breakCommandFlag = ((processorStatusRegister & 0x10) != 0);
     decimalModeFlag = ((processorStatusRegister & 0x08) != 0);
     interruptDisableFlag = ((processorStatusRegister & 0x04) != 0);
     zeroResultFlag = ((processorStatusRegister & 0x02) != 0);
@@ -868,7 +865,6 @@ public class Cpu6502 extends BaseChip {
 
       case BRK:
         interruptDisableFlag = true;
-        breakCommandFlag = true;  // TODO: This flag does not exist as such. It is only pushed onto the stack.
         programCounter = (effectiveAddressHigh | effectiveAddressLow);
         break;
 
@@ -983,8 +979,9 @@ public class Cpu6502 extends BaseChip {
         break;
 
       case PHP:
+        // PHP pushes with B flag bit set, just like BRK does. Note B flag does not physically exist in PSR.
         packPSR();
-        dataBusBuffer = processorStatusRegister | 0x10;   // BRK flag exists only on the stack.
+        dataBusBuffer = processorStatusRegister | 0x10;
         break;
 
       case PLA:
@@ -1693,7 +1690,9 @@ public class Cpu6502 extends BaseChip {
     insBuf.append(String.format("%04X", start));
     insBuf.append(":    ");
     insBuf.append(instructionNames[instructionInfo[insNum]]);
-    insBuf.append(" ");
+    insBuf.append(" (");
+    insBuf.append(String.format("%02X", insNum >> 1));
+    insBuf.append(") ");
 
     switch(instructionInfo[insNum + 1]) {
       case Ac: insBuf.append("A"); break;
@@ -1838,8 +1837,6 @@ public class Cpu6502 extends BaseChip {
   public void setDecimalModeFlag(boolean value) { decimalModeFlag = value; }
   public boolean getInterruptDisableFlag() { return interruptDisableFlag; }
   public void setInterruptDisableFlag(boolean value) { interruptDisableFlag = value; }
-  public boolean getBreakCommandFlag() { return this.breakCommandFlag; }
-  public void setBreakCommandFlag(boolean value) { breakCommandFlag = value; }
   public void stackPush(int value) { mem[stackPointer + 0x100] = value; stackPointer = ((stackPointer - 1) & 0xFF); }
   public int stackPeek() { return mem[0x100 + stackPointer + 1]; }
   public int stackPop() { stackPointer = ((stackPointer + 1) & 0xFF); return mem[stackPointer + 0x100]; }

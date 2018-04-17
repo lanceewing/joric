@@ -54,10 +54,8 @@ public class CpuImpliedModeTest extends CpuBaseTestCase {
     public void test_BRK() {
         cpu.setCarryFlag();
         cpu.setOverflowFlag();
-        assertEquals(0x20 | Cpu.P_CARRY | Cpu.P_OVERFLOW,
-                     cpu.getProcessorStatus());
+        assertEquals(0x20 | Cpu.P_CARRY | Cpu.P_OVERFLOW, cpu.getProcessorStatus());
         assertEquals(0x00, cpu.stackPeek());
-        assertFalse(cpu.getBreakFlag());
         assertEquals(0x0200, cpu.getProgramCounter());
         assertEquals(0xff, cpu.getStackPointer());
 
@@ -88,10 +86,8 @@ public class CpuImpliedModeTest extends CpuBaseTestCase {
         assertEquals(0x1234, cpu.getProgramCounter() - 1);
         assertEquals(0xfc, cpu.getStackPointer());
 
-        // B and I flags should have been set on P
-        assertEquals(0x20 | Cpu.P_CARRY | Cpu.P_OVERFLOW | Cpu.P_BREAK |
-                             Cpu.P_IRQ_DISABLE,
-                     cpu.getProcessorStatus());
+        // I flag should have been set on P, but not B. It doesn't exist as such, but only on the stack.
+        assertEquals(0x20 | Cpu.P_CARRY | Cpu.P_OVERFLOW | Cpu.P_IRQ_DISABLE, cpu.getProcessorStatus());
     }
 
     @Test
@@ -100,10 +96,8 @@ public class CpuImpliedModeTest extends CpuBaseTestCase {
 
         cpu.setCarryFlag();
         cpu.setOverflowFlag();
-        assertEquals(0x20 | Cpu.P_CARRY | Cpu.P_OVERFLOW | Cpu.P_IRQ_DISABLE,
-                     cpu.getProcessorStatus());
+        assertEquals(0x20 | Cpu.P_CARRY | Cpu.P_OVERFLOW | Cpu.P_IRQ_DISABLE, cpu.getProcessorStatus());
         assertEquals(0x00, cpu.stackPeek());
-        assertFalse(cpu.getBreakFlag());
         assertEquals(0x0200, cpu.getProgramCounter());
         assertEquals(0xff, cpu.getStackPointer());
         
@@ -136,9 +130,8 @@ public class CpuImpliedModeTest extends CpuBaseTestCase {
         assertEquals(0x1234, cpu.getProgramCounter() - 1);
         assertEquals(0xfc, cpu.getStackPointer());
 
-        // B and I flags should have been set on P
-        assertEquals(0x20 | Cpu.P_CARRY | Cpu.P_OVERFLOW | Cpu.P_BREAK | Cpu.P_IRQ_DISABLE,
-                     cpu.getProcessorStatus());
+        // I flag should have been set on P, but not B. The B flag only exists on the stack, as tested above.
+        assertEquals(0x20 | Cpu.P_CARRY | Cpu.P_OVERFLOW | Cpu.P_IRQ_DISABLE, cpu.getProcessorStatus());
     }
 
 
@@ -342,6 +335,7 @@ public class CpuImpliedModeTest extends CpuBaseTestCase {
         cpu.step();
         assertEquals(0xfe, cpu.getStackPointer());
         // PHP should have set the BREAK flag _on the stack_ (but not in the CPU)
+        // TODO: This behaviour breaks certain Oric demos, e.g. Pushing The Envelope. Must be missing something else in another instruction.
         assertEquals(0x37, cpu.stackPeek());
         assertEquals(0x27, cpu.getProcessorStatus());
     }
