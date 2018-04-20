@@ -491,7 +491,7 @@ public class Via extends MemoryMappedChip {
         break;
   
       case VIA_REG_14: // Interrupt Enable Register
-        value = (interruptEnableRegister & 0x7F);
+        value = (interruptEnableRegister & 0x7F) | 0x80;
         break;
   
       case VIA_REG_15: // ORA/IRA (no handshake)
