@@ -9,6 +9,22 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "1337",
+      "filePath": "disks/1337.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Buggy Boy",
+      "filePath": "disks/BuggyBoy.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Diagnostic ROM",
       "filePath": "roms/test108j.rom",
       "fileType": "ROM",
