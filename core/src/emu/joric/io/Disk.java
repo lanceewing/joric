@@ -1,5 +1,7 @@
 package emu.joric.io;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 
 import emu.joric.cpu.Cpu6502;
@@ -155,7 +157,7 @@ public class Disk extends MemoryMappedChip {
       case 0x311: // Track Register
       case 0x312: // Sector Register
       case 0x313: // Data Register
-        wd1793.write(address &3 , value);
+        wd1793.write(address & 3, value);
         break;
         
       case 0x314: // Microdisc status register.
@@ -413,8 +415,9 @@ public class Disk extends MemoryMappedChip {
             }
     
             // If this is the first read of a read operation, remember the record type for later
-            if (currentSectorOffset == 0)
+            if (currentSectorOffset == 0) {
               sectorType = (currentSector.read(currentSectorOffset++) == 0xf8) ? WSFR_RECTYP : 0x00;
+            }
     
             // Get the next byte from the sector
             dataRegister = currentSector.read(currentSectorOffset++);
@@ -474,7 +477,7 @@ public class Disk extends MemoryMappedChip {
               // The Track Address of the ID field is written into the Sector Register.
               sectorRegister = currentSector.trackNum;
             }
-            dataRegister = diskImage.getUnsignedByteFromRawImage(++currentSectorOffset);
+            dataRegister = diskImage.rawImage[++currentSectorOffset];
             statusRegister &= ~WSF_DRQ;
             loweredDrq();
             if (currentSectorOffset >= 6) {
@@ -726,9 +729,6 @@ public class Disk extends MemoryMappedChip {
           delayedIrqStatus = WSFI_HEADL | WSFI_PULSE;
         }
 
-        // Cache the new track
-        diskImage.cacheTrack(track, side);
-
         // Update our status
         currentTrack = track;
         currentSectorId = 0;
@@ -767,20 +767,14 @@ public class Disk extends MemoryMappedChip {
     public Sector findSector(int sectorId) {
       int revolutions = 0;
 
-      // Make sure the current track is cached
-      diskImage.cacheTrack(currentTrack, side);
-
-      // No sectors on this track? Someone needs to format their disk...
-      if (diskImage.getNumOfSectors() < 1) {
-        return null;
-      }
-
+      Sector[] sectors = diskImage.getAllTracks()[side][currentTrack];
+      
       // We do this more realistically than we need to since this is not
       // a super-accurate emulation (for now). Never mind. Lets go
       // around the track up to two times.
       while (revolutions < 2) {
         // Move on to the next sector
-        currentSectorId = (currentSectorId + 1) % diskImage.getNumOfSectors();
+        currentSectorId = (currentSectorId + 1) % diskImage.getNumOfSectors();  // TODO: Is it always 17 sectors?
 
         // If we passed through the start of the track, set the pulse bit in the status register
         if (currentSectorId == 0) {
@@ -789,13 +783,13 @@ public class Disk extends MemoryMappedChip {
         }
 
         // Found the required sector?
-        Sector sector = diskImage.getSectors()[currentSectorId];
+        Sector sector = sectors[currentSectorId];
         if (sector.sectorNum == sectorId) {
           return sector;
         }
       }
 
-      // The search failed :-(
+      // The search failed.
       return null;
     }
     
@@ -806,20 +800,12 @@ public class Disk extends MemoryMappedChip {
      * @return The first Sector in the current track, or null if not found.
      */
     public Sector firstSector() {
-      // Make sure the current track is cached
-      diskImage.cacheTrack(currentTrack, side);
-
-      // No sectors on this track? Someone needs to format their disk...
-      if (diskImage.getNumOfSectors() < 1) {
-        return null;
-      }
-
       // We're at the first sector!
       currentSectorId = 0;
       statusRegister = WSFI_PULSE;
 
       // Return the sector
-      return diskImage.getSectors()[currentSectorId];
+      return diskImage.getAllTracks()[side][currentTrack][currentSectorId];
     }
     
     /**
@@ -828,23 +814,14 @@ public class Disk extends MemoryMappedChip {
      * @return The next Sector.
      */
     public Sector nextSector() {
-      // Make sure the current track is cached
-      diskImage.cacheTrack(currentTrack, side);
-
-      // No sectors on this track? Someone needs to format their disk...
-      if (diskImage.getNumOfSectors() < 1) {
-        return null;
-      }
-
       // Get the next sector number
       currentSectorId = (currentSectorId + 1) % diskImage.getNumOfSectors();
 
       // If we are at the start of the track, set the pulse bit
-      if (currentSectorId == 0)
-        statusRegister |= WSFI_PULSE;
+      if (currentSectorId == 0) statusRegister |= WSFI_PULSE;
 
       // Return the sector
-      return diskImage.getSectors()[currentSectorId];
+      return diskImage.getAllTracks()[side][currentTrack][currentSectorId];
     }
   }
   
@@ -873,13 +850,11 @@ public class Disk extends MemoryMappedChip {
     private int numOfTracks;           // Number of tracks per side
     private int numOfSides;            // Number of sides in the image
     private int geometry;              // Geometry type. See javadoc above.
-    private int cachedTrack;           // Currently cached track (or -1 for none)
-    private int cachedSide;            // Currently cached side (or -1 for none)
     private int numOfSectors;          // Number of sectors cached (= number of valid sectors in the current track)
-    private Sector[] sectors;          // Cache of pointers to sectors
-    private byte[] rawImage;           // The raw disk image file loaded into memory
+    private int[] rawImage;            // The raw disk image file loaded into memory
     private String diskImageName;
     private boolean loadFailed;
+    private Sector[][][] allTracks;
     
     /**
      * Constructor for MfmDiskImage.
@@ -891,11 +866,11 @@ public class Disk extends MemoryMappedChip {
     public MfmDiskImage(String diskImageName, byte[] rawImage, int drive) {
       // Read in the full disk image data if it wasn't provided.
       if (rawImage == null) {
-        this.rawImage = Gdx.files.internal("disks/" + diskImageName).readBytes();
-      } else {
-        this.rawImage = rawImage;
+        rawImage = Gdx.files.internal("disks/" + diskImageName).readBytes();
       }
     
+      this.rawImage = convertByteArrayToIntArray(rawImage);
+      
       // Check for the signature. Is it an MFM format disk image? 
       String signature = new String(rawImage, 0, 8);
       if (!signature.equals("MFM_DISK")) {
@@ -909,94 +884,28 @@ public class Disk extends MemoryMappedChip {
       this.numOfTracks = getIntFromRawImage(12);
       this.geometry = getIntFromRawImage(16);
       this.diskImageName = diskImageName;
-      this.cachedTrack = -1;
-      this.cachedSide = -1;
-      this.numOfSectors = 0;
-      this.sectors = new Sector[32];
-      for (int i=0; i<32; i++) {
-        this.sectors[i] = new Sector();
-      }
-    }
-    
-    /**
-     * Gets a single unsigned byte from the specified offset in the raw disk image.
-     * 
-     * @param offset The offset to read an unsigned byte from.
-     * 
-     * @return The unsigned byte at the given offset into the raw disk image.
-     */
-    public int getUnsignedByteFromRawImage(int offset) {
-      return (((int)rawImage[offset]) & 0xFF);
-    }
-    
-    /**
-     * Gets a 32-bit integer value from the specified offset in the raw disk image.
-     * 
-     * @param offset The offset to read the 32-bite integer value from.
-     * 
-     * @return The 32-bit integer value at the given offset into the raw disk image.
-     */
-    private int getIntFromRawImage(int offset) {
-      return (getUnsignedByteFromRawImage(offset + 3) << 24) | 
-             (getUnsignedByteFromRawImage(offset + 2) << 16) |
-             (getUnsignedByteFromRawImage(offset + 1) << 8)  | 
-             (getUnsignedByteFromRawImage(offset + 0) << 0);
-    }
-
-    /**
-     * This class represents a Sector within the MFM disk image. It stores details such as the
-     * sector ID, offset of the data for the sector, and the track and side of the disk where 
-     * the sector resides. It also provides methods for reading and writing to/from a specified
-     * sector position.
-     */
-    public class Sector {
-      int idOffset;
-      int trackNum;
-      int side;
-      int sectorNum;     // This is the sector ID.
-      int sectorSize;    // Should be the same for every sector on the disk.
-      int dataOffset;
+      this.numOfSectors = 17;
       
-      public int read(int sectorPos) {
-        int value = getUnsignedByteFromRawImage(dataOffset + sectorPos);
-        return value;
-      }
-      
-      public void write(int sectorPos, int data) {
-        // TODO: This is just updating an array in memory. Need to add writing back to disk at some point.
-        rawImage[dataOffset + sectorPos] = (byte)data;
+      // Load all tracks.
+      allTracks = new Sector[numOfSides][numOfTracks][32];
+      for (int side=0; side < numOfSides; side++) {
+        for (int track=0; track < numOfTracks; track++) {
+          allTracks[side][track] = loadTrack(side, track); 
+        }
       }
     }
     
     /**
-     * Whenever a seek operation occurs, the track where the head ends up
-     * is "cached". The track is located within the raw image file, and
-     * all the sector address and data markers are found, and pointers
-     * are remembered for each.
+     * Loads a full track of sectors from the identified side and track number.
      * 
-     * @param track
-     * @param side
+     * @param side The side of the disk to load the track from.
+     * @param track The track number of the track to load.
+     * 
+     * @return Array of Sectors for the track that was loaded.
      */
-    public void cacheTrack(int track, int side) {
-      // If this track is already cached, don't waste time doing it again
-      if ((this.cachedTrack == track) && (this.cachedSide == side)) {
-        return;
-      }
-
-      // Reset cached info
-      for (int n = 0; n < 32; n++) {
-        this.sectors[n].idOffset = -1;
-        this.sectors[n].dataOffset = -1;
-      }
-
-      this.numOfSectors = 0;
-      this.cachedTrack = -1;
-      this.cachedSide = -1;
-
-      if (side >= this.numOfSides) {
-        return;
-      }
-
+    private Sector[] loadTrack(int side, int track) {
+      ArrayList<Sector> sectorList = new ArrayList<Sector>();
+      
       // Find the start and end locations of the track within the disk image. This
       // works because Oric disks always use the same geometry setting, tracks are
       // always aligned every 6400 bytes, and the header of a disk is 256 bytes.
@@ -1004,7 +913,6 @@ public class Disk extends MemoryMappedChip {
       int trackEnd = trackStart + 6400;
 
       // Scan through the track looking for sectors
-      int sectorCount = 0;
       int offset = trackStart;
 
       while (offset < trackEnd) {
@@ -1022,13 +930,13 @@ public class Disk extends MemoryMappedChip {
         // 2 bytes CRC
 
         // Store ID pointer and details.
-        Sector sector = this.sectors[sectorCount];
+        Sector sector = new Sector();
         sector.idOffset = offset;
-        sector.trackNum = getUnsignedByteFromRawImage(offset + 1);
-        sector.side = getUnsignedByteFromRawImage(offset + 2);
-        sector.sectorNum = getUnsignedByteFromRawImage(offset + 3);
-        sector.sectorSize = (1 << (getUnsignedByteFromRawImage(offset + 4) + 7));
-        sectorCount++;
+        sector.trackNum = rawImage[offset + 1];
+        sector.side = rawImage[offset + 2];
+        sector.sectorNum = rawImage[offset + 3];
+        sector.sectorSize = (1 << (rawImage[offset + 4] + 7));
+        sectorList.add(sector);
 
         // Skip ID field and CRC
         offset += 7;
@@ -1055,12 +963,63 @@ public class Disk extends MemoryMappedChip {
         // Skip data field and ID
         offset += sector.sectorSize + 3;
       }
+      
+      Sector[] sectors = new Sector[sectorList.size()];
+      sectors = sectorList.toArray(sectors);
+      return sectors;
+    }
+    
+    /**
+     * Converts a byte array into an int array.
+     * 
+     * @param data The byte array to convert.
+     * 
+     * @return The int array.
+     */
+    private int[] convertByteArrayToIntArray(byte[] data) {
+      int[] convertedData = new int[data.length];
+      for (int i=0; i<data.length; i++) {
+        convertedData[i] = ((int)data[i]) & 0xFF;
+      }
+      return convertedData;
+    }
+    
+    /**
+     * Gets a 32-bit integer value from the specified offset in the raw disk image.
+     * 
+     * @param offset The offset to read the 32-bite integer value from.
+     * 
+     * @return The 32-bit integer value at the given offset into the raw disk image.
+     */
+    private int getIntFromRawImage(int offset) {
+      return (rawImage[offset + 3] << 24) | 
+             (rawImage[offset + 2] << 16) |
+             (rawImage[offset + 1] << 8)  | 
+             (rawImage[offset + 0] << 0);
+    }
 
-      if (sectorCount > 0) {
-        // Remember how many sectors we have successfully cached
-        this.numOfSectors = sectorCount;
-        this.cachedTrack = track;
-        this.cachedSide = side;
+    /**
+     * This class represents a Sector within the MFM disk image. It stores details such as the
+     * sector ID, offset of the data for the sector, and the track and side of the disk where 
+     * the sector resides. It also provides methods for reading and writing to/from a specified
+     * sector position.
+     */
+    public class Sector {
+      int idOffset;
+      int trackNum;
+      int side;
+      int sectorNum;     // This is the sector ID.
+      int sectorSize;    // Should be the same for every sector on the disk.
+      int dataOffset;
+      
+      public int read(int sectorPos) {
+        int value = rawImage[dataOffset + sectorPos];
+        return value;
+      }
+      
+      public void write(int sectorPos, int data) {
+        // TODO: This is just updating an array in memory. Need to add writing back to disk at some point.
+        rawImage[dataOffset + sectorPos] = (byte)data;
       }
     }
     
@@ -1085,18 +1044,8 @@ public class Disk extends MemoryMappedChip {
       return numOfSectors;
     }
 
-    /**
-     * @return the rawImage
-     */
-    public byte[] getRawImage() {
-      return rawImage;
-    }
-
-    /**
-     * @return the sectors
-     */
-    public Sector[] getSectors() {
-      return sectors;
+    public Sector[][][] getAllTracks() {
+      return this.allTracks;
     }
   }
 }
