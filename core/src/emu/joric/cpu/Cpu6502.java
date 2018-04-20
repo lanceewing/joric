@@ -764,7 +764,7 @@ public class Cpu6502 extends BaseChip {
    * @param trapRoutine The code to run when that trap is hit.
    */
   public void registerTrapRoutine(int address, Callable<Integer> trapRoutine) {
-    traps.put(address, new Trap(mem[address], trapRoutine));
+    traps.put(address, new Trap(memory.readMemory(address), trapRoutine));
     memory.forceWrite(address, EMU_TRAP_CODE);
   }
   
@@ -1690,9 +1690,6 @@ public class Cpu6502 extends BaseChip {
     insBuf.append(String.format("%04X", start));
     insBuf.append(":    ");
     insBuf.append(instructionNames[instructionInfo[insNum]]);
-    insBuf.append(" (");
-    insBuf.append(String.format("%02X", insNum >> 1));
-    insBuf.append(") ");
 
     switch(instructionInfo[insNum + 1]) {
       case Ac: insBuf.append("A"); break;
