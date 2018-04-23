@@ -257,7 +257,7 @@ public class MachineInputProcessor extends InputAdapter {
       
       if (keyboardClicked) {
         if (keyboardType.equals(KeyboardType.OFF)) {
-          keyboardType = (viewportManager.isPortrait()? KeyboardType.PORTRAIT_10x7 : KeyboardType.LANDSCAPE);
+          keyboardType = (viewportManager.isPortrait()? KeyboardType.PORTRAIT : KeyboardType.LANDSCAPE);
           viewportManager.update();
         } else {
           keyboardType = KeyboardType.OFF;
@@ -322,7 +322,7 @@ public class MachineInputProcessor extends InputAdapter {
   public void resize(int width, int height) {
     if (keyboardType.isRendered() && !keyboardType.equals(KeyboardType.JOYSTICK)) {
       // Switch keyboard layout based on the orientation.
-      keyboardType = (height > width? KeyboardType.PORTRAIT_10x7 : KeyboardType.LANDSCAPE);
+      keyboardType = (height > width? KeyboardType.PORTRAIT : KeyboardType.LANDSCAPE);
     }
   }
   
