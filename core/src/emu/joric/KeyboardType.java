@@ -4,7 +4,6 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
 
 import emu.joric.ui.ViewportManager;
-import static emu.joric.io.Keyboard.*;
 
 /**
  * Enum representing the different types of keyboard available within JOric.
@@ -15,45 +14,35 @@ public enum KeyboardType {
 
   LANDSCAPE(
         new Integer[][][] {{
-          { Keys.LEFT, Keys.LEFT, Keys.NUM_1, Keys.NUM_1, Keys.NUM_2, Keys.NUM_2, Keys.NUM_3, Keys.NUM_3, Keys.NUM_4, Keys.NUM_4, Keys.NUM_5, Keys.NUM_5, Keys.NUM_6, Keys.NUM_6, Keys.NUM_7, Keys.NUM_7, Keys.NUM_8, Keys.NUM_8, Keys.NUM_9, Keys.NUM_9, Keys.NUM_0, Keys.NUM_0, Keys.PLUS, Keys.PLUS, Keys.MINUS, Keys.MINUS, Keys.POUND, Keys.POUND, Keys.HOME, Keys.HOME, Keys.DEL, Keys.DEL, null, null, null, null, null, null, null, null },
-          { Keys.CONTROL_LEFT, Keys.CONTROL_LEFT, Keys.CONTROL_LEFT, Keys.Q, Keys.Q, Keys.W, Keys.W, Keys.E, Keys.E, Keys.R, Keys.R, Keys.T, Keys.T, Keys.Y, Keys.Y, Keys.U, Keys.U, Keys.I, Keys.I, Keys.O, Keys.O, Keys.P, Keys.P, Keys.AT, Keys.AT, Keys.STAR, Keys.STAR, Keys.UP, Keys.UP, null, null, null, null, null, null, null, null, null, null, null },
-          { null, null, null, null, Keys.A, Keys.A, Keys.S, Keys.S, Keys.D, Keys.D, Keys.F, Keys.F, Keys.G, Keys.G, Keys.H, Keys.H, Keys.J, Keys.J, Keys.K, Keys.K, Keys.L, Keys.L, Keys.COLON, Keys.COLON, Keys.SEMICOLON, Keys.SEMICOLON, Keys.EQUALS, Keys.EQUALS, Keys.ENTER, Keys.ENTER, Keys.ENTER, Keys.ENTER, null, null, null, null, null, null, null, null },
-          { Keys.ALT_LEFT, Keys.ALT_LEFT, Keys.SHIFT_LEFT, Keys.SHIFT_LEFT, Keys.SHIFT_LEFT, Keys.Z, Keys.Z, Keys.X, Keys.X, Keys.C, Keys.C, Keys.V, Keys.V, Keys.B, Keys.B, Keys.N, Keys.N, Keys.M, Keys.M, Keys.COMMA, Keys.COMMA, Keys.PERIOD, Keys.PERIOD, Keys.SLASH, Keys.SLASH, Keys.SHIFT_RIGHT, Keys.SHIFT_RIGHT, Keys.SHIFT_RIGHT, Keys.DOWN, Keys.DOWN, Keys.RIGHT, Keys.RIGHT, null, null, null, null, null, null, null, null },
-          { null, null, null, null, null, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null }
+          { null, null, Keys.NUM_1, Keys.NUM_1, Keys.NUM_1, Keys.NUM_1, Keys.NUM_2, Keys.NUM_2, Keys.NUM_2, Keys.NUM_2, Keys.NUM_3, Keys.NUM_3, Keys.NUM_3, Keys.NUM_3, Keys.NUM_4, Keys.NUM_4, Keys.NUM_4, Keys.NUM_4, Keys.NUM_5, Keys.NUM_5, Keys.NUM_5, Keys.NUM_5, Keys.NUM_6, Keys.NUM_6, Keys.NUM_6, Keys.NUM_6, Keys.NUM_7, Keys.NUM_7, Keys.NUM_7, Keys.NUM_7, Keys.NUM_8, Keys.NUM_8, Keys.NUM_8, Keys.NUM_8, Keys.NUM_9, Keys.NUM_9, Keys.NUM_9, Keys.NUM_9, Keys.NUM_0, Keys.NUM_0, Keys.NUM_0, Keys.NUM_0, Keys.MINUS, Keys.MINUS, Keys.MINUS, Keys.MINUS, Keys.EQUALS, Keys.EQUALS, Keys.EQUALS, Keys.EQUALS, Keys.BACKSLASH, Keys.BACKSLASH, Keys.BACKSLASH, Keys.BACKSLASH, null, null },
+          { Keys.ESCAPE, Keys.ESCAPE, Keys.ESCAPE, Keys.ESCAPE, Keys.Q, Keys.Q, Keys.Q, Keys.Q, Keys.W, Keys.W, Keys.W, Keys.W, Keys.E, Keys.E, Keys.E, Keys.E, Keys.R, Keys.R, Keys.R, Keys.R, Keys.T, Keys.T, Keys.T, Keys.T, Keys.Y, Keys.Y, Keys.Y, Keys.Y, Keys.U, Keys.U, Keys.U, Keys.U, Keys.I, Keys.I, Keys.I, Keys.I, Keys.O, Keys.O, Keys.O, Keys.O, Keys.P, Keys.P, Keys.P, Keys.P, Keys.LEFT_BRACKET, Keys.LEFT_BRACKET, Keys.LEFT_BRACKET, Keys.LEFT_BRACKET, Keys.RIGHT_BRACKET, Keys.RIGHT_BRACKET, Keys.RIGHT_BRACKET, Keys.RIGHT_BRACKET, Keys.DEL, Keys.DEL, Keys.DEL, Keys.DEL },
+          { null, Keys.CONTROL_LEFT, Keys.CONTROL_LEFT, Keys.CONTROL_LEFT, Keys.CONTROL_LEFT, Keys.A, Keys.A, Keys.A, Keys.A, Keys.S, Keys.S, Keys.S, Keys.S, Keys.D, Keys.D, Keys.D, Keys.D, Keys.F, Keys.F, Keys.F, Keys.F, Keys.G, Keys.G, Keys.G, Keys.G, Keys.H, Keys.H, Keys.H, Keys.H, Keys.J, Keys.J, Keys.J, Keys.J, Keys.K, Keys.K, Keys.K, Keys.K, Keys.L, Keys.L, Keys.L, Keys.L, Keys.SEMICOLON, Keys.SEMICOLON, Keys.SEMICOLON, Keys.SEMICOLON, Keys.APOSTROPHE, Keys.APOSTROPHE, Keys.APOSTROPHE, Keys.APOSTROPHE, Keys.ENTER, Keys.ENTER, Keys.ENTER, Keys.ENTER, Keys.ENTER, Keys.ENTER, Keys.ENTER, null },
+          { null, Keys.SHIFT_LEFT, Keys.SHIFT_LEFT, Keys.SHIFT_LEFT, Keys.SHIFT_LEFT, Keys.SHIFT_LEFT, Keys.SHIFT_LEFT, Keys.Z, Keys.Z, Keys.Z, Keys.Z, Keys.X, Keys.X, Keys.X, Keys.X, Keys.C, Keys.C, Keys.C, Keys.C, Keys.V, Keys.V, Keys.V, Keys.V, Keys.B, Keys.B, Keys.B, Keys.B, Keys.N, Keys.N, Keys.N, Keys.N, Keys.M, Keys.M, Keys.M, Keys.M, Keys.COMMA, Keys.COMMA, Keys.COMMA, Keys.COMMA, Keys.PERIOD, Keys.PERIOD, Keys.PERIOD, Keys.PERIOD, Keys.SLASH, Keys.SLASH, Keys.SLASH, Keys.SLASH, Keys.SHIFT_RIGHT, Keys.SHIFT_RIGHT, Keys.SHIFT_RIGHT, Keys.SHIFT_RIGHT, Keys.SHIFT_RIGHT, Keys.SHIFT_RIGHT, null, null, null },
+          { null, null, null, Keys.LEFT, Keys.LEFT, Keys.LEFT, Keys.LEFT, Keys.DOWN, Keys.DOWN, Keys.DOWN, Keys.DOWN, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.UP, Keys.UP, Keys.UP, Keys.UP, Keys.RIGHT, Keys.RIGHT, Keys.RIGHT, Keys.RIGHT, Keys.ALT_RIGHT, Keys.ALT_RIGHT, Keys.ALT_RIGHT, Keys.ALT_RIGHT, null }
         }},
         new String[] {"png/keyboard_landscape.png"},
-        0.5f,
+        0.4f,
         0,
+        0,
+        15,
+        1890,
         0
       ),
-  PORTRAIT_12x6(
+  PORTRAIT(
         new Integer[][][] {{
-          { Keys.CONTROL_LEFT, Keys.CONTROL_LEFT, Keys.LEFT, Keys.LEFT, Keys.UP, Keys.UP, Keys.F1, Keys.F1, Keys.F1, Keys.F3, Keys.F3, Keys.F3, Keys.F5, Keys.F5, Keys.F5, Keys.F7, Keys.F7, Keys.F7, Keys.POUND, Keys.POUND, Keys.HOME, Keys.HOME, Keys.DEL, Keys.DEL, null, null },
-          { Keys.NUM_1, Keys.NUM_2, Keys.NUM_3, Keys.NUM_4, Keys.NUM_5, Keys.NUM_6, Keys.NUM_7, Keys.NUM_8, Keys.NUM_9, Keys.NUM_0, Keys.PLUS, Keys.MINUS, null },
-          { Keys.Q, Keys.W, Keys.E, Keys.R, Keys.T, Keys.Y, Keys.U, Keys.I, Keys.O, Keys.P, Keys.AT, Keys.STAR, null },
-          { Keys.A, Keys.S, Keys.D, Keys.F, Keys.G, Keys.H, Keys.J, Keys.K, Keys.L, Keys.COLON, Keys.SEMICOLON, Keys.EQUALS, null },
-          { Keys.Z, Keys.X, Keys.C, Keys.V, Keys.B, Keys.N, Keys.M, Keys.COMMA, Keys.PERIOD, Keys.SLASH, Keys.ENTER, Keys.ENTER, null },
-          { Keys.ALT_LEFT, null, Keys.SHIFT_LEFT, null, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, null, Keys.SHIFT_RIGHT, Keys.DOWN, Keys.RIGHT, null } 
+          { null, null, Keys.NUM_1, Keys.NUM_1, Keys.NUM_1, Keys.NUM_1, Keys.NUM_2, Keys.NUM_2, Keys.NUM_2, Keys.NUM_2, Keys.NUM_3, Keys.NUM_3, Keys.NUM_3, Keys.NUM_3, Keys.NUM_4, Keys.NUM_4, Keys.NUM_4, Keys.NUM_4, Keys.NUM_5, Keys.NUM_5, Keys.NUM_5, Keys.NUM_5, Keys.NUM_6, Keys.NUM_6, Keys.NUM_6, Keys.NUM_6, Keys.NUM_7, Keys.NUM_7, Keys.NUM_7, Keys.NUM_7, Keys.NUM_8, Keys.NUM_8, Keys.NUM_8, Keys.NUM_8, Keys.NUM_9, Keys.NUM_9, Keys.NUM_9, Keys.NUM_9, Keys.NUM_0, Keys.NUM_0, Keys.NUM_0, Keys.NUM_0, Keys.MINUS, Keys.MINUS, Keys.MINUS, Keys.MINUS, Keys.EQUALS, Keys.EQUALS, Keys.EQUALS, Keys.EQUALS, Keys.BACKSLASH, Keys.BACKSLASH, Keys.BACKSLASH, Keys.BACKSLASH, null, null },
+          { Keys.ESCAPE, Keys.ESCAPE, Keys.ESCAPE, Keys.ESCAPE, Keys.Q, Keys.Q, Keys.Q, Keys.Q, Keys.W, Keys.W, Keys.W, Keys.W, Keys.E, Keys.E, Keys.E, Keys.E, Keys.R, Keys.R, Keys.R, Keys.R, Keys.T, Keys.T, Keys.T, Keys.T, Keys.Y, Keys.Y, Keys.Y, Keys.Y, Keys.U, Keys.U, Keys.U, Keys.U, Keys.I, Keys.I, Keys.I, Keys.I, Keys.O, Keys.O, Keys.O, Keys.O, Keys.P, Keys.P, Keys.P, Keys.P, Keys.LEFT_BRACKET, Keys.LEFT_BRACKET, Keys.LEFT_BRACKET, Keys.LEFT_BRACKET, Keys.RIGHT_BRACKET, Keys.RIGHT_BRACKET, Keys.RIGHT_BRACKET, Keys.RIGHT_BRACKET, Keys.DEL, Keys.DEL, Keys.DEL, Keys.DEL },
+          { null, Keys.CONTROL_LEFT, Keys.CONTROL_LEFT, Keys.CONTROL_LEFT, Keys.CONTROL_LEFT, Keys.A, Keys.A, Keys.A, Keys.A, Keys.S, Keys.S, Keys.S, Keys.S, Keys.D, Keys.D, Keys.D, Keys.D, Keys.F, Keys.F, Keys.F, Keys.F, Keys.G, Keys.G, Keys.G, Keys.G, Keys.H, Keys.H, Keys.H, Keys.H, Keys.J, Keys.J, Keys.J, Keys.J, Keys.K, Keys.K, Keys.K, Keys.K, Keys.L, Keys.L, Keys.L, Keys.L, Keys.SEMICOLON, Keys.SEMICOLON, Keys.SEMICOLON, Keys.SEMICOLON, Keys.APOSTROPHE, Keys.APOSTROPHE, Keys.APOSTROPHE, Keys.APOSTROPHE, Keys.ENTER, Keys.ENTER, Keys.ENTER, Keys.ENTER, Keys.ENTER, Keys.ENTER, Keys.ENTER, null },
+          { null, Keys.SHIFT_LEFT, Keys.SHIFT_LEFT, Keys.SHIFT_LEFT, Keys.SHIFT_LEFT, Keys.SHIFT_LEFT, Keys.SHIFT_LEFT, Keys.Z, Keys.Z, Keys.Z, Keys.Z, Keys.X, Keys.X, Keys.X, Keys.X, Keys.C, Keys.C, Keys.C, Keys.C, Keys.V, Keys.V, Keys.V, Keys.V, Keys.B, Keys.B, Keys.B, Keys.B, Keys.N, Keys.N, Keys.N, Keys.N, Keys.M, Keys.M, Keys.M, Keys.M, Keys.COMMA, Keys.COMMA, Keys.COMMA, Keys.COMMA, Keys.PERIOD, Keys.PERIOD, Keys.PERIOD, Keys.PERIOD, Keys.SLASH, Keys.SLASH, Keys.SLASH, Keys.SLASH, Keys.SHIFT_RIGHT, Keys.SHIFT_RIGHT, Keys.SHIFT_RIGHT, Keys.SHIFT_RIGHT, Keys.SHIFT_RIGHT, Keys.SHIFT_RIGHT, null, null, null },
+          { null, null, null, Keys.LEFT, Keys.LEFT, Keys.LEFT, Keys.LEFT, Keys.DOWN, Keys.DOWN, Keys.DOWN, Keys.DOWN, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.UP, Keys.UP, Keys.UP, Keys.UP, Keys.RIGHT, Keys.RIGHT, Keys.RIGHT, Keys.RIGHT, Keys.ALT_RIGHT, Keys.ALT_RIGHT, Keys.ALT_RIGHT, Keys.ALT_RIGHT, null }
         }},
-        new String[] {"png/keyboard_portrait_12x6.png"},
-        1.0f,
+        new String[] {"png/keyboard_portrait.png"},
+        0.6f,
         0,
-        0
-      ),
-  PORTRAIT_10x7(
-        new Integer[][][] {{
-          { Keys.CONTROL_LEFT, Keys.LEFT, Keys.UP, Keys.F1, Keys.F3, Keys.F5, Keys.F7, Keys.POUND, Keys.HOME, Keys.DEL, null },
-          { Keys.COLON, Keys.SEMICOLON, Keys.EQUALS, Keys.AT, Keys.PLUS, Keys.MINUS, Keys.STAR, Keys.SLASH, null, null, null },
-          { Keys.NUM_1, Keys.NUM_2, Keys.NUM_3, Keys.NUM_4, Keys.NUM_5, Keys.NUM_6, Keys.NUM_7, Keys.NUM_8, Keys.NUM_9, Keys.NUM_0, null },
-          { Keys.Q, Keys.W, Keys.E, Keys.R, Keys.T, Keys.Y, Keys.U, Keys.I, Keys.O, Keys.P, null },
-          { Keys.A, Keys.S, Keys.D, Keys.F, Keys.G, Keys.H, Keys.J, Keys.K, Keys.L, Keys.ENTER, null },
-          { Keys.Z, Keys.X, Keys.C, Keys.V, Keys.B, Keys.N, Keys.M, Keys.COMMA, Keys.PERIOD, Keys.ENTER, null },
-          { Keys.ALT_LEFT, null, Keys.SHIFT_LEFT, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SPACE, Keys.SHIFT_RIGHT, Keys.DOWN, Keys.RIGHT, null }
-        }},
-        new String[] {"png/keyboard_portrait_10x7.png"},
-        1.0f,
         0,
-        0
+        2,
+        -1,
+        -2
       ),
   JOYSTICK(
         new Integer[][][] {{
@@ -78,7 +67,10 @@ public enum KeyboardType {
         new String[] {"png/joystick_arrows.png", "png/joystick_fire.png"},
         1.0f,
         0,
-        100
+        100,
+        0,
+        -1,
+        0
       ),
   MOBILE_ON_SCREEN,
   OFF;
@@ -88,9 +80,14 @@ public enum KeyboardType {
   public static final int RIGHT = 1;
   
   /**
-   * The size of the keys in this KeyboardType.
+   * The vertical size of the keys in this KeyboardType.
    */
-  private int keySize;
+  private float vertKeySize;
+  
+  /**
+   * The horizontal size of the keys in this KeyboardType. 
+   */
+  private float horizKeySize;
   
   /**
    * The position of each key within this KeyboardType.
@@ -128,6 +125,16 @@ public enum KeyboardType {
   private int closeHeight;
   
   /**
+   * The X value at which the keyboard starts in the keyboard image.
+   */
+  private int xStart;
+  
+  /**
+   * The Y value at which the keyboard starts in the keyboard image.
+   */
+  private int yStart;
+  
+  /**
    * Constructor for KeyboardType.
    * 
    * @param keyMap The position of each key within this KeyboardType.
@@ -135,8 +142,11 @@ public enum KeyboardType {
    * @param opacity The opacity of this KeyboardType.
    * @param renderOffset Offset from the bottom of the screen that the keyboard is rendered at.
    * @param closeBuffer Buffer over the keyboard above which a tap or click will close the keyboard.
+   * @param xStart The X value at which the keyboard starts in the keyboard image.
+   * @param activeWidth The width of the active part of the keyboard image, or -1 to deduce from texture width and xStart.
+   * @param yStart The Y value at which the keyboard starts in the keyboard image.
    */
-  KeyboardType(Integer[][][] keyMap, String[] keyboardImages, float opacity, int renderOffset, int closeBuffer) {
+  KeyboardType(Integer[][][] keyMap, String[] keyboardImages, float opacity, int renderOffset, int closeBuffer, int xStart, int activeWidth, int yStart) {
     this.keyMap = keyMap;
     this.keyboardImages = keyboardImages;
     this.numOfSides = keyboardImages.length;
@@ -150,7 +160,12 @@ public enum KeyboardType {
       }
     }
     
-    this.keySize = (this.textures[0].getHeight() / this.keyMap[0].length);
+    this.xStart = xStart;
+    this.yStart = yStart;
+    activeWidth = (activeWidth == -1? this.textures[0].getWidth() - this.xStart : activeWidth);
+    this.vertKeySize = ((float)(((float)this.textures[0].getHeight()) - (float)this.yStart) / (float)this.keyMap[0].length);
+    this.horizKeySize = ((float)activeWidth / (float)this.keyMap[0][0].length);
+    
     this.opacity = opacity;
     this.renderOffset = renderOffset;
     this.closeHeight = maxTextureHeight + renderOffset + closeBuffer;
@@ -196,33 +211,20 @@ public enum KeyboardType {
     // If we're showing the mini version of the joystick, adjust the height here.
     if (equals(JOYSTICK) && !ViewportManager.getInstance().isPortrait() && (side == LEFT)) {
       // TODO: Make this a flag in the construction of a KeyboardType.
-      keyRow = (int)((textures[side].getHeight() - (y * 2) + renderOffset) / keySize);
+      keyRow = (int)((textures[side].getHeight() - (y * 2) + renderOffset) / vertKeySize);
       
     } else {
-      keyRow = (int)((textures[side].getHeight() - y + renderOffset) / keySize);
+      keyRow = (int)((textures[side].getHeight() - (y - yStart) + renderOffset) / vertKeySize);
     }
 
     if (keyRow >= keyMap[side].length) keyRow = keyMap[side].length - 1;
     
     switch (this) {
       case LANDSCAPE:
-        // Perform adjustment of x pos for rows 0, 1 and 4 to align with rows 2 and 3, but 
-        // only if it is left of the function keys.
-        if (((keyRow < 2) || (keyRow == 4)) && (x < 1768)) {
-          x = x - 25.26f;
-          if (x < 0) {
-            return null;
-          }
+      case PORTRAIT:
+        if (x >= xStart) {
+          keyCode = keyMap[side][keyRow][(int)((x - xStart) / horizKeySize)];
         }
-        keyCode = keyMap[side][keyRow][(int)(x / (keySize / 2f))];
-        break;
-    
-      case PORTRAIT_12x6:
-        // First row of 12x6 layout is mapped by half key.
-        if (keyRow == 0) x *= 2;
-      
-      case PORTRAIT_10x7:
-        keyCode = keyMap[side][keyRow][(int)(x / keySize)];
         break;
       
       case JOYSTICK:
@@ -232,7 +234,7 @@ public enum KeyboardType {
         if (side == RIGHT) {
           x = x - (ViewportManager.getInstance().getWidth() - getTexture(RIGHT).getWidth());
         }
-        int keyCol = (int)(x / keySize);
+        int keyCol = (int)(x / vertKeySize);
         if (keyCol < keyMap[side][keyRow].length) {
           keyCode = keyMap[side][keyRow][keyCol];
         }

@@ -37,7 +37,7 @@ public class Keyboard {
   // C     @2    Z     CTRL  $4    B     ^6    M
   // "'    |\                £-    :;    (9    K
   // RIGHT DOWN  LEFT  SHIFT UP    >.    <,    SPACE
-  // {[    }]    DEL   ALT   P     O     I     U
+  // {[    }]    DEL   FCN   P     O     I     U
   // W     S     A           E     G     H     Y
   // +=          RET         ?/    )0    L     *8
   
@@ -104,7 +104,7 @@ public class Keyboard {
     {Keys.RIGHT_BRACKET, 5, 64},
     {Keys.DEL, 5, 32},
     {Keys.BACKSPACE, 5, 32},
-    {Keys.ALT_LEFT, 5, 16},
+    {Keys.ALT_LEFT, 5, 16},   // Using ALTs for FUNCT
     {Keys.ALT_RIGHT, 5, 16},
     {Keys.P, 5, 8},
     {Keys.O, 5, 4},
