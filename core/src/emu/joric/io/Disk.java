@@ -477,7 +477,7 @@ public class Disk extends MemoryMappedChip {
               // The Track Address of the ID field is written into the Sector Register.
               sectorRegister = currentSector.trackNum;
             }
-            dataRegister = diskImage.rawImage[++currentSectorOffset];
+            dataRegister = diskImage.rawImage[++currentSectorOffset];  // TODO: Does this really read from raw image? Or should it be sector?
             statusRegister &= ~WSF_DRQ;
             loweredDrq();
             if (currentSectorOffset >= 6) {
