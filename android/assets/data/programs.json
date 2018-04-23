@@ -4,7 +4,7 @@
       "name": "BASIC",
       "filePath": "",
       "fileType": "",
-      "iconPath": "icons/basic2.png",
+      "iconPath": "icons/basic.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -231,6 +231,14 @@
       "displayName": "Secret Du\nTombeau",
       "filePath": "tapes/tombjeu.tap",
       "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Sedoric V3.0",
+      "filePath": "disks/S30tpOK.dsk",
+      "fileType": "DISK",
       "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
