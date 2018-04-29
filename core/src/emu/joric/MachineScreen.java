@@ -75,6 +75,7 @@ public class MachineScreen implements Screen {
   // UI components.
   private Texture joystickIcon;
   private Texture keyboardIcon;
+  private Texture backIcon;
 
   private ViewportManager viewportManager;
   
@@ -104,6 +105,7 @@ public class MachineScreen implements Screen {
     
     keyboardIcon = new Texture("png/keyboard_icon.png");
     joystickIcon = new Texture("png/joystick_icon.png");
+    backIcon = new Texture("png/back_arrow.png");
     
     viewportManager = ViewportManager.getInstance();
     
@@ -152,11 +154,14 @@ public class MachineScreen implements Screen {
     Pixmap screenPixmap = new Pixmap(machineType.getTotalScreenWidth(), machineType.getTotalScreenHeight(), Pixmap.Format.RGB565);
     Texture[] screens = new Texture[3];
     screens[0] = new Texture(screenPixmap, Pixmap.Format.RGB565, false);
+    screens[0].setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
     screens[1] = new Texture(screenPixmap, Pixmap.Format.RGB565, false);
+    screens[1].setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
     screens[2] = new Texture(screenPixmap, Pixmap.Format.RGB565, false);
+    screens[2].setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
     Camera camera = new OrthographicCamera();
-    Viewport viewport = new ExtendViewport((machineType.getVisibleScreenHeight() / 3) * 4, machineType.getVisibleScreenHeight(), camera);
-    
+    Viewport viewport = new ExtendViewport(((machineType.getVisibleScreenHeight() / 4) * 5), machineType.getVisibleScreenHeight(), camera);
+    //Viewport viewport = new ExtendViewport(machineType.getVisibleScreenWidth(), (machineType.getVisibleScreenWidth() / 5) * 4, camera);
     machineTypePixmaps.put(machineType, screenPixmap);
     machineTypeTextures.put(machineType, screens);
     machineTypeCameras.put(machineType, camera);
@@ -268,16 +273,25 @@ public class MachineScreen implements Screen {
       batch.setColor(c.r, c.g, c.b, 0.5f);
       if (viewportManager.isPortrait()) {
         batch.draw(joystickIcon, 0, 0);
-        batch.draw(keyboardIcon, viewportManager.getWidth() - 145, 0);
         
         if (Gdx.app.getType().equals(ApplicationType.Android)) {
           // Mobile keyboard for debug purpose. Wouldn't normally make this available.
           batch.setColor(c.r, c.g, c.b, 0.15f);
           batch.draw(keyboardIcon, viewportManager.getWidth() - viewportManager.getWidth()/2 - 70, 0);
+          // Main Oric keyboard on the left.
+          batch.draw(keyboardIcon, viewportManager.getWidth() - 145, 0);
+          
+        } else {
+          // Desktop puts Oric keyboard button in the middle.
+          batch.draw(keyboardIcon, viewportManager.getWidth() - viewportManager.getWidth()/2 - 70, 0);
+          // and the back button on the right.
+          batch.draw(backIcon, viewportManager.getWidth() - 145, 0);
         }
+        
       } else {
         batch.draw(joystickIcon, 0, viewportManager.getHeight() - 140);
         batch.draw(keyboardIcon, viewportManager.getWidth() - 150, viewportManager.getHeight() - 125);
+        batch.draw(backIcon, viewportManager.getWidth() - 150, 0);
       }
     }
     batch.end();

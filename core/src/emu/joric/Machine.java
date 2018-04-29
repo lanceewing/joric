@@ -28,12 +28,12 @@ public class Machine {
   private Via via;
   private AYPSG psg;
   private Cpu6502 cpu;
-  private Disk microdisc;
   
   // Peripherals.
   private Keyboard keyboard;
   private Joystick joystick;
   private Tape tape;
+  private Disk microdisc;
 
   private boolean paused = true;
   
@@ -120,9 +120,11 @@ public class Machine {
     
     tape = new Tape(cpu, memory);
     
-    // Set up the screen dimensions based on the ULA chip settings. Aspect ratio of 4:3.
-    screenWidth = (machineType.getVisibleScreenHeight() / 3) * 4;
+    // Set up the screen dimensions based on the ULA chip settings. Aspect ratio of 5:4.
+    screenWidth = ((machineType.getVisibleScreenHeight() / 4) * 5);
     screenHeight = machineType.getVisibleScreenHeight();
+    //screenWidth = machineType.getVisibleScreenWidth();
+    //screenHeight = (machineType.getVisibleScreenWidth() / 5) * 4;
     screenLeft = machineType.getHorizontalOffset();
     screenRight = screenLeft + machineType.getVisibleScreenWidth();
     screenTop = machineType.getVerticalOffset();
