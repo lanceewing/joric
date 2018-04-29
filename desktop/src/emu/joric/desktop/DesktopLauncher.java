@@ -1,5 +1,8 @@
 package emu.joric.desktop;
 
+import javax.swing.JOptionPane;
+
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
@@ -16,8 +19,18 @@ public class DesktopLauncher {
     new LwjglApplication(new JOric(new ConfirmHandler() {
 
       @Override
-      public void confirm(String message, ConfirmResponseHandler confirmResponseHandler) {
-        // TODO: Implement confirmation dialog for desktop version.
+      public void confirm(final String message, final ConfirmResponseHandler responseHandler) {
+        Gdx.app.postRunnable(new Runnable() {
+          @Override
+          public void run() {
+            int output = JOptionPane.showConfirmDialog(null, "Please confirm", message, JOptionPane.YES_NO_OPTION);
+            if (output != 0) {
+              responseHandler.no();
+            } else {
+              responseHandler.yes();
+            }
+          }
+        });
       }
       
     }, new AY38912PSG()), config);    // Passing null instead of a AY38912PSG will use libgdx sound instead.

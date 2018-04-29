@@ -116,17 +116,15 @@ public class MachineInputProcessor extends InputAdapter {
   public boolean keyUp(int keycode) {
     if (keycode == Keys.BACK) {
       if (keyboardType.equals(KeyboardType.OFF)) {
-        if (Gdx.app.getType().equals(ApplicationType.Android)) {
-          machineScreen.getMachineRunnable().pause();
-          confirmHandler.confirm("Return to Home screen?", new ConfirmResponseHandler() {
-            public void yes() {
-              machineScreen.exit();
-            }
-            public void no() {
-              machineScreen.getMachineRunnable().resume();
-            }
-          });
-        }
+        machineScreen.getMachineRunnable().pause();
+        confirmHandler.confirm("Return to Home screen?", new ConfirmResponseHandler() {
+          public void yes() {
+            machineScreen.exit();
+          }
+          public void no() {
+            machineScreen.getMachineRunnable().resume();
+          }
+        });
       } else {
         // If a keyboard is being shown, then BACK will close this.
         keyboardType = KeyboardType.OFF;
@@ -222,6 +220,7 @@ public class MachineInputProcessor extends InputAdapter {
       // TODO: Need to handle the magic numbers in this block in a better way. 
       boolean keyboardClicked = false;
       boolean joystickClicked = false;
+      boolean backArrowClicked = false;
       
       if (viewportManager.isPortrait()) {
         // Portrait.
@@ -230,15 +229,23 @@ public class MachineInputProcessor extends InputAdapter {
             joystickClicked = true;
             
           } else if (touchXY.x > (viewportManager.getWidth() - 145)) {
-            keyboardClicked = true;
-            
-          } else if (Gdx.app.getType().equals(ApplicationType.Android)) {
+            // If not Android, then right area is Back button.
+            if (Gdx.app.getType().equals(ApplicationType.Android)) {
+              keyboardClicked = true;
+            } else {
+              backArrowClicked = true;
+            }
+          } else {
             // Mobile soft keyboard is only available in portrait mode (debug only)
             int midWidth = (int)(viewportManager.getWidth() - viewportManager.getWidth()/2);
             if ((touchXY.x > (midWidth - 70)) && 
                 (touchXY.y < (midWidth + 70))) {
-              Gdx.input.setOnscreenKeyboardVisible(true);
-              keyboardType = KeyboardType.MOBILE_ON_SCREEN;
+              if (Gdx.app.getType().equals(ApplicationType.Android)) {
+                Gdx.input.setOnscreenKeyboardVisible(true);
+                keyboardType = KeyboardType.MOBILE_ON_SCREEN;
+              } else {
+                keyboardClicked = true;
+              }
             }
           }
         }
@@ -251,6 +258,10 @@ public class MachineInputProcessor extends InputAdapter {
             
           } else if (touchXY.x > (viewportManager.getWidth() - 150)) {
             keyboardClicked = true;
+          }
+        } else if (touchXY.y < 140) {
+          if (touchXY.x > (viewportManager.getWidth() - 150)) {
+            backArrowClicked = true;
           }
         }
       }
@@ -266,6 +277,10 @@ public class MachineInputProcessor extends InputAdapter {
       
       if (joystickClicked) {
         keyboardType = KeyboardType.JOYSTICK;
+      }
+      
+      if (backArrowClicked) {
+        keyUp(Keys.BACK);
       }
     }
     
