@@ -25,11 +25,15 @@ public class AY38912PSG implements AYPSG {
   private static final int CYCLES_PER_SECOND = 1000000;
   private static final int CYCLES_PER_SAMPLE = (CYCLES_PER_SECOND / SAMPLE_RATE);
 
-  // Not entirely sure what these should be.
+  // Not entirely sure what these volume levels should be. With LEVEL_DIVISOR set to 4, 
+  // and volumes A, B, and C all at 15, then max sample is at 32760, which is just under
+  // the limit.
+  private final static int LEVEL_DIVISOR = 4;
   private final static int[] VOLUME_LEVELS = {
-    0x003C/3, 0x0055/3, 0x0079/3, 0x00AB/3, 0x00F1/3, 0x0155/3, 0x01E3/3, 
-    0x02AA/3, 0x03C5/3, 0x0555/3, 0x078B/3, 0x0AAB/3, 0x0F16/3, 0x1555/3, 
-    0x1E2B/3, 0x2AAA/3 
+    0x003C/LEVEL_DIVISOR, 0x0055/LEVEL_DIVISOR, 0x0079/LEVEL_DIVISOR, 0x00AB/LEVEL_DIVISOR, 
+    0x00F1/LEVEL_DIVISOR, 0x0155/LEVEL_DIVISOR, 0x01E3/LEVEL_DIVISOR, 0x02AA/LEVEL_DIVISOR,
+    0x03C5/LEVEL_DIVISOR, 0x0555/LEVEL_DIVISOR, 0x078B/LEVEL_DIVISOR, 0x0AAB/LEVEL_DIVISOR,
+    0x0F16/LEVEL_DIVISOR, 0x1555/LEVEL_DIVISOR, 0x1E2B/LEVEL_DIVISOR, 0x2AAA/LEVEL_DIVISOR 
   };
   
   // Constants for index values into output, count, and period arrays.
@@ -136,6 +140,7 @@ public class AY38912PSG implements AYPSG {
       audioLine = (SourceDataLine)AudioSystem.getLine(info);
       audioLine.open();
       audioLine.start();
+      
       sampleBuffer = new byte[audioBufferSize / 10];
       sampleBufferOffset = 0;
       
@@ -461,7 +466,7 @@ public class AY38912PSG implements AYPSG {
     
     int sample =  (((((VOLUME_LEVELS[volumeA] * cnt[A]) >> 13) + 
                      ((VOLUME_LEVELS[volumeB] * cnt[B]) >> 13) + 
-                     ((VOLUME_LEVELS[volumeC] * cnt[C]) >> 13)) & 0xFFFF) - 0x8000);
+                     ((VOLUME_LEVELS[volumeC] * cnt[C]) >> 13)) & 0x7FFF));
     
     sampleBuffer[sampleBufferOffset + 0] = (byte)(sample & 0x00FF);
     sampleBuffer[sampleBufferOffset + 1] = (byte)((sample & 0xFF00) >> 8);

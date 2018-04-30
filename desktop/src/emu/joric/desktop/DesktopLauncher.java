@@ -33,6 +33,9 @@ public class DesktopLauncher {
         });
       }
       
-    }, new AY38912PSG()), config);    // Passing null instead of a AY38912PSG will use libgdx sound instead.
+    }, 
+    new AY38912PSG()),
+    //null),
+    config);    // Passing null instead of a AY38912PSG will use libgdx sound instead.
 	}
 }
