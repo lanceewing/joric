@@ -275,11 +275,11 @@ public class MachineScreen implements Screen {
         batch.draw(joystickIcon, 0, 0);
         
         if (Gdx.app.getType().equals(ApplicationType.Android)) {
+          // Main Oric keyboard on the left.
+          batch.draw(keyboardIcon, viewportManager.getWidth() - 145, 0);
           // Mobile keyboard for debug purpose. Wouldn't normally make this available.
           batch.setColor(c.r, c.g, c.b, 0.15f);
           batch.draw(keyboardIcon, viewportManager.getWidth() - viewportManager.getWidth()/2 - 70, 0);
-          // Main Oric keyboard on the left.
-          batch.draw(keyboardIcon, viewportManager.getWidth() - 145, 0);
           
         } else {
           // Desktop puts Oric keyboard button in the middle.
