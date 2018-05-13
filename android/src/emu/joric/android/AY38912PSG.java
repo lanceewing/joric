@@ -188,23 +188,29 @@ public class AY38912PSG implements AYPSG {
    * Pauses the sound output. Invoked when the Machine is paused.
    */
   public void pauseSound() {
-    audioLine.pause();
+    if (audioLine != null)  {
+      audioLine.pause();
+    }
   }
 
   /**
    * Resumes the sound output. Invoked when the Machine is unpaused.
    */
   public void resumeSound() {
-    audioLine.play();
+    if (audioLine != null) {
+      audioLine.play();
+    }
   }
 
   /**
    * Stops and closes the audio line.
    */
   public void dispose() {
-    audioLine.flush();
-    audioLine.stop();
-    audioLine.release();
+    if (audioLine != null) {
+      audioLine.flush();
+      audioLine.stop();
+      audioLine.release();
+    }
   }
   
   /**
@@ -466,7 +472,9 @@ public class AY38912PSG implements AYPSG {
     
     // If the sample buffer is full, write it out to the audio line.
     if ((sampleBufferOffset += 1) == sampleBuffer.length) {
-      audioLine.write(sampleBuffer, 0, sampleBuffer.length);
+      if (audioLine != null) {
+        audioLine.write(sampleBuffer, 0, sampleBuffer.length);
+      }
       sampleBufferOffset = 0;
     }
   }
