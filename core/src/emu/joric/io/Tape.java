@@ -3,7 +3,7 @@ package emu.joric.io;
 import java.io.ByteArrayInputStream;
 import java.util.concurrent.Callable;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 
 import emu.joric.cpu.Cpu6502;
 import emu.joric.memory.Memory;
@@ -23,6 +23,8 @@ public class Tape {
   private int[] mem;
   
   private ByteArrayInputStream tapeIn;
+
+  private FileHandle folderHandle;
   
   /**
    * Constructor for Tape.
@@ -76,7 +78,22 @@ public class Tape {
             for (fileNameLength = 0; mem[addressOfFileName + fileNameLength] != 0; ++fileNameLength) {}
             String fileName = new String(mem, addressOfFileName, fileNameLength);
             try {
-              tapeIn = new ByteArrayInputStream(Gdx.files.internal("tapes/" + fileName + ".tap").readBytes());
+              if (folderHandle.child(fileName.toLowerCase() + ".tap").exists()) {
+                tapeIn = new ByteArrayInputStream(folderHandle.child(fileName.toLowerCase() + ".tap").readBytes());
+              } else if (folderHandle.child(fileName.toLowerCase() + ".TAP").exists()) {
+                tapeIn = new ByteArrayInputStream(folderHandle.child(fileName.toLowerCase() + ".TAP").readBytes());
+              } else if (folderHandle.child(fileName.toUpperCase() + ".tap").exists()) {
+                tapeIn = new ByteArrayInputStream(folderHandle.child(fileName.toUpperCase() + ".tap").readBytes());
+              } else if (folderHandle.child(fileName.toUpperCase() + ".TAP").exists()) {
+                tapeIn = new ByteArrayInputStream(folderHandle.child(fileName.toUpperCase() + ".TAP").readBytes());
+              } else {
+                String capitalisedFileName = fileName.length() == 0 ? "" : fileName.substring(0, 1).toUpperCase() + fileName.substring(1).toLowerCase();
+                if (folderHandle.child(capitalisedFileName + ".tap").exists()) {
+                  tapeIn = new ByteArrayInputStream(folderHandle.child(capitalisedFileName + ".tap").readBytes());
+                } else if (folderHandle.child(capitalisedFileName + ".TAP").exists()) {
+                  tapeIn = new ByteArrayInputStream(folderHandle.child(capitalisedFileName + ".TAP").readBytes());
+                }
+              }
               alreadyOpenedOnce = true;
               mem[addressOfFileName] = 0;
             } catch (Exception e) {
@@ -98,9 +115,13 @@ public class Tape {
    * Loads a TAPE file ready to be read by the emulator.
    * 
    * @param tapeData The byte array containing the TAPE data to be loaded.
+   * @param folderHandle 
    */
-  public void loadTape(byte[] tapeData) {
+  public void loadTape(byte[] tapeData, FileHandle folderHandle) {
     if ((romType == RomType.ATMOS) || (romType == RomType.ORIC1)) {
+      // Store handle to the folder in which this tape file resides.
+      this.folderHandle = folderHandle;
+      
       // Create input stream for the tape data. Makes it available for synchro and reading routines.
       tapeIn = new ByteArrayInputStream(tapeData);
       
