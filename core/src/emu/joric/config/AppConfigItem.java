@@ -19,14 +19,34 @@ public class AppConfigItem {
   
   private RamType ram = RamType.RAM_48K;
   
+  private FileLocation fileLocation = FileLocation.INTERNAL;
+  
   private String status = "WORKING";
 
+  public enum FileLocation {
+    INTERNAL, EXTERNAL, ABSOLUTE, CLASSPATH, LOCAL
+  };
+  
   /**
    * Constructor for AppConfigItem.
    */
   public AppConfigItem() {
   }
   
+  /**
+   * @return the fileLocation
+   */
+  public FileLocation getFileLocation() {
+    return fileLocation;
+  }
+
+  /**
+   * @param fileLocation the fileLocation to set
+   */
+  public void setFileLocation(FileLocation fileLocation) {
+    this.fileLocation = fileLocation;
+  }
+
   /**
    * @return the name
    */

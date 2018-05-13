@@ -1,7 +1,9 @@
 package emu.joric;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 
+import emu.joric.config.AppConfigItem.FileLocation;
 import emu.joric.cpu.Cpu6502;
 import emu.joric.io.Disk;
 import emu.joric.io.Joystick;
@@ -67,7 +69,7 @@ public class Machine {
    * @param machineType The type of Oric machine, i.e. PAL or NTSC.
    */
   public void init(RamType ramType, MachineType machineType) {
-    init(null, null, machineType, ramType);
+    init(null, null, machineType, ramType, null);
   }
   
   /**
@@ -77,11 +79,13 @@ public class Machine {
    * @param programType The type of program data, e.g. TAPE, etc.
    * @param machineType The type of Oric machine, i.e. PAL or NTSC.
    * @param ramType The RAM configuration to use.
+   * @param fileLocation The location of the file, e.g. internal, external, local, classpath, absolute.
    * 
    */
-  public void init(String programFile, String programType, MachineType machineType, RamType ramType) {
+  public void init(String programFile, String programType, MachineType machineType, RamType ramType, FileLocation fileLocation) {
     byte[] programData = null;
     Snapshot snapshot = null;
+    FileHandle fileHandle = null;
     
     this.machineType = machineType;
     
@@ -89,7 +93,29 @@ public class Machine {
     // other initialisation.
     if ((programFile != null) && (programFile.length() > 0)) {
       try {
-        programData = Gdx.files.internal(programFile).readBytes();
+        fileLocation = (fileLocation != null? fileLocation : FileLocation.INTERNAL);
+        switch (fileLocation) {
+          case INTERNAL:
+            fileHandle = Gdx.files.internal(programFile);
+            break;
+          case EXTERNAL:
+            fileHandle = Gdx.files.external(programFile);
+            break;
+          case LOCAL:
+            fileHandle = Gdx.files.local(programFile);
+            break;
+          case ABSOLUTE:
+            fileHandle = Gdx.files.absolute(programFile);
+            break;
+          case CLASSPATH:
+            fileHandle = Gdx.files.classpath(programFile);
+            break;
+        }
+        if (fileHandle != null) {
+          if (fileHandle.exists()){
+            programData = fileHandle.readBytes();
+          }
+        }
       } catch (Exception e) {
         // Continue with default behaviour, which is to boot in to BASIC.
       }
@@ -138,7 +164,7 @@ public class Machine {
         
       } else if ("TAPE".equals(programType)) {
         // Sets up the tape data to be loaded automatically at BASIC startup.
-        tape.loadTape(programData);
+        tape.loadTape(programData, fileHandle.parent());
       } else if ("DISK".equals(programType)) {
         // Insert the disk ready to be booted.
         microdisc.insertDisk(programFile, programData);

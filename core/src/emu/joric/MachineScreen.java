@@ -20,7 +20,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import emu.joric.config.AppConfigItem;
 import emu.joric.sound.AYPSG;
-import emu.joric.ui.ConfirmHandler;
+import emu.joric.ui.DialogHandler;
 import emu.joric.ui.MachineInputProcessor;
 import emu.joric.ui.ViewportManager;
 
@@ -83,10 +83,10 @@ public class MachineScreen implements Screen {
    * Constructor for MachineScreen.
    * 
    * @param joric The JOric instance.
-   * @param confirmHandler
+   * @param dialogHandler
    * @param psg The device specific AY-3-8912 implementation to use.
    */
-  public MachineScreen(JOric joric, ConfirmHandler confirmHandler, AYPSG psg) {
+  public MachineScreen(JOric joric, DialogHandler dialogHandler, AYPSG psg) {
     this.joric = joric;
     
     // Create the Machine, at this point not configured with a MachineType.
@@ -110,7 +110,7 @@ public class MachineScreen implements Screen {
     viewportManager = ViewportManager.getInstance();
     
     // Create and register an input processor for keys, etc.
-    machineInputProcessor = new MachineInputProcessor(this, confirmHandler);
+    machineInputProcessor = new MachineInputProcessor(this, dialogHandler);
     
     // Start up the MachineRunnable Thread. It will initially be paused, awaiting machine configuration.
     Thread machineThread = new Thread(this.machineRunnable);
@@ -126,12 +126,12 @@ public class MachineScreen implements Screen {
    * @param appConfigItem The configuration for the app that was selected on the HomeScreen.
    */
   public void initMachine(AppConfigItem appConfigItem) {
-    if (appConfigItem.getFileType().equals("")) {
+    if ((appConfigItem.getFileType() == null) || appConfigItem.getFileType().equals("")) {
       // If there is no file type, there is no file to load and we simply boot in to BASIC.
       machine.init(appConfigItem.getRam(), appConfigItem.getMachineType());
     } else {
       // Otherwise there is a file to load.
-      machine.init(appConfigItem.getFilePath(), appConfigItem.getFileType(), appConfigItem.getMachineType(), appConfigItem.getRam());
+      machine.init(appConfigItem.getFilePath(), appConfigItem.getFileType(), appConfigItem.getMachineType(), appConfigItem.getRam(), appConfigItem.getFileLocation());
     }
     
     // Switch libGDX screen resources used by the Oric screen to the size required by the MachineType.
@@ -353,7 +353,6 @@ public class MachineScreen implements Screen {
    * Disposes the libGDX screen resources for each MachineType.
    */
   private void disposeScreens() {
-    Gdx.app.log("MachineScreen", "Disposing screens");
     for (Pixmap pixmap : machineTypePixmaps.values()) {
       pixmap.dispose();
     }

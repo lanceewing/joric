@@ -30,9 +30,10 @@ public class MachineInputProcessor extends InputAdapter {
   private KeyboardType keyboardType;
   
   /**
-   * Invoked by JOric whenever it would like the user to confirm an action.
+   * Invoked by JOric whenever it would like to show a dialog, such as when it needs
+   * the user to confirm an action, or to choose a file.
    */
-  private ConfirmHandler confirmHandler;
+  private DialogHandler dialogHandler;
   
   /**
    * The one and only ViewportManager used by JOric.
@@ -68,11 +69,11 @@ public class MachineInputProcessor extends InputAdapter {
    * Constructor for MachineInputProcessor.
    * 
    * @param machineScreen 
-   * @param confirmHandler 
+   * @param dialogHandler 
    */
-  public MachineInputProcessor(MachineScreen machineScreen, ConfirmHandler confirmHandler) {
+  public MachineInputProcessor(MachineScreen machineScreen, DialogHandler dialogHandler) {
     this.machineScreen = machineScreen;
-    this.confirmHandler = confirmHandler;
+    this.dialogHandler = dialogHandler;
     this.keyboardType = KeyboardType.OFF;
     this.viewportManager = ViewportManager.getInstance();
     
@@ -117,7 +118,7 @@ public class MachineInputProcessor extends InputAdapter {
     if (keycode == Keys.BACK) {
       if (keyboardType.equals(KeyboardType.OFF)) {
         machineScreen.getMachineRunnable().pause();
-        confirmHandler.confirm("Return to Home screen?", new ConfirmResponseHandler() {
+        dialogHandler.confirm("Return to Home screen?", new ConfirmResponseHandler() {
           public void yes() {
             machineScreen.exit();
           }

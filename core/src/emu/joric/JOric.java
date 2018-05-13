@@ -2,9 +2,13 @@ package emu.joric;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 
+import emu.joric.config.AppConfigItem;
+import emu.joric.config.AppConfigItem.FileLocation;
+import emu.joric.memory.RamType;
 import emu.joric.sound.AYPSG;
-import emu.joric.ui.ConfirmHandler;
+import emu.joric.ui.DialogHandler;
 
 /**
  * The main entry point in to the cross-platform part of the JOric emulator. A multi-screen
@@ -26,9 +30,10 @@ public class JOric extends Game {
   private HomeScreen homeScreen;
   
   /**
-   * Invoked by JOric whenever it would like the user to confirm an action.
+   * Invoked by JOric whenever it would like to show a dialog, such as when it needs
+   * the user to confirm an action, or to choose a file.
    */
-  private ConfirmHandler confirmHandler;
+  private DialogHandler dialogHandler;
   
   /**
    * The device specific AY-3-8912 implementation to use. Libgdx sound isn't the best, so
@@ -37,21 +42,52 @@ public class JOric extends Game {
   private AYPSG psg;
   
   /**
+   * Command line args. Mainly applicable to desktop.
+   */
+  private String[] args;
+  
+  /**
+   * JOric's saved preferences.
+   */
+  private Preferences preferences;
+  
+  /**
    * Constructor for JOric.
    * 
-   * @param confirmHandler
+   * @param dialogHandler
    * @param psg 
+   * @param args Command line args.
    */
-  public JOric(ConfirmHandler confirmHandler, AYPSG psg) {
-    this.confirmHandler = confirmHandler;
+  public JOric(DialogHandler dialogHandler, AYPSG psg, String... args) {
+    this.dialogHandler = dialogHandler;
     this.psg = psg;
+    this.args = args;
   }
   
   @Override
   public void create () {
-    machineScreen = new MachineScreen(this, confirmHandler, psg);
-    homeScreen = new HomeScreen(this, confirmHandler);
-    setScreen(homeScreen);
+    preferences = Gdx.app.getPreferences("joric.preferences");
+    machineScreen = new MachineScreen(this, dialogHandler, psg);
+    homeScreen = new HomeScreen(this, dialogHandler);
+
+    if ((args != null) && (args.length > 0)) {
+      AppConfigItem appConfigItem = new AppConfigItem();
+      appConfigItem.setFilePath(args[0]);
+      if ((args[0].toLowerCase().endsWith(".dsk"))) {
+        appConfigItem.setFileType("DISK");
+      }
+      if ((args[0].toLowerCase().endsWith(".tap"))) {
+        appConfigItem.setFileType("TAPE");
+      }
+      appConfigItem.setMachineType(MachineType.PAL);
+      appConfigItem.setRam(RamType.RAM_48K);
+      appConfigItem.setFileLocation(FileLocation.ABSOLUTE);
+      MachineScreen machineScreen = getMachineScreen();
+      machineScreen.initMachine(appConfigItem);
+      setScreen(machineScreen);
+    } else {
+      setScreen(homeScreen);
+    }
     
     // Stop the back key from immediately exiting the app.
     Gdx.input.setCatchBackKey(true);
@@ -75,6 +111,15 @@ public class JOric extends Game {
     return homeScreen;
   }
   
+  /**
+   * Gets the Preferences for JOric.
+   * 
+   * @return The Preferences for JOric.
+   */
+  public Preferences getPreferences() {
+    return preferences;
+  }
+  
   @Override
   public void dispose () {
     super.dispose();
@@ -84,5 +129,8 @@ public class JOric extends Game {
     // super dispose does not call dispose on the screen.
     machineScreen.dispose();
     homeScreen.dispose();
+    
+    // Save the preferences when the emulator is closed.
+    preferences.flush();
   }
 }

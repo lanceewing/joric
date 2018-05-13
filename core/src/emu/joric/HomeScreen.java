@@ -1,7 +1,10 @@
 package emu.joric;
 
+import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
+import java.util.TreeMap;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -12,7 +15,9 @@ import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -22,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
@@ -30,9 +36,13 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import emu.joric.config.AppConfig;
 import emu.joric.config.AppConfigItem;
-import emu.joric.ui.ConfirmHandler;
+import emu.joric.config.AppConfigItem.FileLocation;
+import emu.joric.memory.RamType;
+import emu.joric.ui.DialogHandler;
 import emu.joric.ui.ConfirmResponseHandler;
+import emu.joric.ui.OpenFileResponseHandler;
 import emu.joric.ui.PagedScrollPane;
+import emu.joric.ui.TextInputResponseHandler;
 import emu.joric.ui.ViewportManager;
 
 /**
@@ -57,9 +67,10 @@ public class HomeScreen extends InputAdapter implements Screen  {
   private Map<String, Texture> buttonTextureMap;
   
   /**
-   * Invoked by JOric whenever it would like the user to confirm an action.
+   * Invoked by JOric whenever it would like to show a dialog, such as when it needs
+   * the user to confirm an action, or to choose a file.
    */
-  private ConfirmHandler confirmHandler;
+  private DialogHandler dialogHandler;
   
   /**
    * The InputProcessor for the Home screen. This is an InputMultiplexor, which includes 
@@ -69,19 +80,29 @@ public class HomeScreen extends InputAdapter implements Screen  {
   private InputMultiplexer landscapeInputProcessor;
   
   /**
+   * The default JSON to use when creating the home_screen_app_list preference for the
+   * first time. This is the basis for starting to add apps to the home screen.
+   */
+  private static final String DEFAULT_APP_CONFIG_JSON = 
+      "{\"apps\": [{\"name\": \"BASIC\",\"machineType\": \"PAL\",\"ram\": \"RAM_48K\"}]}";
+  
+  /**
    * Constructor for HomeScreen.
    * 
    * @param joric The Joric instance.
-   * @param confirmHandler
+   * @param dialogHandler
    */
-  public HomeScreen(JOric joric, ConfirmHandler confirmHandler) {
+  public HomeScreen(JOric joric, DialogHandler dialogHandler) {
     this.joric = joric;
-    this.confirmHandler = confirmHandler;
+    this.dialogHandler = dialogHandler;
     
     // Load the app meta data.
     Json json = new Json();
-    AppConfig appConfig = json.fromJson(AppConfig.class, Gdx.files.internal("data/programs.json"));
-    appConfigMap = new HashMap<String, AppConfigItem>();
+    //String appConfigJson = Gdx.files.internal("data/programs.json").readString();
+    String appConfigJson = joric.getPreferences().getString("home_screen_app_list", DEFAULT_APP_CONFIG_JSON);
+    joric.getPreferences().putString("home_screen_app_list", appConfigJson);
+    AppConfig appConfig = json.fromJson(AppConfig.class, appConfigJson);
+    appConfigMap = new TreeMap<String, AppConfigItem>();
     for (AppConfigItem appConfigItem : appConfig.getApps()) {
       appConfigMap.put(appConfigItem.getName(), appConfigItem);
     }
@@ -105,7 +126,11 @@ public class HomeScreen extends InputAdapter implements Screen  {
   
   private Stage createStage(Viewport viewport, AppConfig appConfig, int columns, int rows) {
     Stage stage = new Stage(viewport);
-    
+    addAppButtonsToStage(stage, appConfig, columns, rows);
+    return stage;
+  }
+  
+  private void addAppButtonsToStage(Stage stage, AppConfig appConfig, int columns, int rows) {
     Table container = new Table();
     stage.addActor(container);
     container.setFillParent(true);
@@ -151,8 +176,6 @@ public class HomeScreen extends InputAdapter implements Screen  {
     }
 
     container.add(scroll).expand().fill();
-    
-    return stage;
   }
   
   @Override
@@ -206,6 +229,8 @@ public class HomeScreen extends InputAdapter implements Screen  {
     for (Texture texture: buttonTextureMap.values()) {
       texture.dispose();
     }
+    
+    saveAppConfigMap();
   }
 
   /** 
@@ -218,7 +243,7 @@ public class HomeScreen extends InputAdapter implements Screen  {
   public boolean keyUp(int keycode) {
     if (keycode == Keys.BACK) {
       if (Gdx.app.getType().equals(ApplicationType.Android)) {
-        confirmHandler.confirm("Do you really want to Exit?", new ConfirmResponseHandler() {
+        dialogHandler.confirm("Do you really want to Exit?", new ConfirmResponseHandler() {
           public void yes() {
             // Pressing BACK from the home screen will leave JOric.
             Gdx.app.exit();
@@ -231,6 +256,63 @@ public class HomeScreen extends InputAdapter implements Screen  {
       }
     }
     return false;
+  }
+  
+  /**
+   * Generates an identicon for the given text, of the given size. An identicon is an icon
+   * image that will always look the same for the same text but is highly likely to look
+   * different from the icons generates for all other text strings. Its therefore an 
+   * 
+   * @param text
+   * @param iconWidth
+   * @param iconHeight
+   * 
+   * @return The generated icon image for the given text.
+   */
+  public Texture generateIdenticon(String text, int iconWidth, int iconHeight) {
+    // Generate a message hash from the text string, then use it as a seed for a random sequence.
+    int[] hashRand = new int[20];
+    try {
+      byte[] textHash = MessageDigest.getInstance("SHA1").digest(text.getBytes("UTF-8"));
+      long seed = (
+          (((int)textHash[0] & 0xFF) <<  0) | (((int)textHash[1] & 0xFF) <<  8) | 
+          (((int)textHash[2] & 0xFF) << 16) | (((int)textHash[3] & 0xFF) << 24) | 
+          (((int)textHash[4] & 0xFF) << 32) | (((int)textHash[5] & 0xFF) << 40) | 
+          (((int)textHash[6] & 0xFF) << 48) | (((int)textHash[7] & 0xFF) << 56));
+      Random random = new Random(seed);
+      for (int i=0; i<hashRand.length; i++) {
+        hashRand[i] = random.nextInt();
+      }
+    } catch (Exception e) { /* Ignore. We know it will never happen. */}
+    
+    // Create Pixmap and Texture of required size, and define 
+    Pixmap pixmap = new Pixmap(iconWidth, iconHeight, Pixmap.Format.RGBA8888);
+    Texture texture =  new Texture(pixmap, Pixmap.Format.RGBA8888, false);
+    Color background = new Color(1, 1, 1, 1);
+    Color foreground = new Color(
+        ((int)hashRand[0] & 0xFF) / 255f, 
+        ((int)hashRand[1] & 0xFF) / 255f, 
+        ((int)hashRand[2] & 0xFF) / 255f, 1);
+
+    for (int x = 0; x < 11; x++) {
+      // Enforce horizontal symmetry
+      int i = x < 6 ? x : 10 - x;
+      for (int y = 0; y < 11; y++) {
+        Color pixelColor;
+        // toggle pixels based on bit being on/off
+        if ((hashRand[i] >> y & 1) == 1) {
+          pixelColor = foreground;
+        } else {
+          pixelColor = background;
+        }
+        pixmap.setColor(pixelColor);
+        pixmap.fillRectangle(x * 13, y * 10, 13, 10);
+        //pixmap.fillCircle(x * 13 + 5, y * 10 + 5, 5);
+      }
+    }
+    
+    texture.draw(pixmap, 0, 0);
+    return texture;
   }
   
   /**
@@ -255,27 +337,118 @@ public class HomeScreen extends InputAdapter implements Screen  {
         icon = new Image(iconTexture);
         icon.setAlign(Align.center);
       }
+    } else {
+      if ((appConfigItem.getName() != null) && (!appConfigItem.getName().isEmpty())) {
+        icon = new Image(generateIdenticon(appConfigItem.getName(), 143, 110));
+      }
     }
     
     if (icon != null) {
       Container<Image> iconContainer = new Container<Image>();
       iconContainer.setActor(icon);
       iconContainer.align(Align.center);
-      button.stack(new Image(skin.getDrawable("top")), iconContainer).width(165).height(125);
+      button.stack(new Image(skin.getDrawable("top")), iconContainer).width(165).height(132);
+      //button.add(icon).width(165).height(132);
     } else {
-      button.add(new Image(skin.getDrawable("top"))).width(165).height(125);
+      button.add(new Image(skin.getDrawable("top"))).width(165).height(132);
     }
     button.row();
     
     Label label = new Label(appConfigItem.getDisplayName(), skin);
     label.setFontScale(2f);
-    label.setAlignment(Align.bottom);  
+    label.setAlignment(Align.top);
+    label.setWrap(false);
     button.add(label).width(150).height(90).padTop(20);
     
     button.setName(appConfigItem.getName());
-    button.addListener(appClickListener);   
+    button.addListener(appClickListener);
+    button.addListener(appGestureListener);
     return button;
   }
+  
+  /**
+   * Converts the given Map of AppConfigItems to an AppConfig instance.
+   * 
+   * @param appConfigMap The Map of AppConfigItems to convert.
+   * 
+   * @return The AppConfig.
+   */
+  private AppConfig convertAppConfigItemMapToAppConfig(Map<String, AppConfigItem> appConfigMap) {
+    AppConfig appConfig = new AppConfig();
+    for (String appName : appConfigMap.keySet()) {
+      AppConfigItem item = appConfigMap.get(appName);
+      if ((item.getFileType() == null) || (item.getFileType().trim().isEmpty())) {
+        // BASIC start icon. Add these at the start of the JSON file.
+        appConfig.getApps().add(item);
+      }
+    }
+    for (String appName : appConfigMap.keySet()) {
+      AppConfigItem item = appConfigMap.get(appName);
+      if ((item.getFileType() != null) && (!item.getFileType().trim().isEmpty())) {
+        // Tape or Disk file.
+        appConfig.getApps().add(item);
+      }
+    }
+    return appConfig;
+  }
+  
+  /**
+   * Converts the AppConfigItem Map to JSON and stores in the associated preference.
+   */
+  private void saveAppConfigMap() {
+    AppConfig appConfig = convertAppConfigItemMapToAppConfig(appConfigMap);
+    Json json = new Json();
+    String appConfigJson = json.toJson(appConfig);
+    joric.getPreferences().putString("home_screen_app_list", appConfigJson);
+  }
+  
+  /**
+   * Updates the application buttons on the home screen Stages to reflect the current AppConfigItem Map.
+   */
+  public void updateHomeScreenButtonStages() {
+    AppConfig appConfig = convertAppConfigItemMapToAppConfig(appConfigMap);
+    portraitStage.clear();
+    landscapeStage.clear();
+    addAppButtonsToStage(portraitStage, appConfig, 4, 5);
+    addAppButtonsToStage(landscapeStage, appConfig, 4, 5);
+    saveAppConfigMap();
+    joric.getPreferences().flush();
+  }
+  
+  public ActorGestureListener appGestureListener = new ActorGestureListener() {
+    public boolean longPress (final Actor actor, float x, float y) {
+      actor.debug();
+      String appName = actor.getName();
+      if ((appName != null) && (!appName.equals(""))) {
+        final AppConfigItem appConfigItem = appConfigMap.get(appName);
+        if (appConfigItem != null) {
+          longPressActor = actor;
+          String displayName = appConfigItem.getDisplayName().replace("\n", "\\n");
+          dialogHandler.promptForTextInput("Program display name", displayName, new TextInputResponseHandler() {
+            @Override
+            public void inputTextResult(boolean success, String text) {
+              if (success && (text != null) &  !text.isEmpty()) {
+                String displayName = text.replace("\\n", "\n");
+                String name = text.replace("\\n", " ").replaceAll(" +", " ");
+                appConfigItem.setName(name);
+                appConfigItem.setDisplayName(displayName);
+                updateHomeScreenButtonStages();
+              }
+              actor.setDebug(false);
+            }
+          });
+        }
+      }
+      return true;
+    }
+
+    public void fling (InputEvent event, float velocityX, float velocityY, int button) {
+      appConfigMap.remove(event.getListenerActor().getName());
+      updateHomeScreenButtonStages();
+    }
+  };
+  
+  private Actor longPressActor;
   
   /**
    * Handle clicking an app button. This will start the Machine and run the selected app.
@@ -285,12 +458,71 @@ public class HomeScreen extends InputAdapter implements Screen  {
     public void clicked (InputEvent event, float x, float y) {
       String appName = event.getListenerActor().getName();
       if ((appName != null) && (!appName.equals(""))) {
-        AppConfigItem appConfigItem = appConfigMap.get(appName);
+        final AppConfigItem appConfigItem = appConfigMap.get(appName);
         if (appConfigItem != null) {
-          MachineScreen machineScreen = joric.getMachineScreen();
-          machineScreen.initMachine(appConfigItem);
-          joric.setScreen(machineScreen);
+          if (longPressActor != null) {
+            longPressActor = null;
+          } else {
+            MachineScreen machineScreen = joric.getMachineScreen();
+            machineScreen.initMachine(appConfigItem);
+            joric.setScreen(machineScreen);
+          }
         }
+      } else {
+        dialogHandler.openFileDialog("", Gdx.files.external("/").path(), new OpenFileResponseHandler() {
+          @Override
+          public void openFileResult(boolean success, final String filePath) {
+            if (success && (filePath != null) && (!filePath.isEmpty())) {
+              dialogHandler.promptForTextInput("Program name", "", new TextInputResponseHandler() {
+                @Override
+                public void inputTextResult(boolean success, String text) {
+                  AppConfigItem appConfigItem = new AppConfigItem();
+                  appConfigItem.setName(text);
+                  appConfigItem.setFilePath(filePath);
+                  appConfigItem.setFileLocation(FileLocation.ABSOLUTE);
+                  if (filePath.toLowerCase().endsWith(".dsk")) {
+                    appConfigItem.setFileType("DISK");
+                  }
+                  if (filePath.toLowerCase().endsWith(".tap")) {
+                    appConfigItem.setFileType("TAPE");
+                  }
+                  appConfigItem.setMachineType(MachineType.PAL);
+                  appConfigItem.setRam(RamType.RAM_48K);
+                  appConfigMap.put(appConfigItem.getName(), appConfigItem);
+                  updateHomeScreenButtonStages();
+                }
+              });
+            }
+          }
+        });
+        
+        // Example of using the libgdx platform independent FileChooser:
+        //
+        //        skin.getFont("default-font").getData().setScale(2.0f);
+        //        FileChooser dialog = FileChooser.createPickDialog("Add program", skin, Gdx.files.external("/"));// Gdx.files.internal("/"));
+        //        dialog.padTop(70);
+        //        dialog.setResultListener(new ResultListener() {
+        //            @Override
+        //            public boolean result(boolean success, FileHandle result) {
+        //                if (success) {
+        //                    
+        //                }
+        //                return true;
+        //            }
+        //        });
+        //        dialog.setOkButtonText("Add");
+        //        dialog.setFilter(new FileFilter() {
+        //            @Override
+        //            public boolean accept(File pathname) {
+        //              String path = pathname.getPath();
+        //              return (pathname.isDirectory() || path.matches(".*(?:dsk|tap)"));
+        //            }
+        //        });
+        //        if (viewportManager.isPortrait()) {
+        //          dialog.show(portraitStage);
+        //        } else {
+        //          dialog.show(landscapeStage);
+        //        }
       }
     }
   };
