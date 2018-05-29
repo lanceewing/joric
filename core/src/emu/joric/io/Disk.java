@@ -1,7 +1,5 @@
 package emu.joric.io;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.Gdx;
 
 import emu.joric.cpu.Cpu6502;
@@ -904,7 +902,7 @@ public class Disk extends MemoryMappedChip {
      * @return Array of Sectors for the track that was loaded.
      */
     private Sector[] loadTrack(int side, int track) {
-      ArrayList<Sector> sectorList = new ArrayList<Sector>();
+      Sector[] sectors = new Sector[17];
       
       // Find the start and end locations of the track within the disk image. This
       // works because Oric disks always use the same geometry setting, tracks are
@@ -914,8 +912,11 @@ public class Disk extends MemoryMappedChip {
 
       // Scan through the track looking for sectors
       int offset = trackStart;
+      int startOfSector = 0;
 
       while (offset < trackEnd) {
+        startOfSector = offset;
+        
         // Search for ID mark
         while ((offset < trackEnd) && (((int)rawImage[offset] & 0xFF) != 0xFE)) offset++;
 
@@ -928,7 +929,7 @@ public class Disk extends MemoryMappedChip {
         // Sector number 
         // Number of bytes per sector (1=256 bytes, 2=512 bytes, 3 = 1024 bytes, 4 = 2048 bytes)
         // 2 bytes CRC
-
+        
         // Store ID pointer and details.
         Sector sector = new Sector();
         sector.idOffset = offset;
@@ -936,8 +937,8 @@ public class Disk extends MemoryMappedChip {
         sector.side = rawImage[offset + 2];
         sector.sectorNum = rawImage[offset + 3];
         sector.sectorSize = (1 << (rawImage[offset + 4] + 7));
-        sectorList.add(sector);
-
+        sectors[sector.sectorNum - 1] = sector; 
+        
         // Skip ID field and CRC
         offset += 7;
 
@@ -964,8 +965,19 @@ public class Disk extends MemoryMappedChip {
         offset += sector.sectorSize + 3;
       }
       
-      Sector[] sectors = new Sector[sectorList.size()];
-      sectors = sectorList.toArray(sectors);
+      // Some disks appear to be missing a properly formatted last sector of each track, and yet the code
+      // attempts to read from it. So we make an educated guess about what the offsets and settings are.
+      if (sectors[16] == null) {
+        Sector sector = new Sector();
+        sector.idOffset = startOfSector + 55;
+        sector.trackNum = track;
+        sector.side = side;
+        sector.sectorNum = 17;
+        sector.sectorSize = 256;
+        sector.dataOffset = startOfSector + 99;
+        sectors[16] = sector;
+      }
+      
       return sectors;
     }
     
@@ -1020,6 +1032,10 @@ public class Disk extends MemoryMappedChip {
       public void write(int sectorPos, int data) {
         // TODO: This is just updating an array in memory. Need to add writing back to disk at some point.
         rawImage[dataOffset + sectorPos] = (byte)data;
+      }
+      
+      public String toString() {
+        return String.format("Sector - side#: %d, track#: %d, sector#: %d, size: %d, idOffset: %d, dataOffset: %d", side, trackNum, sectorNum, sectorSize, idOffset, dataOffset);
       }
     }
     
