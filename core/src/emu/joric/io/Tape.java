@@ -77,8 +77,18 @@ public class Tape {
             int addressOfFileName = romType.getAddressOfFileToLoadFromTape();
             for (fileNameLength = 0; mem[addressOfFileName + fileNameLength] != 0; ++fileNameLength) {}
             String fileName = new String(mem, addressOfFileName, fileNameLength);
+            String capitalisedFileName = fileName.length() == 0 ? "" : fileName.substring(0, 1).toUpperCase() + fileName.substring(1).toLowerCase();
             try {
-              if (folderHandle.child(fileName.toLowerCase() + ".tap").exists()) {
+              // Start by looking for the tape file without adding a .tap or .TAP extension.
+              if (folderHandle.child(fileName.toUpperCase()).exists()) {
+                tapeIn = new ByteArrayInputStream(folderHandle.child(fileName.toUpperCase()).readBytes());
+              } else if (folderHandle.child(fileName.toLowerCase()).exists()) {
+                tapeIn = new ByteArrayInputStream(folderHandle.child(fileName.toLowerCase()).readBytes());
+              } else if (folderHandle.child(capitalisedFileName).exists()) {
+                tapeIn = new ByteArrayInputStream(folderHandle.child(capitalisedFileName).readBytes());
+              }
+              // We didn't find a file, so we look now for variants of adding .tap or .TAP extension.
+              else if (folderHandle.child(fileName.toLowerCase() + ".tap").exists()) {
                 tapeIn = new ByteArrayInputStream(folderHandle.child(fileName.toLowerCase() + ".tap").readBytes());
               } else if (folderHandle.child(fileName.toLowerCase() + ".TAP").exists()) {
                 tapeIn = new ByteArrayInputStream(folderHandle.child(fileName.toLowerCase() + ".TAP").readBytes());
@@ -86,13 +96,10 @@ public class Tape {
                 tapeIn = new ByteArrayInputStream(folderHandle.child(fileName.toUpperCase() + ".tap").readBytes());
               } else if (folderHandle.child(fileName.toUpperCase() + ".TAP").exists()) {
                 tapeIn = new ByteArrayInputStream(folderHandle.child(fileName.toUpperCase() + ".TAP").readBytes());
-              } else {
-                String capitalisedFileName = fileName.length() == 0 ? "" : fileName.substring(0, 1).toUpperCase() + fileName.substring(1).toLowerCase();
-                if (folderHandle.child(capitalisedFileName + ".tap").exists()) {
-                  tapeIn = new ByteArrayInputStream(folderHandle.child(capitalisedFileName + ".tap").readBytes());
-                } else if (folderHandle.child(capitalisedFileName + ".TAP").exists()) {
-                  tapeIn = new ByteArrayInputStream(folderHandle.child(capitalisedFileName + ".TAP").readBytes());
-                }
+              } else if (folderHandle.child(capitalisedFileName + ".tap").exists()) {
+                tapeIn = new ByteArrayInputStream(folderHandle.child(capitalisedFileName + ".tap").readBytes());
+              } else if (folderHandle.child(capitalisedFileName + ".TAP").exists()) {
+                tapeIn = new ByteArrayInputStream(folderHandle.child(capitalisedFileName + ".TAP").readBytes());
               }
               alreadyOpenedOnce = true;
               mem[addressOfFileName] = 0;
