@@ -763,28 +763,14 @@ public class Disk extends MemoryMappedChip {
      * @return The found Sector, or null if it wasn't found.
      */
     public Sector findSector(int sectorId) {
-      int revolutions = 0;
-
       Sector[] sectors = diskImage.getAllTracks()[side][currentTrack];
       
-      // We do this more realistically than we need to since this is not
-      // a super-accurate emulation (for now). Never mind. Lets go
-      // around the track up to two times.
-      while (revolutions < 2) {
-        // Move on to the next sector
-        currentSectorId = (currentSectorId + 1) % diskImage.getNumOfSectors();  // TODO: Is it always 17 sectors?
+      currentSectorId = sectorId;
 
-        // If we passed through the start of the track, set the pulse bit in the status register
-        if (currentSectorId == 0) {
-          revolutions++;
-          statusRegister |= WSFI_PULSE;
-        }
-
-        // Found the required sector?
-        Sector sector = sectors[currentSectorId];
-        if (sector.sectorNum == sectorId) {
-          return sector;
-        }
+      // Found the required sector?
+      Sector sector = sectors[currentSectorId];
+      if (sector.sectorNum == sectorId) {
+        return sector;
       }
 
       // The search failed.
@@ -902,7 +888,7 @@ public class Disk extends MemoryMappedChip {
      * @return Array of Sectors for the track that was loaded.
      */
     private Sector[] loadTrack(int side, int track) {
-      Sector[] sectors = new Sector[17];
+      Sector[] sectors = new Sector[numOfSectors + 1];
       
       // Find the start and end locations of the track within the disk image. This
       // works because Oric disks always use the same geometry setting, tracks are
@@ -937,7 +923,7 @@ public class Disk extends MemoryMappedChip {
         sector.side = rawImage[offset + 2];
         sector.sectorNum = rawImage[offset + 3];
         sector.sectorSize = (1 << (rawImage[offset + 4] + 7));
-        sectors[sector.sectorNum - 1] = sector; 
+        sectors[sector.sectorNum] = sector; 
         
         // Skip ID field and CRC
         offset += 7;
