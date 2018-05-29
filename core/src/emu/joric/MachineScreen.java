@@ -5,14 +5,21 @@ import java.util.Map;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
@@ -53,6 +60,12 @@ public class MachineScreen implements Screen {
   private MachineInputProcessor machineInputProcessor;
   
   /**
+   * This is an InputMultiplexor, which includes both the Stage and the MachineScreen.
+   */
+  private InputMultiplexer portraitInputProcessor;
+  private InputMultiplexer landscapeInputProcessor;
+  
+  /**
    * SpriteBatch shared by all rendered components.
    */
   private SpriteBatch batch;
@@ -78,6 +91,17 @@ public class MachineScreen implements Screen {
   private Texture backIcon;
 
   private ViewportManager viewportManager;
+  
+  // Touchpad
+  private Stage portraitStage;
+  private Stage landscapeStage;
+  private Touchpad portraitTouchpad;
+  private Touchpad landscapeTouchpad;
+  
+  /**
+   * Details about the application currently running.
+   */
+  private AppConfigItem appConfigItem;
   
   /**
    * Constructor for MachineScreen.
@@ -107,15 +131,46 @@ public class MachineScreen implements Screen {
     joystickIcon = new Texture("png/joystick_icon.png");
     backIcon = new Texture("png/back_arrow.png");
     
+    // Create the portrait and landscape joystick touchpads.
+    portraitTouchpad = createTouchpad();
+    landscapeTouchpad = createTouchpad();
+    
     viewportManager = ViewportManager.getInstance();
+    
+    //Create a Stage and add TouchPad
+    portraitStage = new Stage(viewportManager.getPortraitViewport(), batch);
+    portraitStage.addActor(portraitTouchpad);
+    landscapeStage = new Stage(viewportManager.getLandscapeViewport(), batch);
+    landscapeStage.addActor(landscapeTouchpad);
     
     // Create and register an input processor for keys, etc.
     machineInputProcessor = new MachineInputProcessor(this, dialogHandler);
+    portraitInputProcessor = new InputMultiplexer();
+    portraitInputProcessor.addProcessor(portraitStage);
+    portraitInputProcessor.addProcessor(machineInputProcessor);
+    landscapeInputProcessor = new InputMultiplexer();
+    landscapeInputProcessor.addProcessor(landscapeStage);
+    landscapeInputProcessor.addProcessor(machineInputProcessor);
     
     // Start up the MachineRunnable Thread. It will initially be paused, awaiting machine configuration.
     Thread machineThread = new Thread(this.machineRunnable);
     machineThread.start();
   }
+  
+  protected Touchpad createTouchpad() {
+    Skin touchpadSkin = new Skin();
+    touchpadSkin.add("touchBackground", new Texture("png/touchBackground.png"));
+    touchpadSkin.add("touchKnob", new Texture("png/touchKnob.png"));
+    TouchpadStyle touchpadStyle = new TouchpadStyle();
+    Drawable touchBackground = touchpadSkin.getDrawable("touchBackground");
+    Drawable touchKnob = touchpadSkin.getDrawable("touchKnob");
+    touchpadStyle.background = touchBackground;
+    touchpadStyle.knob = touchKnob;
+    Touchpad touchpad = new Touchpad(10, touchpadStyle);
+    touchpad.setBounds(15, 15, 200, 200);
+    return touchpad;
+  }
+  
   
   /**
    * Initialises the Machine with the given AppConfigItem. This will represent an app that was
@@ -126,6 +181,8 @@ public class MachineScreen implements Screen {
    * @param appConfigItem The configuration for the app that was selected on the HomeScreen.
    */
   public void initMachine(AppConfigItem appConfigItem) {
+    this.appConfigItem = appConfigItem;
+    
     if ((appConfigItem.getFileType() == null) || appConfigItem.getFileType().equals("")) {
       // If there is no file type, there is no file to load and we simply boot in to BASIC.
       machine.init(appConfigItem.getRam(), appConfigItem.getMachineType());
@@ -202,7 +259,7 @@ public class MachineScreen implements Screen {
     
     if (draw) {
       drawCount++;
-      draw();
+      draw(delta);
       long drawDuration = TimeUtils.nanoTime() - renderStartTime;
       if (renderCount == 0) {
         avgDrawTime = drawDuration;
@@ -228,7 +285,7 @@ public class MachineScreen implements Screen {
     }
   }
 
-  private void draw() {
+  private void draw(float delta) {
     // Get the KeyboardType currently being used by the MachineScreenProcessor.
     KeyboardType keyboardType = machineInputProcessor.getKeyboardType();
     
@@ -237,6 +294,8 @@ public class MachineScreen implements Screen {
     
     // Render the Oric screen.
     camera.update();
+    
+    // Move blockSprite with TouchPad
     batch.setProjectionMatrix(camera.combined);
     batch.disableBlending();
     batch.begin();
@@ -258,13 +317,14 @@ public class MachineScreen implements Screen {
     batch.begin();
     if (keyboardType.equals(KeyboardType.JOYSTICK)) {
       if (viewportManager.isPortrait()) {
-        batch.draw(keyboardType.getTexture(KeyboardType.LEFT), 0, 0);
+        //batch.draw(keyboardType.getTexture(KeyboardType.LEFT), 0, 0);
         batch.draw(keyboardType.getTexture(KeyboardType.RIGHT), viewportManager.getWidth() - 135, 0);
       } else {
-        batch.draw(keyboardType.getTexture(KeyboardType.LEFT), 0, 0, 201, 201);
+        //batch.draw(keyboardType.getTexture(KeyboardType.LEFT), 0, 0, 201, 201);
         batch.draw(keyboardType.getTexture(KeyboardType.RIGHT), viewportManager.getWidth() - 135, 0);
       }
-    } else if (keyboardType.isRendered()) {
+    } else 
+    if (keyboardType.isRendered()) {
       batch.setColor(c.r, c.g, c.b, keyboardType.getOpacity());
       batch.draw(keyboardType.getTexture(), 0, keyboardType.getRenderOffset());
     }
@@ -295,6 +355,27 @@ public class MachineScreen implements Screen {
       }
     }
     batch.end();
+    if (keyboardType.equals(KeyboardType.JOYSTICK)) {
+      if (viewportManager.isPortrait()) {
+        portraitStage.act(delta);
+        portraitStage.draw();
+      } else {
+        landscapeStage.act(delta);
+        landscapeStage.draw();
+      }
+    }
+  }
+  
+  /**
+   * Saves a screenshot of the machine's current screen contents.
+   */
+  public void saveScreenshot() {
+    StringBuilder filePath = new StringBuilder("joric_screens/");
+    filePath.append(appConfigItem != null? appConfigItem.getName().replaceAll("[ ,\n/\\:;*?\"<>|!]",  "_") : "shot");
+    filePath.append("_");
+    filePath.append(System.currentTimeMillis());
+    filePath.append(".png");
+    PixmapIO.writePNG(Gdx.files.external(filePath.toString()), screenPixmap);
   }
   
   @Override
@@ -309,6 +390,12 @@ public class MachineScreen implements Screen {
     
     machineInputProcessor.resize(width, height);
     viewportManager.update(width, height);
+    
+    if (viewportManager.isPortrait()) {
+      Gdx.input.setInputProcessor(portraitInputProcessor);
+    } else {
+      Gdx.input.setInputProcessor(landscapeInputProcessor);
+    }
   }
 
   @Override
@@ -329,7 +416,11 @@ public class MachineScreen implements Screen {
     // the initMachine method of MachineScreen. This will create the necessary PixMap and Textures 
     // required for the MachineType.
     KeyboardType.init();
-    Gdx.input.setInputProcessor(machineInputProcessor);
+    if (viewportManager.isPortrait()) {
+      Gdx.input.setInputProcessor(portraitInputProcessor);
+    } else {
+      Gdx.input.setInputProcessor(landscapeInputProcessor);
+    }
     machineRunnable.resume();
   }
   
