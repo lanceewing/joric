@@ -134,6 +134,9 @@ public class MachineInputProcessor extends InputAdapter {
       // NMI
       machineScreen.getMachine().getCpu().setInterrupt(Cpu6502.S_NMI);
       
+    } else if (keycode == Keys.F10) {
+      machineScreen.saveScreenshot();
+      
     } else {
       machineScreen.getMachine().getKeyboard().keyReleased(keycode);
       machineScreen.getMachine().getJoystick().keyReleased(keycode);
