@@ -13,10 +13,12 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -65,6 +67,8 @@ public class HomeScreen extends InputAdapter implements Screen  {
   private ViewportManager viewportManager;
   private Map<String, AppConfigItem> appConfigMap;
   private Map<String, Texture> buttonTextureMap;
+  private Texture backgroundLandscape;
+  private Texture backgroundPortrait;
   
   /**
    * Invoked by JOric whenever it would like to show a dialog, such as when it needs
@@ -98,8 +102,8 @@ public class HomeScreen extends InputAdapter implements Screen  {
     
     // Load the app meta data.
     Json json = new Json();
-    //String appConfigJson = Gdx.files.internal("data/programs.json").readString();
-    String appConfigJson = joric.getPreferences().getString("home_screen_app_list", DEFAULT_APP_CONFIG_JSON);
+    String appConfigJson = Gdx.files.internal("data/programs.json").readString();
+    //String appConfigJson = joric.getPreferences().getString("home_screen_app_list", DEFAULT_APP_CONFIG_JSON);
     joric.getPreferences().putString("home_screen_app_list", appConfigJson);
     AppConfig appConfig = json.fromJson(AppConfig.class, appConfigJson);
     appConfigMap = new TreeMap<String, AppConfigItem>();
@@ -109,8 +113,13 @@ public class HomeScreen extends InputAdapter implements Screen  {
     
     buttonTextureMap = new HashMap<String, Texture>();
     skin = new Skin(Gdx.files.internal("data/uiskin.json"));
-    skin.add("top", skin.newDrawable("default-round", Color.RED), Drawable.class);
+    skin.add("top", skin.newDrawable("default-round", new Color(0, 0, 0, 0)), Drawable.class);
+    skin.add("empty", skin.newDrawable("default-round", new Color(1f, 1f, 1f, 0.1f)), Drawable.class);
     
+    backgroundLandscape = new Texture("jpg/atmos_red_back_3.jpg");
+    backgroundLandscape.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+    backgroundPortrait = new Texture("jpg/atmos_red_back_3l.jpg");
+    backgroundPortrait.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
     viewportManager = ViewportManager.getInstance();
     portraitStage = createStage(viewportManager.getPortraitViewport(), appConfig, 4, 5);
     landscapeStage = createStage(viewportManager.getLandscapeViewport(), appConfig, 7, 3);
@@ -134,23 +143,46 @@ public class HomeScreen extends InputAdapter implements Screen  {
     Table container = new Table();
     stage.addActor(container);
     container.setFillParent(true);
-
+    
+    Table currentPage = new Table().pad(0, 0, 0, 0);
+    Texture titleTexture = new Texture("png/joric_title_3.png");
+    Image title = new Image(titleTexture);
+    
+    int totalHorizPadding = 0;
+    int horizPaddingUnit = 0;
+    
+    if (columns > rows) {
+      container.setBackground(new Image(backgroundLandscape).getDrawable());
+      totalHorizPadding = 1920 - (ICON_IMAGE_WIDTH * 7);
+      horizPaddingUnit = totalHorizPadding / 14;
+      currentPage.add(title).width(980).height(360).pad(0, 470, 0, 470);
+    } else {
+      container.setBackground(new Image(backgroundPortrait).getDrawable());
+      totalHorizPadding = 1080 - (ICON_IMAGE_WIDTH * 4);
+      horizPaddingUnit = totalHorizPadding / 8;
+      currentPage.add(title).width(980).height(360).pad(0, 50, 0, 50);
+    }
+    
     PagedScrollPane scroll = new PagedScrollPane();
     scroll.setFlingTime(0.01f);
     scroll.setPageSpacing(25);
     
     int itemsPerPage = columns * rows;
     int pageItemCount = 0;
-    Table currentPage = new Table().pad(50, 10, 50, 10);
-    currentPage.defaults().pad(0, 50, 0, 50);
+    
+    // Set up first page, which is mainly empty.
+    scroll.addPage(currentPage);
+    
+    currentPage = new Table().pad(0, 0, 0, 0);
+    currentPage.defaults().pad(0, horizPaddingUnit, 0, horizPaddingUnit);
     
     for (AppConfigItem appConfigItem : appConfig.getApps()) {
       // Every itemsPerPage apps, add a new page.
       if (pageItemCount == itemsPerPage) {
         scroll.addPage(currentPage);
         pageItemCount = 0;
-        currentPage = new Table().pad(50, 10, 50, 10);
-        currentPage.defaults().pad(0, 50, 0, 50);
+        currentPage = new Table().pad(0, 0, 0, 0);
+        currentPage.defaults().pad(0, horizPaddingUnit, 0, horizPaddingUnit);
       }
       
       // Every number of columns apps, add a new row to the current page.
@@ -173,6 +205,17 @@ public class HomeScreen extends InputAdapter implements Screen  {
         currentPage.add(buildAppButton(appConfigItem)).expand().fill();
       }
       scroll.addPage(currentPage);
+      if (pageItemCount == itemsPerPage) {
+        currentPage = new Table().pad(50, 10, 50, 10);
+        currentPage.defaults().pad(0, 50, 0, 50);
+        for (int i=0; i<itemsPerPage; i++) {
+          if ((i % columns) == 0) {
+            currentPage.row();
+          }
+          currentPage.add(buildAppButton(appConfigItem)).expand().fill();
+        }
+        scroll.addPage(currentPage);
+      }
     }
 
     container.add(scroll).expand().fill();
@@ -288,32 +331,46 @@ public class HomeScreen extends InputAdapter implements Screen  {
     // Create Pixmap and Texture of required size, and define 
     Pixmap pixmap = new Pixmap(iconWidth, iconHeight, Pixmap.Format.RGBA8888);
     Texture texture =  new Texture(pixmap, Pixmap.Format.RGBA8888, false);
-    Color background = new Color(1, 1, 1, 1);
-    Color foreground = new Color(
-        ((int)hashRand[0] & 0xFF) / 255f, 
-        ((int)hashRand[1] & 0xFF) / 255f, 
-        ((int)hashRand[2] & 0xFF) / 255f, 1);
+    Color background = new Color(0, 0, 0, 0);
+    Color foreground = null;
+    if ((text == null) || (text.equals(""))) {
+      foreground = new Color(1f, 1f, 1f, 0.3f);
+    } else {
+      foreground = new Color(
+          ((int)hashRand[0] & 0xFF) / 255f, 
+          ((int)hashRand[1] & 0xFF) / 255f, 
+          ((int)hashRand[2] & 0xFF) / 255f, 
+          0.9f);
+    }
 
-    for (int x = 0; x < 11; x++) {
-      // Enforce horizontal symmetry
-      int i = x < 6 ? x : 10 - x;
-      for (int y = 0; y < 11; y++) {
+    int blockDensityX = 17;  // 39 x 37 is pretty good. 17 x 17 is okay as well.
+    int blockDensityY = 17;
+    int blockWidth = iconWidth / blockDensityX;
+    int blockHeight = iconHeight / blockDensityY;
+    int blockMidX = ((blockDensityX + 1) / 2);
+    int blockMidY = ((blockDensityY + 1) / 2);
+    
+    for (int x = 0; x < blockDensityX; x++) {
+      int i = x < blockMidX ? x : (blockDensityX - 1) - x;
+      for (int y = 0; y < blockDensityY; y++) {
         Color pixelColor;
-        // toggle pixels based on bit being on/off
-        if ((hashRand[i] >> y & 1) == 1) {
+        int j = y < blockMidY ? y : (blockDensityY - 1) - y;
+        if ((hashRand[i] >> j & 1) == 1) {
           pixelColor = foreground;
         } else {
           pixelColor = background;
         }
         pixmap.setColor(pixelColor);
-        pixmap.fillRectangle(x * 13, y * 10, 13, 10);
-        //pixmap.fillCircle(x * 13 + 5, y * 10 + 5, 5);
+        pixmap.fillRectangle(x * blockWidth, y * blockHeight, blockWidth, blockHeight);
       }
     }
     
     texture.draw(pixmap, 0, 0);
     return texture;
   }
+  
+  private static final int ICON_IMAGE_WIDTH = 240;//165;
+  private static final int ICON_IMAGE_HEIGHT = 224; //192;//132;
   
   /**
    * Creates a button to represent the given AppConfigItem.
@@ -332,29 +389,38 @@ public class HomeScreen extends InputAdapter implements Screen  {
     if ((appConfigItem.getIconPath() != null) && (!appConfigItem.getIconPath().equals(""))) {
       Texture iconTexture = buttonTextureMap.get(appConfigItem.getIconPath());
       if (iconTexture == null) {
-        iconTexture = new Texture(appConfigItem.getIconPath());
-        buttonTextureMap.put(appConfigItem.getIconPath(), iconTexture);
+        try {
+          iconTexture = new Texture(appConfigItem.getIconPath());
+          iconTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+          buttonTextureMap.put(appConfigItem.getIconPath(), iconTexture);
+          icon = new Image(iconTexture);
+          icon.setAlign(Align.center);
+        } catch (Exception e) {
+          icon = new Image(generateIdenticon(appConfigItem.getName(), ICON_IMAGE_WIDTH, ICON_IMAGE_HEIGHT));// 143, 110));
+        }
+      } else {
         icon = new Image(iconTexture);
         icon.setAlign(Align.center);
       }
     } else {
-      if ((appConfigItem.getName() != null) && (!appConfigItem.getName().isEmpty())) {
-        icon = new Image(generateIdenticon(appConfigItem.getName(), 143, 110));
-      }
+      icon = new Image(generateIdenticon(appConfigItem.getName(), ICON_IMAGE_WIDTH, ICON_IMAGE_HEIGHT));//, 143, 110));
     }
     
     if (icon != null) {
       Container<Image> iconContainer = new Container<Image>();
       iconContainer.setActor(icon);
       iconContainer.align(Align.center);
-      button.stack(new Image(skin.getDrawable("top")), iconContainer).width(165).height(132);
-      //button.add(icon).width(165).height(132);
-    } else {
-      button.add(new Image(skin.getDrawable("top"))).width(165).height(132);
+      button.stack(new Image(skin.getDrawable("top")), iconContainer).width(ICON_IMAGE_WIDTH).height(ICON_IMAGE_HEIGHT);
     }
     button.row();
     
-    Label label = new Label(appConfigItem.getDisplayName(), skin);
+    Label label = null;
+    if ((appConfigItem.getDisplayName() == null) || appConfigItem.getDisplayName().trim().isEmpty()) {
+      label = new Label("[empty]", skin);
+      label.setColor(new Color(1f, 1f, 1f, 0.4f));
+    } else {
+      label = new Label(appConfigItem.getDisplayName(), skin);
+    }
     label.setFontScale(2f);
     label.setAlignment(Align.top);
     label.setWrap(false);
@@ -469,27 +535,35 @@ public class HomeScreen extends InputAdapter implements Screen  {
           }
         }
       } else {
-        dialogHandler.openFileDialog("", Gdx.files.external("/").path(), new OpenFileResponseHandler() {
+        String startPath = joric.getPreferences().getString("open_app_start_path", null);
+        System.out.println("startPath: " + startPath);
+        dialogHandler.openFileDialog("", startPath, new OpenFileResponseHandler() {
           @Override
           public void openFileResult(boolean success, final String filePath) {
             if (success && (filePath != null) && (!filePath.isEmpty())) {
-              dialogHandler.promptForTextInput("Program name", "", new TextInputResponseHandler() {
+              FileHandle fileHandle = new FileHandle(filePath);
+              String defaultText = fileHandle.nameWithoutExtension();
+              joric.getPreferences().putString("open_app_start_path", fileHandle.parent().path());
+              joric.getPreferences().flush();
+              dialogHandler.promptForTextInput("Program name", defaultText, new TextInputResponseHandler() {
                 @Override
                 public void inputTextResult(boolean success, String text) {
-                  AppConfigItem appConfigItem = new AppConfigItem();
-                  appConfigItem.setName(text);
-                  appConfigItem.setFilePath(filePath);
-                  appConfigItem.setFileLocation(FileLocation.ABSOLUTE);
-                  if (filePath.toLowerCase().endsWith(".dsk")) {
-                    appConfigItem.setFileType("DISK");
+                  if (success) {
+                    AppConfigItem appConfigItem = new AppConfigItem();
+                    appConfigItem.setName(text);
+                    appConfigItem.setFilePath(filePath);
+                    appConfigItem.setFileLocation(FileLocation.ABSOLUTE);
+                    if (filePath.toLowerCase().endsWith(".dsk")) {
+                      appConfigItem.setFileType("DISK");
+                    }
+                    if (filePath.toLowerCase().endsWith(".tap")) {
+                      appConfigItem.setFileType("TAPE");
+                    }
+                    appConfigItem.setMachineType(MachineType.PAL);
+                    appConfigItem.setRam(RamType.RAM_48K);
+                    appConfigMap.put(appConfigItem.getName(), appConfigItem);
+                    updateHomeScreenButtonStages();
                   }
-                  if (filePath.toLowerCase().endsWith(".tap")) {
-                    appConfigItem.setFileType("TAPE");
-                  }
-                  appConfigItem.setMachineType(MachineType.PAL);
-                  appConfigItem.setRam(RamType.RAM_48K);
-                  appConfigMap.put(appConfigItem.getName(), appConfigItem);
-                  updateHomeScreenButtonStages();
                 }
               });
             }
