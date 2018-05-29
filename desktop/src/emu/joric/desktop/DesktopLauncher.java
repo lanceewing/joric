@@ -40,13 +40,17 @@ public class DesktopLauncher {
       }
 
       @Override
-      public void openFileDialog(String title, String startPath, final OpenFileResponseHandler openFileResponseHandler) {
+      public void openFileDialog(String title, final String startPath, final OpenFileResponseHandler openFileResponseHandler) {
         Gdx.app.postRunnable(new Runnable() {
           
           @Override
           public void run() {
-            JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-            //JFileChooser jfc = new JFileChooser(startPath);
+            JFileChooser jfc = null;
+            if (startPath != null) {
+              jfc = new JFileChooser(startPath);
+            } else {
+              jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+            }
             jfc.setDialogTitle("Select a tape or disk file");
             jfc.setAcceptAllFileFilterUsed(false);
             FileNameExtensionFilter filter = new FileNameExtensionFilter("TAP and DSK files", "tap", "dsk");
