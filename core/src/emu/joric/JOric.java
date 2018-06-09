@@ -52,6 +52,11 @@ public class JOric extends Game {
   private Preferences preferences;
   
   /**
+   * JOric's application screenshot storage.
+   */
+  private Preferences screenshotStore;
+  
+  /**
    * Constructor for JOric.
    * 
    * @param dialogHandler
@@ -67,6 +72,7 @@ public class JOric extends Game {
   @Override
   public void create () {
     preferences = Gdx.app.getPreferences("joric.preferences");
+    screenshotStore = Gdx.app.getPreferences("joric_screens.store");
     machineScreen = new MachineScreen(this, dialogHandler, psg);
     homeScreen = new HomeScreen(this, dialogHandler);
 
@@ -120,6 +126,15 @@ public class JOric extends Game {
     return preferences;
   }
   
+  /**
+   * Gets the screenshot store for JOric. 
+   * 
+   * @return The screenshot store for JOric.
+   */
+  public Preferences getScreenshotStore() {
+    return screenshotStore;
+  }
+  
   @Override
   public void dispose () {
     super.dispose();
@@ -132,5 +147,6 @@ public class JOric extends Game {
     
     // Save the preferences when the emulator is closed.
     preferences.flush();
+    screenshotStore.flush();
   }
 }
