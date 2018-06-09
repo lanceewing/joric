@@ -23,7 +23,7 @@ public class AY38912PSG implements AYPSG {
   private static final int CLOCK_1MHZ = 1000000;
   private static final int SAMPLE_RATE = 22050;   // 44100
   private static final int CYCLES_PER_SECOND = 1000000;
-  private static final int CYCLES_PER_SAMPLE = (CYCLES_PER_SECOND / SAMPLE_RATE);
+  private static final float CYCLES_PER_SAMPLE = ((float)CYCLES_PER_SECOND / (float)SAMPLE_RATE);
 
   // Not entirely sure what these volume levels should be. With LEVEL_DIVISOR set to 4, 
   // and volumes A, B, and C all at 15, then max sample is at 32760, which is just under
@@ -79,7 +79,7 @@ public class AY38912PSG implements AYPSG {
 
   private byte[] sampleBuffer;
   private int sampleBufferOffset = 0;
-  private int cyclesToNextSample;
+  private float cyclesToNextSample;
   private SourceDataLine audioLine;
   
   /**
