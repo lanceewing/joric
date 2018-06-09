@@ -46,6 +46,9 @@ public class MachineRunnable implements Runnable {
 
   private boolean exit = false;
   private boolean paused = true;
+  private boolean warpSpeed = false;
+  
+  private int framesLastSecond;
   
   /**
    * Constructor for MachineRunnable.
@@ -63,12 +66,9 @@ public class MachineRunnable implements Runnable {
     int nanosPerFrame = (1000000000 / 50);
     long frameStart = TimeUtils.nanoTime();
     int framesThisSecond = 0;
-    int framesLastSecond = 0;
     long avgUpdateTime = 0;
     long frameCount = 0;
     long lastTime = TimeUtils.nanoTime();
-    
-    boolean skipRender = false;
     
     while (true) {
       if (paused) {
@@ -102,10 +102,7 @@ public class MachineRunnable implements Runnable {
       long updateStartTime = TimeUtils.nanoTime();
       
       // Updates the Machine's state for the time that has passed.
-      machine.update(skipRender);
-      
-      // TODO: Experimental solution to skip ULA frames on slower devices.
-      //skipRender = !skipRender;
+      machine.update(warpSpeed);
       
       long updateEndTime = TimeUtils.nanoTime();
       long updateDuration = updateEndTime - updateStartTime;
@@ -115,13 +112,17 @@ public class MachineRunnable implements Runnable {
         avgUpdateTime = ((avgUpdateTime * frameCount) + updateDuration) / (frameCount + 1);
       }
       
-      // Throttle at expected FPS.
-      while (TimeUtils.nanoTime() - lastTime <= 0L) {
+      if (!warpSpeed) {
+        // Throttle at expected FPS. Note that the PSG naturally throttles at 50 FPS without the yield.
+        while (TimeUtils.nanoTime() - lastTime <= 0L) {
           Thread.yield();
+        }
+        lastTime += nanosPerFrame;
+      } else {
+        lastTime = TimeUtils.nanoTime();
       }
-      lastTime += nanosPerFrame;
       
-      if (time - frameStart > 1000000000l) {
+      if (time - frameStart >= 1000000000l) {
         framesLastSecond = framesThisSecond;
         framesThisSecond = 0;
         frameStart = time;
@@ -130,6 +131,20 @@ public class MachineRunnable implements Runnable {
       }
       framesThisSecond++;
     }
+  }
+
+  /**
+   * @return The frames in the last second.
+   */
+  public int getFramesLastSecond() {
+    return framesLastSecond;
+  }
+
+  /**
+   * Toggles the current warp speed state.
+   */
+  public void toggleWarpSpeed() {
+    warpSpeed = !warpSpeed;
   }
   
   /**

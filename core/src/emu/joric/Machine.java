@@ -7,6 +7,7 @@ import emu.joric.config.AppConfigItem.FileLocation;
 import emu.joric.cpu.Cpu6502;
 import emu.joric.io.Disk;
 import emu.joric.io.Joystick;
+import emu.joric.io.Joystick.JoystickType;
 import emu.joric.io.Keyboard;
 import emu.joric.io.Tape;
 import emu.joric.io.Via;
@@ -38,6 +39,7 @@ public class Machine {
   private Disk microdisc;
 
   private boolean paused = true;
+  private boolean lastWarpSpeed = false;
   
   private MachineType machineType;
   
@@ -129,7 +131,7 @@ public class Machine {
      
     // Create the peripherals.
     keyboard = new Keyboard();
-    joystick = new Joystick();
+    joystick = new Joystick(keyboard, JoystickType.ARROW_KEYS);
     
     // Create the VIA chip.
     via = new Via(cpu, keyboard, snapshot);
@@ -180,27 +182,36 @@ public class Machine {
   /**
    * Updates the state of the machine of the machine until a frame is complete
    * 
-   * @param skipRender true if the ULA chip emulation should skip rendering.
+   * @param warpSpeed true If the machine is running at warp speed.
    */
-  public void update(boolean skipRender) {
+  public void update(boolean warpSpeed) {
     boolean frameComplete = false;
-    if (skipRender) {
-      do {
-        frameComplete |= ula.emulateSkipCycle();
-        cpu.emulateCycle();
-        via.emulateCycle();
-        microdisc.emulateCycle();
-        psg.emulateCycle();
-      } while (!frameComplete);
-    } else {
-      do {
-        frameComplete |= ula.emulateCycle();
-        cpu.emulateCycle();
-        via.emulateCycle();
-        microdisc.emulateCycle();
-        psg.emulateCycle();
-      } while (!frameComplete);
+    if (warpSpeed && !lastWarpSpeed) {
+      // We pause sound during warp speed
+      psg.pauseSound();
+    } else if (lastWarpSpeed && !warpSpeed) {
+      // And resume sound when warp speed ends.
+      psg.resumeSound();
     }
+    lastWarpSpeed = warpSpeed;
+    do {
+      frameComplete |= ula.emulateCycle();
+      cpu.emulateCycle();
+      via.emulateCycle();
+      microdisc.emulateCycle();
+      if (!warpSpeed) {
+        psg.emulateCycle();
+      }
+    } while (!frameComplete);
+  }
+  
+  /**
+   * Gets whether the last frame was updated at warp speed, or not.
+   * 
+   * @return true if the last frame was updated at warp speed; otherwise false.
+   */
+  public boolean isLastWarpSpeed() {
+    return lastWarpSpeed;
   }
   
   /**
