@@ -92,12 +92,6 @@ public class Ula extends BaseChip {
     newFrame();
   }
   
-  public boolean emulateSkipCycle() {
-    
-    
-    return false;
-  }
-  
   public boolean emulateCycle() {
     boolean frameRenderComplete = false;
     short[] framePixels = frames[activeFrame].framePixels;
