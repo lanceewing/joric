@@ -33,6 +33,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Base64Coder;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -403,7 +404,23 @@ public class HomeScreen extends InputAdapter implements Screen  {
         icon.setAlign(Align.center);
       }
     } else {
-      icon = new Image(generateIdenticon(appConfigItem.getName(), ICON_IMAGE_WIDTH, ICON_IMAGE_HEIGHT));//, 143, 110));
+      // See if there is screenshot in the screenshot store.
+      String friendlyAppName = appConfigItem.getName().replaceAll("[ ,\n/\\:;*?\"<>|!]",  "_");
+      String screenshotData = joric.getScreenshotStore().getString(friendlyAppName, "");
+      if (screenshotData != "") {
+        try {
+          byte[] decodedScreenshotData = Base64Coder.decode(screenshotData);
+          Pixmap screenshotPixmap = new Pixmap(decodedScreenshotData, 0, decodedScreenshotData.length);
+          Texture screenshotTexture = new Texture(screenshotPixmap);
+          screenshotTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+          icon = new Image(screenshotTexture);
+          icon.setAlign(Align.center);
+        } catch (Exception e) {
+          icon = new Image(generateIdenticon(appConfigItem.getName(), ICON_IMAGE_WIDTH, ICON_IMAGE_HEIGHT));//, 143, 110));
+        }
+      } else {
+        icon = new Image(generateIdenticon(appConfigItem.getName(), ICON_IMAGE_WIDTH, ICON_IMAGE_HEIGHT));//, 143, 110));
+      }
     }
     
     if (icon != null) {
@@ -536,7 +553,6 @@ public class HomeScreen extends InputAdapter implements Screen  {
         }
       } else {
         String startPath = joric.getPreferences().getString("open_app_start_path", null);
-        System.out.println("startPath: " + startPath);
         dialogHandler.openFileDialog("", startPath, new OpenFileResponseHandler() {
           @Override
           public void openFileResult(boolean success, final String filePath) {

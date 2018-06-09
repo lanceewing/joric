@@ -1,5 +1,7 @@
 package emu.joric;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,13 +16,17 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.PixmapIO.PNG;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.utils.Base64Coder;
 import com.badlogic.gdx.utils.BufferUtils;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -98,6 +104,11 @@ public class MachineScreen implements Screen {
   private Touchpad portraitTouchpad;
   private Touchpad landscapeTouchpad;
   
+  // FPS text font
+  private BitmapFont font;
+  
+  private boolean showFPS;
+  
   /**
    * Details about the application currently running.
    */
@@ -132,8 +143,8 @@ public class MachineScreen implements Screen {
     backIcon = new Texture("png/back_arrow.png");
     
     // Create the portrait and landscape joystick touchpads.
-    portraitTouchpad = createTouchpad();
-    landscapeTouchpad = createTouchpad();
+    portraitTouchpad = createTouchpad(300);
+    landscapeTouchpad = createTouchpad(200);
     
     viewportManager = ViewportManager.getInstance();
     
@@ -152,12 +163,18 @@ public class MachineScreen implements Screen {
     landscapeInputProcessor.addProcessor(landscapeStage);
     landscapeInputProcessor.addProcessor(machineInputProcessor);
     
+    // FPS font
+    font = new BitmapFont(Gdx.files.internal("data/default.fnt"), false);
+    font.setFixedWidthGlyphs(".  *");  // Note: The * and . are ignored, first and last. Only the space is fixed width.
+    font.setColor(new Color(0x808080FF));
+    font.getData().setScale(2f, 2f);
+    
     // Start up the MachineRunnable Thread. It will initially be paused, awaiting machine configuration.
     Thread machineThread = new Thread(this.machineRunnable);
     machineThread.start();
   }
   
-  protected Touchpad createTouchpad() {
+  protected Touchpad createTouchpad(int size) {
     Skin touchpadSkin = new Skin();
     touchpadSkin.add("touchBackground", new Texture("png/touchBackground.png"));
     touchpadSkin.add("touchKnob", new Texture("png/touchKnob.png"));
@@ -167,7 +184,7 @@ public class MachineScreen implements Screen {
     touchpadStyle.background = touchBackground;
     touchpadStyle.knob = touchKnob;
     Touchpad touchpad = new Touchpad(10, touchpadStyle);
-    touchpad.setBounds(15, 15, 200, 200);
+    touchpad.setBounds(15, 15, size, size);
     return touchpad;
   }
   
@@ -176,7 +193,7 @@ public class MachineScreen implements Screen {
    * Initialises the Machine with the given AppConfigItem. This will represent an app that was
    * selected on the HomeScreen. As part of this initialisation, it creates the Pixmap, screen
    * Textures, Camera and Viewport required to render the Oric screen at the size needed for
-   * the MachineType being emulatoed.
+   * the MachineType being emulated.
    * 
    * @param appConfigItem The configuration for the app that was selected on the HomeScreen.
    */
@@ -294,8 +311,6 @@ public class MachineScreen implements Screen {
     
     // Render the Oric screen.
     camera.update();
-    
-    // Move blockSprite with TouchPad
     batch.setProjectionMatrix(camera.combined);
     batch.disableBlending();
     batch.begin();
@@ -333,7 +348,12 @@ public class MachineScreen implements Screen {
       batch.setColor(c.r, c.g, c.b, 0.5f);
       if (viewportManager.isPortrait()) {
         batch.draw(joystickIcon, 0, 0);
-        
+        if (showFPS) {
+          font.draw(batch, String.format("%4d%%", (machineRunnable.getFramesLastSecond() / 50) * 100), 
+              0, (viewportManager.getHeight() - (viewportManager.getWidth()  / 5) * 4) - 2);
+          font.draw(batch, String.format("%4dFPS", machineRunnable.getFramesLastSecond()), 
+              viewportManager.getWidth() - 150, (viewportManager.getHeight() - (viewportManager.getWidth()  / 5) * 4) - 2);
+        }
         if (Gdx.app.getType().equals(ApplicationType.Android)) {
           // Main Oric keyboard on the left.
           batch.draw(keyboardIcon, viewportManager.getWidth() - 145, 0);
@@ -356,26 +376,63 @@ public class MachineScreen implements Screen {
     }
     batch.end();
     if (keyboardType.equals(KeyboardType.JOYSTICK)) {
+      float joyX = 0;
+      float joyY = 0;
       if (viewportManager.isPortrait()) {
         portraitStage.act(delta);
         portraitStage.draw();
+        joyX = portraitTouchpad.getKnobPercentX();
+        joyY = portraitTouchpad.getKnobPercentY();
       } else {
         landscapeStage.act(delta);
         landscapeStage.draw();
+        joyX = landscapeTouchpad.getKnobPercentX();
+        joyY = landscapeTouchpad.getKnobPercentY();
       }
+      machine.getJoystick().touchPad(joyX, joyY);
     }
+  }
+  
+  /**
+   * Toggles the display of the FPS.
+   */
+  public void toggleShowFPS() {
+    showFPS = !showFPS;
   }
   
   /**
    * Saves a screenshot of the machine's current screen contents.
    */
   public void saveScreenshot() {
-    StringBuilder filePath = new StringBuilder("joric_screens/");
-    filePath.append(appConfigItem != null? appConfigItem.getName().replaceAll("[ ,\n/\\:;*?\"<>|!]",  "_") : "shot");
-    filePath.append("_");
-    filePath.append(System.currentTimeMillis());
-    filePath.append(".png");
-    PixmapIO.writePNG(Gdx.files.external(filePath.toString()), screenPixmap);
+    String friendlyAppName = appConfigItem != null? appConfigItem.getName().replaceAll("[ ,\n/\\:;*?\"<>|!]",  "_") : "shot";
+    if (Gdx.app.getType().equals(ApplicationType.Desktop)) {
+      try {
+        StringBuilder filePath = new StringBuilder("joric_screens/");
+        filePath.append(friendlyAppName);
+        filePath.append("_");
+        filePath.append(System.currentTimeMillis());
+        filePath.append(".png");
+        PixmapIO.writePNG(Gdx.files.external(filePath.toString()), screenPixmap);
+      } catch (Exception e) {
+        // Ignore.
+      }
+    }
+    if (appConfigItem != null) {
+      try {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PNG writer = new PNG((int)(screenPixmap.getWidth() * screenPixmap.getHeight() * 1.5f));
+        try {
+          writer.setFlipY(false);
+          writer.write(out, screenPixmap);
+        } finally {
+          writer.dispose();
+        }
+        joric.getScreenshotStore().putString(friendlyAppName, new String(Base64Coder.encode(out.toByteArray())));
+        joric.getScreenshotStore().flush();
+      } catch (IOException ex) {
+        // Ignore.
+      }
+    }
   }
   
   @Override

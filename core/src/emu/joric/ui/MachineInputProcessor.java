@@ -137,6 +137,13 @@ public class MachineInputProcessor extends InputAdapter {
     } else if (keycode == Keys.F10) {
       machineScreen.saveScreenshot();
       
+    } else if (keycode == Keys.F5) { 
+      machineScreen.toggleShowFPS();
+      
+    } else if (keycode == Keys.F6) { 
+      // Toggle warp speed.
+      machineScreen.getMachineRunnable().toggleWarpSpeed();
+      
     } else {
       machineScreen.getMachine().getKeyboard().keyReleased(keycode);
       machineScreen.getMachine().getJoystick().keyReleased(keycode);
