@@ -4,7 +4,7 @@
       "name": "BASIC",
       "filePath": "",
       "fileType": "",
-      "iconPath": "icons/BASIC_2.png",
+      "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -12,7 +12,7 @@
       "name": "1337",
       "filePath": "disks/1337.dsk",
       "fileType": "DISK",
-      "iconPath": "icons/1337_1.png",
+      "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -37,7 +37,7 @@
       "displayName": "Aigle\nD'Or, L'",
       "filePath": "tapes/AIGLE.TAP",
       "fileType": "TAPE",
-      "iconPath": "icons/Aigle_d'Or,_L'_2.png",
+      "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -85,7 +85,7 @@
       "name": "Barbitoric",
       "filePath": "disks/barbitoric.dsk",
       "fileType": "DISK",
-      "iconPath": "icons/Barbitoric_2.png",
+      "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -93,7 +93,7 @@
       "name": "Blake's 7",
       "filePath": "disks/B7en-1.1.dsk",
       "fileType": "DISK",
-      "iconPath": "icons/Blake's_7.png",
+      "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -118,7 +118,7 @@
       "name": "Buggy Boy",
       "filePath": "disks/BuggyBoy.dsk",
       "fileType": "DISK",
-      "iconPath": "icons/Buggy_Boy_4.png",
+      "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -183,7 +183,7 @@
       "displayName": "Damsel in\nDistress",
       "filePath": "tapes/DAMSEL.TAP",
       "fileType": "TAPE",
-      "iconPath": "icons/Damsel_in_Distress.png",
+      "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -199,7 +199,7 @@
       "name": "Defence Force",
       "filePath": "tapes/DEFENDER.TAP",
       "fileType": "TAPE",
-      "iconPath": "icons/Defence_Force_2.png",
+      "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -207,7 +207,7 @@
       "name": "Delta Four",
       "filePath": "tapes/delta4.tap",
       "fileType": "TAPE",
-      "iconPath": "icons/Delta_4_1.png",
+      "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -215,7 +215,7 @@
       "name": "Diagnostic ROM",
       "filePath": "roms/test108j.rom",
       "fileType": "ROM",
-      "iconPath": "icons/Diagnostic_ROM.png",
+      "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -265,7 +265,7 @@
       "name": "Dracula's Revenge",
       "filePath": "tapes/DRACULA.TAP",
       "fileType": "TAPE",
-      "iconPath": "icons/Dracula's_Revenge_1.png",
+      "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -331,7 +331,7 @@
       "name": "Ghost Gobbler",
       "filePath": "tapes/GOBBLER.TAP",
       "fileType": "TAPE",
-      "iconPath": "icons/Ghost_Gobbler.png",
+      "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -371,7 +371,7 @@
       "name": "Hellion, The",
       "filePath": "tapes/hellion.tap",
       "fileType": "TAPE",
-      "iconPath": "icons/The_Hellion_1.png",
+      "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -411,7 +411,7 @@
       "name": "Impossible Mission",
       "filePath": "tapes/im10.tap",
       "fileType": "TAPE",
-      "iconPath": "icons/Impossible_Mission.png",
+      "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -419,7 +419,7 @@
       "name": "IRQBench 1.7",
       "filePath": "tapes/IrqBench1.7.tap",
       "fileType": "TAPE",
-      "iconPath": "icons/IRQBench_1.7.png",
+      "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -467,7 +467,7 @@
       "name": "Manic Miner",
       "filePath": "tapes/MANICMINER.TAP",
       "fileType": "TAPE",
-      "iconPath": "icons/Manic_Miner.png",
+      "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -475,7 +475,7 @@
       "name": "Magnetix",
       "filePath": "disks/MAGNETIX.DSK",
       "fileType": "DISK",
-      "iconPath": "icons/Magnetix_1.png",
+      "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -500,7 +500,7 @@
       "displayName": "Not Another\nBoulder Dash",
       "filePath": "tapes/NABDC_2016-07-12.tap",
       "fileType": "TAPE",
-      "iconPath": "icons/N_A_B_D_C.png",
+      "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -508,7 +508,7 @@
       "name": "Oricium",
       "filePath": "tapes/Oricium12.tap",
       "fileType": "TAPE",
-      "iconPath": "icons/Oricium.png",
+      "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -536,10 +536,10 @@
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
-        {
+    {
       "name": "O-Type Demo-2",
-      "filePath": "tapes/me.tap",
-      "fileType": "TAPE",
+      "filePath": "disks/otype.dsk",
+      "fileType": "DISK",
       "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
@@ -767,7 +767,7 @@
       "name": "STNICCC 2000",
       "filePath": "tapes/rotozoom.tap",
       "fileType": "TAPE",
-      "iconPath": "icons/STNICCC_2000.png",
+      "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -859,6 +859,14 @@
       "name": "Ultra, The",
       "filePath": "tapes/ULTRA.TAP",
       "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Wave 200",
+      "filePath": "disks/WAVE200.DSK",
+      "fileType": "DISK",
       "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
