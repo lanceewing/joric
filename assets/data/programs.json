@@ -7,6 +7,14 @@
       "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
+    },
+    {
+      "name": "Barbitoric",
+      "filePath": "https://archive.org/download/GameBase_Oric_v0.99_2013/Games.rar/Games%2FB%2FBarbitoric%2Fbarbitoric.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
     }
   ]
 }
