@@ -1,16 +1,7 @@
-apply plugin: "java"
-
-sourceCompatibility = 1.6
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-
-sourceSets.main.java.srcDirs = [ "src/" ]
-
-
-eclipse.project {
-    name = appName + "-core"
-}
+eclipse.project.name = appName + '-core'
 
 dependencies {
-    // Adds a remote binary dependency only for local tests.
-    testCompile 'junit:junit:4.12'
+  api "com.badlogicgames.gdx:gdx:$gdxVersion"
+  api "com.github.payne911:PieMenu:$pieMenuVersion"
 }
