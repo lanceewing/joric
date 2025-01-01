@@ -55,6 +55,7 @@ jobs:
           workingDirectory: html/build
           directory: dist
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          branch: master
           wranglerVersion: '3'
 
     # NOTE: The Gradle Wrapper is the default and recommended way to run Gradle (https://docs.gradle.org/current/userguide/gradle_wrapper.html).
