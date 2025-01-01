@@ -279,9 +279,9 @@
       "ram": "RAM_48K"
     },
     {
-      "name": "Encounter HD v1.0.1",
-      "displayName": "Encounter HD\nv1.0.1",
-      "filePath": "disks/EncounterHD-EN-50HZ-v1.0.1.dsk",
+      "name": "Encounter HD v1.0.2",
+      "displayName": "Encounter HD\nv1.0.2",
+      "filePath": "disks/EncounterHD-EN-50HZ-v1.0.2.dsk",
       "fileType": "DISK",
       "iconPath": "",
       "machineType": "PAL",
