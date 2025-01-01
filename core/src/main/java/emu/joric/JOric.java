@@ -7,7 +7,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 
 import emu.joric.config.AppConfigItem;
-import emu.joric.memory.RamType;
 import emu.joric.ui.DialogHandler;
 
 /**
@@ -72,34 +71,16 @@ public class JOric extends Game {
         AppConfigItem appConfigItem = null;
         
         if ((args != null) && (args.size() > 0)) {
-            if (args.containsKey("id")) {
-                // TODO: Implement lookup by id
-                //appConfigItem = homeScreen.getAppConfigItemByGameId(args.get("id"));
-            }
             if (args.containsKey("uri")) {
-                // TODO: Implement lookup by uri
-                //appConfigItem = homeScreen.getAppConfigItemByGameUri(args.get("uri"));
-            }
-            if (args.containsKey("path")) {
-                String filePath = args.get("path");
-                appConfigItem = new AppConfigItem();
-                appConfigItem.setFilePath(filePath);
-                if (filePath.toLowerCase().endsWith(".dsk")) {
-                    appConfigItem.setFileType("DISK");
-                }
-                if (filePath.toLowerCase().endsWith(".tap")) {
-                    appConfigItem.setFileType("TAPE");
-                }
-                appConfigItem.setMachineType(MachineType.PAL.name());
-                appConfigItem.setRam(RamType.RAM_48K.name());
+                // Start by checking to see if the programs.json has an entry.
+                appConfigItem = homeScreen.getAppConfigItemByProgramUri(args.get("uri"));
             }
         }
         
         setScreen(homeScreen);
         
         if (appConfigItem != null) {
-            // TODO: add processGameSelection
-            //homeScreen.processGameSelection(appConfigItem);
+            homeScreen.processProgramSelection(appConfigItem);
         }
         
         // Stop the back key from immediately exiting the app.
@@ -122,6 +103,15 @@ public class JOric extends Game {
      */
     public HomeScreen getHomeScreen() {
         return homeScreen;
+    }
+    
+    /**
+     * Gets the JOricRunner.
+     * 
+     * @return the JOricRunner.
+     */
+    public JOricRunner getJOricRunner() {
+        return joricRunner;
     }
 
     /**

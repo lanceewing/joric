@@ -92,6 +92,11 @@ public class HomeScreen extends InputAdapter implements Screen  {
       "{\"apps\": [{\"name\": \"BASIC\",\"machineType\": \"PAL\",\"ram\": \"RAM_48K\"}]}";
   
   /**
+   * Holds a reference to the AppConfigItem for the last program that was launched.
+   */
+  private AppConfigItem lastProgramLaunched;
+  
+  /**
    * Constructor for HomeScreen.
    * 
    * @param joric The Joric instance.
@@ -435,6 +440,24 @@ public class HomeScreen extends InputAdapter implements Screen  {
   }
   
   /**
+   * If there is a program in the AppConfigItem Map that has the given URI, then
+   * that is returned; otherwise returns false.
+   * 
+   * @param programUri The URI of the program to get the AppConfigItem for, if it exists.
+   * 
+   * @return
+   */
+  public AppConfigItem getAppConfigItemByProgramUri(String programUri) {
+      for (AppConfigItem appConfigItem : appConfigMap.values()) {
+          String uri = joric.getJOricRunner().slugify(appConfigItem.getName());
+          if (uri.equalsIgnoreCase(programUri)) {
+              return appConfigItem;
+          }
+      }
+      return null;
+  }
+  
+  /**
    * Converts the given Map of AppConfigItems to an AppConfig instance.
    * 
    * @param appConfigMap The Map of AppConfigItems to convert.
@@ -601,4 +624,11 @@ public class HomeScreen extends InputAdapter implements Screen  {
       }
     }
   };
+  
+  public void processProgramSelection(AppConfigItem appConfigItem) {
+      lastProgramLaunched = appConfigItem;
+      MachineScreen machineScreen = joric.getMachineScreen();
+      machineScreen.initMachine(appConfigItem, true);
+      joric.setScreen(machineScreen);
+  }
 }

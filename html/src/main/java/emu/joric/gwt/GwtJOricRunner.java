@@ -50,8 +50,8 @@ public class GwtJOricRunner extends JOricRunner {
     @Override
     public void start(AppConfigItem appConfigItem) {
         String newURL = Window.Location.createUrlBuilder()
-                .setHash(null)
-                .setPath("/play/" + slugify(appConfigItem.getName()) + "/")
+                .setHash("/" + slugify(appConfigItem.getName()))
+                .setPath("/")
                 .buildString();
         
         logToJSConsole("newURL: " + newURL);
