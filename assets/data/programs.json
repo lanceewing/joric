@@ -4,15 +4,976 @@
       "name": "BASIC",
       "filePath": "",
       "fileType": "",
+      "iconPath": "screenshots/B/Basic/Basic.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "1337",
+      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2F0-9%2F1337%2F1337.dsk",
+      "fileType": "DISK",
+      "iconPath": "screenshots/0-9/1337/1337.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Adventureland",
+      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FA%2FAdventureland%20%282%29%2FAdventure.dsk",
+      "fileType": "DISK",
+      "iconPath": "screenshots/A/Adventureland/Adventureland.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Aigle D'Or, L'",
+      "displayName": "Aigle\nD'Or, L'",
+      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FA%2FAigle%20D%27or%2C%20L%27%2FAigle.TAP",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/A/Aigle D'or, L'/Aigle_d'Or,_L'.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Airfox [B]",
+      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FA%2FAirfox%2FAirfox.TAP",
+      "fileType": "TAPE",
       "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
     {
+      "name": "Assembly 2002",
+      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FA%2FAssembly%202002%2Fasm2k2.dsk",
+      "fileType": "DISK",
+      "iconPath": "screenshots/A/Assembly 2002/Assembly_2002.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Atlantid [B]",
+      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FA%2FAtlantid%2FAtlantid.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "A.T.M",
+      "filePath": "tapes/atm.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Attacker",
+      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FA%2FAttacker%2FATTACKER.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/A/Attacker/Attacker.PNG",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Barbitoric",
-      "filePath": "https://archive.org/download/GameBase_Oric_v0.99_2013/Games.rar/Games%2FB%2FBarbitoric%2Fbarbitoric.dsk",
+      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FB%2FBarbitoric%2Fbarbitoric.dsk",
+      "fileType": "DISK",
+      "iconPath": "screenshots/B/Barbitoric/Barbitoric.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Blake's 7",
+      "filePath": "disks/B7en-1.1.dsk",
+      "fileType": "DISK",
+      "iconPath": "screenshots/B/Blake's 7/Blakes_7.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Born in 1983",
+      "displayName": "Born in\n1983",
+      "filePath": "disks/BornIn1983.dsk",
       "fileType": "DISK",
       "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Box World",
+      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FB%2FBoxworld%2FBoxWorld.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/B/Boxworld/Boxworld.PNG",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Buggy Boy",
+      "filePath": "disks/BuggyBoy.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Catacombe Demo",
+      "filePath": "tapes/catacombe_demo.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Cheops",
+      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FC%2FCheops%2FCheops.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/C/Cheops/Cheops.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Chopper",
+      "filePath": "tapes/CHOPPER.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Chuckford",
+      "filePath": "tapes/CHUCKFRD.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Cock'In",
+      "filePath": "tapes/COCKIN.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Creepy Castle",
+      "filePath": "disks/Creepy Castle.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Cyclotron",
+      "filePath": "tapes/Cyclotron.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Damsel in Distress",
+      "displayName": "Damsel in\nDistress",
+      "filePath": "tapes/DAMSEL.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Danger Zone",
+      "filePath": "tapes/danger.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Defence Force",
+      "filePath": "tapes/DEFENDER.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Delta Four",
+      "filePath": "tapes/delta4.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Diagnostic ROM",
+      "filePath": "roms/test108j.rom",
+      "fileType": "ROM",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Diamant de Kheops",
+      "displayName": "Diamant de\nKheops",
+      "filePath": "tapes/Kheops.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Doggy",
+      "filePath": "tapes/DOGGY.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Don't Panic",
+      "filePath": "disks/DPANIC.DSK",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Don't Press the Letter Q",
+      "displayName": "Don't Press\nthe Letter Q",
+      "filePath": "tapes/dptlq.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Dotman",
+      "filePath": "disks/DOTMAN.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Dracula's Revenge",
+      "filePath": "tapes/DRACULA.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Dungeon Master Preview",
+      "displayName": "Dungeon Master\nPreview",
+      "filePath": "disks/Dungeon.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Encounter",
+      "displayName": "Encounter",
+      "filePath": "https://archive.org/download/Gamebase_Oric_v0.99_2013/Games.rar/Games%2FE%2FEncounter%2FEncounter.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/E/Encounter/Encounter.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Encounter HD v1.0.1",
+      "displayName": "Encounter HD\nv1.0.1",
+      "filePath": "disks/EncounterHD-EN-50HZ-v1.0.1.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Escape from Pulsar 7",
+      "displayName": "Escape from\nPulsar 7",
+      "filePath": "tapes/PULSAR7.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Fire Flash",
+      "filePath": "tapes/Fire Flash.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Frelon",
+      "filePath": "tapes/Frelon.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Galactosmash",
+      "filePath": "disks/gal.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Galaxians",
+      "filePath": "tapes/GALAXIAN.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Giga Demo",
+      "filePath": "disks/vip3.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Ghost Gobbler",
+      "filePath": "tapes/GOBBLER.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Gravitor",
+      "filePath": "tapes/GRAVITOR.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Grendel",
+      "filePath": "disks/grendel.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Gubbie",
+      "filePath": "tapes/gubbie.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Harrier Attack",
+      "filePath": "tapes/harriera.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Hellion, The",
+      "filePath": "tapes/hellion.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Hobbit, The",
+      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FH%2FHobbit%2C%20The%2FHobbit.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/H/Hobbit, The/The_Hobbit.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Honey Kong",
+      "filePath": "tapes/Honey Kong.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Hopper",
+      "filePath": "tapes/hopper_a.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Hunchback",
+      "filePath": "tapes/hunchbk.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Impossible Mission",
+      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FI%2FImpossible%20Mission%2Fim10-60.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/I/Impossible Mission/Impossible_Mission.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "IRQBench 1.7",
+      "filePath": "tapes/IrqBench1.7.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Jet Attack",
+      "filePath": "tapes/JETATTAC.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Krillys",
+      "filePath": "tapes/krillys.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Lode Runner",
+      "filePath": "disks/LODERUN.DSK",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Loki",
+      "filePath": "tapes/loki.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Lone Raider",
+      "filePath": "tapes/RAIDER.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Manic Miner [B]",
+      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FM%2FManic%20Miner%2FManic%20Miner.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Magnetix",
+      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FM%2FMagnetix%2FMAGNETIX.DSK",
+      "fileType": "DISK",
+      "iconPath": "screenshots/M/Magnetix/Magnetix.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Mission Impossible",
+      "filePath": "disks/Mission.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Mr Wimpy",
+      "filePath": "tapes/WIMPY.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "N.A.B.D.C",
+      "displayName": "Not Another\nBoulder Dash",
+      "filePath": "tapes/NABDC_2016-07-12.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Oricium",
+      "filePath": "tapes/Oricium12.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Oric Tech",
+      "filePath": "disks/OricTech.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "O-Thrust",
+      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FO%2FO-Thrust%2FO-Thrust.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/O/O-Thrust/O-Thrust.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "O-Type Demo",
+      "filePath": "tapes/swiv.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "O-Type Demo-2",
+      "filePath": "disks/otype.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Panic",
+      "filePath": "tapes/panic_f.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Pirate's Adventure",
+      "filePath": "disks/Pirate.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Probe 3",
+      "filePath": "tapes/probe3.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Playground 21",
+      "filePath": "tapes/Playground 21.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Protector, Le",
+      "filePath": "tapes/Protector.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Psychiatric",
+      "filePath": "tapes/PSY.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Pulsoids",
+      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FP%2FPulsoids%2Fpulsoids.dsk",
+      "fileType": "DISK",
+      "iconPath": "screenshots/P/Pulsoids/Pulsoids.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Pushing The Envelope",
+      "displayName": "Pushing\nThe Envelope",
+      "filePath": "disks/PushingTheEnvelope.dsk",
+      "fileType": "DISK",
+      "iconPath": "screenshots/P/Pushing the Envelope/Pushing_the_Envelope.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Quintessential",
+      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FQ%2FQuintessential%2FQuintessential.dsk",
+      "fileType": "DISK",
+      "iconPath": "screenshots/Q/Quintessential/Quintessential.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Rabbit",
+      "filePath": "tapes/Rabbit.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Rambo",
+      "filePath": "disks/rambo.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Rat Splat",
+      "filePath": "tapes/RATSPLAT.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Ripped",
+      "filePath": "disks/ripped.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "S.A.G.A",
+      "filePath": "tapes/Saga.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Scuba Dive",
+      "filePath": "tapes/Scuba.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Secret Du Tombeau",
+      "displayName": "Secret Du\nTombeau",
+      "filePath": "tapes/tombjeu.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Sedoric V3.0",
+      "filePath": "disks/S30tpOK.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Singerie",
+      "filePath": "tapes/SINGERIE.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Skool Daze",
+      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FS%2FSkool%20Daze%2FSkoolDaze10.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/S/Skool Daze/Skool_Daze.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Snake Venom",
+      "filePath": "tapes/Snake Venom.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Sound Tracker",
+      "filePath": "disks/STRACKER.DSK",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Space 1999",
+      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FS%2FSpace%201999%2Fspace1999.dsk",
+      "fileType": "DISK",
+      "iconPath": "screenshots/S/Space 1999/Space_1999.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Sprity Dans La Cave",
+      "displayName": "Sprity Dans\nLa Cave",
+      "filePath": "tapes/sprity.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Squeek",
+      "filePath": "disks/SQUEEK.DSK",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Star",
+      "filePath": "tapes/star.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Starship",
+      "filePath": "tapes/STARSHIP.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Starter 3D",
+      "filePath": "tapes/Starter.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "STNICCC 2000",
+      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FS%2FStniccc2000%2Fstniccc2000.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/S/Stniccc2000/STNICCC_2000.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Stormlord",
+      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FS%2FStormlord%2FStormlord.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/S/Stormlord/Stormlord.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Styx",
+      "filePath": "tapes/STYX.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Super Advanced Breakout",
+      "displayName": "Super Advanced\nBreakout",
+      "filePath": "tapes/BREAKOUT.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Super Meteors",
+      "filePath": "tapes/super-meteor.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Super Jeep",
+      "filePath": "disks/SuperJeep.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Tendre Poulet",
+      "filePath": "tapes/Tendre Poulet.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Time of Lore",
+      "displayName": "Times\nof Lore",
+      "filePath": "tapes/toldemo.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Titan",
+      "filePath": "disks/TITAN.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Trident de Neptune, La",
+      "displayName": "Trident de\nNeptune, La",
+      "filePath": "tapes/NEPTUNE.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Trouble In Store",
+      "displayName": "Trouble\nIn Store",
+      "filePath": "tapes/TROUBLE.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Ultra, The",
+      "filePath": "tapes/ULTRA.TAP",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Wave 200",
+      "filePath": "disks/WAVE200.DSK",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Welcome",
+      "filePath": "tapes/welcome.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Wurlde Demo",
+      "filePath": "disks/wdemo.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Wurlde Demo 2",
+      "filePath": "disks/WurldeDemo2.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Xenon 1",
+      "filePath": "tapes/Xenon1.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Xenon 3",
+      "filePath": "tapes/Xenon3.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "X-Files",
+      "filePath": "disks/Xfiles.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Zamcoptere",
+      "filePath": "tapes/zamcopter.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Zebbie",
+      "filePath": "tapes/zebbie.tap",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Zebulon",
+      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FZ%2FZebulon%2FZEBULON.DSK",
+      "fileType": "DISK",
+      "iconPath": "screenshots/Z/Zebulon/Zebulon.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Zerofx",
+      "filePath": "disks/Zerofx.dsk",
+      "fileType": "DISK",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Zip n Zap [B]",
+      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FZ%2FZip%20n%20Zap%2FZip%20n%20Zap.dsk",
+      "fileType": "TAPE",
+      "iconPath": "",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Zorgon's Revenge",
+      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FZ%2FZorgons%20Revenge%2FZorgon%27s%20Revenge%20%28UK%29%20%281983%29.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/Z/Zorgon's Revenge/Zorgon's_Revenge.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     }
