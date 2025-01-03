@@ -4,9 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Input.Buttons;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
 
+import emu.joric.KeyboardMatrix;
 import emu.joric.KeyboardType;
 import emu.joric.MachineScreen;
 
@@ -113,7 +113,7 @@ public class MachineInputProcessor extends InputAdapter {
         if (keyboardType.isInKeyboard(touchXY.x, touchXY.y)) {
             Integer keycode = keyboardType.getKeyCode(touchXY.x, touchXY.y);
             if (keycode != null) {
-                keyDown(keycode);
+                processVirtualKeyboardKeyDown(keycode);
             }
             if (touchInfo != null) {
                 touchInfo.lastKey = keycode;
@@ -148,7 +148,7 @@ public class MachineInputProcessor extends InputAdapter {
         if (keyboardType.isInKeyboard(touchXY.x, touchXY.y)) {
             Integer keycode = keyboardType.getKeyCode(touchXY.x, touchXY.y);
             if (keycode != null) {
-                keyUp(keycode);
+                processVirtualKeyboardKeyUp(keycode);
             }
         } else if (keyboardType.equals(KeyboardType.MOBILE_ON_SCREEN)) {
             // If the onscreen keyboard is being shown then if we receive a tap event, it
@@ -229,7 +229,23 @@ public class MachineInputProcessor extends InputAdapter {
             }
 
             if (backArrowClicked) {
-                keyUp(Keys.BACK);
+                if (Gdx.app.getType().equals(ApplicationType.Desktop) && Gdx.graphics.isFullscreen()) {
+                    // Dialog won't show for desktop unless we exit full screen,
+                    // TODO: switchOutOfFullScreen();
+                }
+                
+                dialogHandler.confirm("Are you sure you want to quit the game?", 
+                        new ConfirmResponseHandler() {
+                    @Override
+                    public void yes() {
+                        machineScreen.getJoricRunner().stop();
+                    }
+                    
+                    @Override
+                    public void no() {
+                        // Nothing to do.
+                    }
+                });
             }
         }
 
@@ -262,10 +278,10 @@ public class MachineInputProcessor extends InputAdapter {
             // If the drag has resulting in the position moving in to or out of a key, then
             // we simulate the coresponding key events.
             if ((lastKey != null) && ((newKey == null) || (newKey != lastKey))) {
-                keyUp(lastKey);
+                processVirtualKeyboardKeyUp(lastKey);
             }
             if ((newKey != null) && ((lastKey == null) || (lastKey != newKey))) {
-                keyDown(newKey);
+                processVirtualKeyboardKeyDown(newKey);
             }
 
             // Finally we update the new last position and last key for this pointer.
@@ -297,5 +313,17 @@ public class MachineInputProcessor extends InputAdapter {
      */
     public KeyboardType getKeyboardType() {
         return keyboardType;
+    }
+    
+    public KeyboardMatrix getKeyboardMatrix() {
+        return machineScreen.getJoricRunner().getKeyboardMatrix();
+    }
+    
+    private void processVirtualKeyboardKeyDown(int keycode) {
+        getKeyboardMatrix().keyDown(keycode & 0xFF);
+    }
+    
+    private void processVirtualKeyboardKeyUp(int keycode) {
+        getKeyboardMatrix().keyUp(keycode & 0xFF);
     }
 }

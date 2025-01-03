@@ -236,6 +236,21 @@ public class MachineScreen implements Screen {
         long fps = Gdx.graphics.getFramesPerSecond();
         boolean draw = false;
 
+        if (joricRunner.hasStopped()) {
+            // If game has ended then go back to home screen. It has to be the UI thread
+            // that calls the setScreen method. The JOricRunner itself can't do this.
+            joricRunner.reset();
+            // This makes sure we update the Pixmap one last time before leaving, as that
+            // will mean that the AGI game screen starts out black for the next game.
+            copyPixels();
+            if (Gdx.graphics.isFullscreen()) {
+                // TODO: We don't yet support full screen.
+                //machineScreenInputProcessor.switchOutOfFullScreen();
+            }
+            joric.setScreen(joric.getHomeScreen());
+            return;
+        }
+        
         if (joricRunner.isPaused()) {
             // When paused, we limit the draw frequency since there isn't anything to change.
             draw = ((fps < 30) || ((renderCount % (fps / 30)) == 0));

@@ -14,6 +14,17 @@ public class GwtDialogHandler implements DialogHandler {
 
     private boolean dialogOpen;
     
+    /**
+     * Constructor for GwtDialogHandler.
+     */
+    public GwtDialogHandler() {
+        initDialog();
+    }
+    
+    private final native void initDialog()/*-{
+        this.dialog = new $wnd.Dialog();
+    }-*/;
+    
     @Override
     public void confirm(String message, ConfirmResponseHandler confirmResponseHandler) {
         Gdx.app.postRunnable(new Runnable() {

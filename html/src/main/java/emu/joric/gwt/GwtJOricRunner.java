@@ -222,6 +222,15 @@ public class GwtJOricRunner extends JOricRunner {
     }
 
     @Override
+    public void stop() {
+        // Kill off the web worker immediately. Ensure that any playing sound is stopped.
+        paused = false;
+        worker.terminate();
+        // TODO: Stop sound processing.
+        stopped = true;
+    }
+    
+    @Override
     public void reset() {
         // Resets to the original state, as if a game has not been previously run.
         paused = false;
