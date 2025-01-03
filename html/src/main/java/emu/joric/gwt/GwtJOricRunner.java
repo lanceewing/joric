@@ -5,6 +5,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.typedarrays.shared.ArrayBuffer;
 import com.google.gwt.typedarrays.shared.TypedArrays;
 import com.google.gwt.typedarrays.shared.Uint8Array;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.webworker.client.ErrorEvent;
 import com.google.gwt.webworker.client.ErrorHandler;
@@ -45,14 +46,47 @@ public class GwtJOricRunner extends JOricRunner {
      */
     public GwtJOricRunner(KeyboardMatrix keyboardMatrix, PixelData pixelData, AYPSG psg) {
         super(keyboardMatrix, pixelData, psg);
+        
+        registerPopStateEventHandler();
     }
 
+    private native void registerPopStateEventHandler() /*-{
+        var that = this;
+        var oldHandler = $wnd.onpopstate;
+        $wnd.onpopstate = $entry(function(e) {
+            that.@emu.joric.gwt.GwtJOricRunner::onPopState(Lcom/google/gwt/user/client/Event;)(e);
+            if (oldHandler) {
+                oldHandler();
+            }
+        });
+    }-*/;
+    
+    private void onPopState(Event e) {
+        String newURL = Window.Location.getHref();
+        String programHashId = Window.Location.getHash();
+        
+        logToJSConsole("PopState - newURL: " + newURL + ", programHashId: " + programHashId);
+        
+        // If the URL does not have a hash, then it has gone back to the home screen.
+        if ((programHashId == null) || (programHashId.trim().equals(""))) {
+            if (isRunning()) {
+                stop();
+            }
+        } else {
+            Window.Location.reload();
+        }
+    }
+    
     @Override
     public void start(AppConfigItem appConfigItem) {
-        String newURL = Window.Location.createUrlBuilder()
-                .setHash("/" + slugify(appConfigItem.getName()))
-                .setPath("/")
-                .buildString();
+        // The URL Builder doesn't add a / before the #, so we do this ourselves.
+        String newURL = Window.Location.createUrlBuilder().setPath("/").setHash(null).buildString();
+        if (newURL.endsWith("/")) {
+            newURL += "#/";
+        } else {
+            newURL += "/#/";
+        }
+        newURL += slugify(appConfigItem.getName());
         
         logToJSConsole("newURL: " + newURL);
         
@@ -209,8 +243,8 @@ public class GwtJOricRunner extends JOricRunner {
         return obj.object[fieldName];
     }-*/;
     
-    private static native void updateURLWithoutReloading(String newUrl) /*-{
-        $wnd.history.pushState(newUrl, "", newUrl);
+    private static native void updateURLWithoutReloading(String newURL) /*-{
+        $wnd.history.pushState(newURL, "", newURL);
     }-*/;
     
     private void clearUrl() {
