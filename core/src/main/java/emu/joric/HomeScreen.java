@@ -196,9 +196,11 @@ public class HomeScreen extends InputAdapter implements Screen  {
         currentPage.row();
       }
       
-      currentPage.add(buildAppButton(appConfigItem)).expand().fill();
-      
-      pageItemCount++;
+      // Currently, we're using the presence of an icon path to decide whether to add it.
+      if ((appConfigItem.getIconPath() != null) && (!appConfigItem.getIconPath().equals(""))) {
+          currentPage.add(buildAppButton(appConfigItem)).expand().fill();
+          pageItemCount++;
+      }
     }
     
     // Add the last page of apps.
