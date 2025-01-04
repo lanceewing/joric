@@ -154,8 +154,8 @@ public class Ula extends BaseChip {
                         int dotInk;
                         int dotPaper;
                         if ((screenCode & 0x80) != 0) {
-                            dotInk = (ink ^ 0xFFFFFFFF);
-                            dotPaper = (paper ^ 0xFFFFFFFF);
+                            dotInk = (ink ^ 0xFFFFFF00);
+                            dotPaper = (paper ^ 0xFFFFFF00);
                         } else {
                             dotInk = ink;
                             dotPaper = paper;
