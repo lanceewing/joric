@@ -12,6 +12,11 @@ export default {
         async function handleRequest(request) {
             const url = new URL(request.url);
             let targetUrl = url.searchParams.get("url");
+            
+            // If the target url is not present, return 400.
+            if (!targetUrl) {
+                return new Response("Missing target URL.", { status: 400 });
+            }
 
             if ((url.origin == "https://oric.games") && 
                 (targetUrl.startsWith("https://www.defence-force.org/") || 
