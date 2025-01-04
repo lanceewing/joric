@@ -20,7 +20,7 @@ export default {
 
             if ((url.origin == "https://oric.games") && 
                 (targetUrl.startsWith("https://www.defence-force.org/") || 
-                 targetUrl.startsWith("https://www.pouet.net/"))) {
+                 targetUrl.startsWith("https://cdn.oric.org/"))) {
 
                 // Rewrite request to point to target URL. This also makes the request 
                 // mutable so you can add the correct Origin header to make the API server
