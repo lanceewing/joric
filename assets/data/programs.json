@@ -613,9 +613,9 @@
     {
       "name": "Pushing The Envelope",
       "displayName": "Pushing\nThe Envelope",
-      "filePath": "disks/PushingTheEnvelope.dsk",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/p/pushing_the_envelope/PushingTheEnvelope.dsk",
       "fileType": "DISK",
-      "iconPath": "",
+      "iconPath": "screenshots/P/Pushing the Envelope/Pushing_the_Envelope.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
