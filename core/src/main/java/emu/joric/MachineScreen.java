@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.badlogic.gdx.Application.ApplicationType;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
@@ -89,6 +90,7 @@ public class MachineScreen implements Screen {
     private Stage landscapeStage;
     private Touchpad portraitTouchpad;
     private Touchpad landscapeTouchpad;
+    private int previousDirection;
 
     /**
      * Details about the application currently running.
@@ -353,11 +355,80 @@ public class MachineScreen implements Screen {
                 joyX = landscapeTouchpad.getKnobPercentX();
                 joyY = landscapeTouchpad.getKnobPercentY();
             }
-            // TODO: Handle joystick input.
-            // machine.getJoystick().touchPad(joyX, joyY);
+            processJoystickInput(joyX, joyY);
         }
     }
 
+    private static final int[] DIRECTION_TO_KEY_MAP = new int[] {
+        0, 
+        Keys.UP, 
+        Keys.RIGHT, 
+        Keys.DOWN, 
+        Keys.LEFT
+    };
+    
+    /**
+     * Processes joystick input, converting the touchpad position into an Oric
+     * arrow direction and then setting the corresponding direction key.
+     * 
+     * @param joyX
+     * @param joyY
+     */
+    private void processJoystickInput(float joyX, float joyY) {
+        double heading = Math.atan2(-joyY, joyX);
+        double distance = Math.sqrt((joyX * joyX) + (joyY * joyY));
+        
+        int direction = 0;
+        
+        if (distance > 0.3) {
+            if (heading == 0) {
+                // Right
+                direction = 2;
+            }
+            else if (heading > 0) {
+                // Down
+                if (heading < 0.785398) {
+                    // Right
+                    direction = 2;
+                }
+                else if (heading < 2.3561946) {
+                    // Down
+                    direction = 3;
+                }
+                else {
+                    // Left
+                    direction = 4;
+                }
+            }
+            else {
+                // Up
+                if (heading > -0.785398) {
+                    // Right
+                    direction = 2;
+                }
+                else if (heading > -2.3561946) {
+                    // Up
+                    direction = 1;
+                }
+                else {
+                    // Left
+                    direction = 4;
+                }
+            }
+        }
+        
+        KeyboardMatrix keyboardMatrix = joricRunner.getKeyboardMatrix();
+        
+        if ((previousDirection != 0) && (direction != previousDirection)) {
+            keyboardMatrix.keyUp(DIRECTION_TO_KEY_MAP[previousDirection]);
+        }
+        if ((direction != 0) && (direction != previousDirection)) {
+            keyboardMatrix.keyDown(DIRECTION_TO_KEY_MAP[direction]);
+        }
+                
+        previousDirection = direction;
+    }
+    
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height, false);

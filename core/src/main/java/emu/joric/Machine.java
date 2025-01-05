@@ -2,8 +2,6 @@ package emu.joric;
 
 import emu.joric.cpu.Cpu6502;
 import emu.joric.io.Disk;
-import emu.joric.io.Joystick;
-import emu.joric.io.Joystick.JoystickType;
 import emu.joric.io.Keyboard;
 import emu.joric.io.Tape;
 import emu.joric.io.Via;
@@ -30,7 +28,6 @@ public class Machine {
 
     // Peripherals.
     private Keyboard keyboard;
-    private Joystick joystick;
     private Tape tape;
     private Disk microdisc;
 
@@ -94,7 +91,6 @@ public class Machine {
 
         // Create the peripherals.
         keyboard = new Keyboard(keyboardMatrix, psg);
-        joystick = new Joystick(keyboard, JoystickType.ARROW_KEYS);
 
         // Create the VIA chip.
         via = new Via(cpu, keyboard, snapshot);
@@ -286,15 +282,6 @@ public class Machine {
      */
     public Keyboard getKeyboard() {
         return keyboard;
-    }
-
-    /**
-     * Gets the Joystick of this Machine.
-     * 
-     * @return The Joystick of this Machine.
-     */
-    public Joystick getJoystick() {
-        return joystick;
     }
 
     /**
