@@ -224,9 +224,10 @@ public class MachineInputProcessor extends InputAdapter {
                 }
             }
 
-            if (joystickClicked) {
-                keyboardType = KeyboardType.JOYSTICK;
-            }
+            // TODO: Add back in after proper joystick implementation.
+            //if (joystickClicked) {
+            //    keyboardType = KeyboardType.JOYSTICK;
+            //}
 
             if (backArrowClicked) {
                 if (Gdx.app.getType().equals(ApplicationType.Desktop) && Gdx.graphics.isFullscreen()) {

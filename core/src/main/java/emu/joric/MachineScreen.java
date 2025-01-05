@@ -319,7 +319,8 @@ public class MachineScreen implements Screen {
             // showing.
             batch.setColor(c.r, c.g, c.b, 0.5f);
             if (viewportManager.isPortrait()) {
-                batch.draw(joystickIcon, 0, 0);
+                // TODO: Add back in after proper joystick implementation.
+                //batch.draw(joystickIcon, 0, 0);
                 if (Gdx.app.getType().equals(ApplicationType.Android)) {
                     // Main Oric keyboard on the left.
                     batch.draw(keyboardIcon, viewportManager.getWidth() - 145, 0);
@@ -335,7 +336,8 @@ public class MachineScreen implements Screen {
                 }
 
             } else {
-                batch.draw(joystickIcon, 0, viewportManager.getHeight() - 140);
+                // TODO: Add back in after proper joystick implementation.
+                //batch.draw(joystickIcon, 0, viewportManager.getHeight() - 140);
                 batch.draw(keyboardIcon, viewportManager.getWidth() - 150, viewportManager.getHeight() - 125);
                 batch.draw(backIcon, viewportManager.getWidth() - 150, 0);
             }
