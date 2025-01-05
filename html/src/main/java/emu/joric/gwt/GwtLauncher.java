@@ -87,10 +87,10 @@ public class GwtLauncher extends GwtApplication {
     
     private final native boolean isURLValid(String url)/*-{
         try {
-            new URL(string);
+            new URL(url);
             return true;
         } catch (err) {
-            console.log("err: " + err);
+            console.log("Sorry, there was an error validating the program URL: " + err);
             return false;
         }
     }-*/;
