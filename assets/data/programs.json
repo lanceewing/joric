@@ -83,7 +83,7 @@
     },
     {
       "name": "Blake's 7",
-      "filePath": "disks/B7en-1.1.dsk",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/b/blakes_7/B7en-1_3.dsk",
       "fileType": "DISK",
       "iconPath": "screenshots/B/Blake's 7/Blakes_7.png",
       "machineType": "PAL",
