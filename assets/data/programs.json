@@ -66,6 +66,15 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Attack of the Petscii Robots",
+      "displayName": "Attack of the\nPetscii Robots",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/f/free_petscii_robots/oricpetscii.dsk",
+      "fileType": "DISK",
+      "iconPath": "screenshots/A/Attack of the Petscii Robots/Attack_of_the_Petscii_Robots.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Attacker",
       "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FA%2FAttacker%2FATTACKER.tap",
       "fileType": "TAPE",
