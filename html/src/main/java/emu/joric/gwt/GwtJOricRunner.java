@@ -79,18 +79,21 @@ public class GwtJOricRunner extends JOricRunner {
     
     @Override
     public void start(AppConfigItem appConfigItem) {
-        // The URL Builder doesn't add a / before the #, so we do this ourselves.
-        String newURL = Window.Location.createUrlBuilder().setPath("/").setHash(null).buildString();
-        if (newURL.endsWith("/")) {
-            newURL += "#/";
-        } else {
-            newURL += "/#/";
+        // Do not change the URL if joric was invoked with "url" request param.
+        if (Window.Location.getParameter("url") == null) {
+            // The URL Builder doesn't add a / before the #, so we do this ourselves.
+            String newURL = Window.Location.createUrlBuilder().setPath("/").setHash(null).buildString();
+            if (newURL.endsWith("/")) {
+                newURL += "#/";
+            } else {
+                newURL += "/#/";
+            }
+            newURL += slugify(appConfigItem.getName());
+            
+            logToJSConsole("newURL: " + newURL);
+            
+            updateURLWithoutReloading(newURL);
         }
-        newURL += slugify(appConfigItem.getName());
-        
-        logToJSConsole("newURL: " + newURL);
-        
-        updateURLWithoutReloading(newURL);
         
         GwtProgramLoader programLoader = new GwtProgramLoader();
         programLoader.fetchProgram(appConfigItem, p -> createWorker(appConfigItem, p));
@@ -251,6 +254,7 @@ public class GwtJOricRunner extends JOricRunner {
         String newURL = Window.Location.createUrlBuilder()
                 .setPath("/")
                 .setHash(null)
+                .removeParameter("url")
                 .buildString();
         updateURLWithoutReloading(newURL);
     }
