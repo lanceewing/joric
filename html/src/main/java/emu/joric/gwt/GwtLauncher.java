@@ -43,6 +43,7 @@ public class GwtLauncher extends GwtApplication {
             } else {
                 // JOric also supports loading from a provided URL.
                 String programUrl = Window.Location.getParameter("url");
+                logToJSConsole("programUrl: " + programUrl);
                 if ((programUrl != null) && (!programUrl.trim().equals(""))) {
                     if (isProgramURLValid(programUrl)) {
                         argsMap.put("url", programUrl);
@@ -51,7 +52,8 @@ public class GwtLauncher extends GwtApplication {
                         String cleanURL = Window.Location.createUrlBuilder()
                                 .removeParameter("url")
                                 .buildString();
-                        Window.Location.replace(cleanURL);
+                        //Window.Location.replace(cleanURL);
+                        logToJSConsole("cleanURL: " + cleanURL);
                     }
                 }
             }
@@ -69,6 +71,7 @@ public class GwtLauncher extends GwtApplication {
         String lcProgramURL = url.toLowerCase();
         if ((lcProgramURL.endsWith(".dsk")) || (lcProgramURL.endsWith(".tap"))) {
             // If the extension looks fine, then check if the URL itself is valid.
+            logToJSConsole("Program URL ends with valid extension. Checking URL itself...");
             return isURLValid(url);
         } else {
             if (lcProgramURL.endsWith(".zip")) {
@@ -87,6 +90,7 @@ public class GwtLauncher extends GwtApplication {
             new URL(string);
             return true;
         } catch (err) {
+            console.log("err: " + err);
             return false;
         }
     }-*/;
