@@ -162,8 +162,8 @@ public class MachineScreen implements Screen {
 
     protected Touchpad createTouchpad(int size) {
         Skin touchpadSkin = new Skin();
-        touchpadSkin.add("touchBackground", new Texture("png/touchBackground.png"));
-        touchpadSkin.add("touchKnob", new Texture("png/touchKnob.png"));
+        touchpadSkin.add("touchBackground", new Texture("png/joystick_background.png"));
+        touchpadSkin.add("touchKnob", new Texture("png/joystick_knob.png"));
         TouchpadStyle touchpadStyle = new TouchpadStyle();
         Drawable touchBackground = touchpadSkin.getDrawable("touchBackground");
         Drawable touchKnob = touchpadSkin.getDrawable("touchKnob");
