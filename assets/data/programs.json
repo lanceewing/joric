@@ -117,7 +117,7 @@
     },
     {
       "name": "Buggy Boy",
-      "filePath": "https://cdn.oric.org//games/software//l/lcp2004/lcp2004.dsk",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org//games/software//l/lcp2004/lcp2004.dsk",
       "fileType": "DISK",
       "iconPath": "screenshots/B/Buggy Boy/Buggy_Boy.png",
       "machineType": "PAL",
