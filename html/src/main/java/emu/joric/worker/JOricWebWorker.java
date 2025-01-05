@@ -106,7 +106,6 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
         int totalDataLength = programDataBuffer.byteLength();
         if (totalDataLength > programOffset) {
             int programLength = (totalDataLength - programOffset);
-            logToJSConsole("Decoding program data of size: " + programLength);
             byte[] programData = extractBytesFromArrayBuffer(programDataBuffer,
                     programOffset, programLength);
             program = new Program();

@@ -44,7 +44,15 @@ public class GwtLauncher extends GwtApplication {
                 // JOric also supports loading from a provided URL.
                 String programUrl = Window.Location.getParameter("url");
                 if ((programUrl != null) && (!programUrl.trim().equals(""))) {
-                    argsMap.put("url", programUrl);
+                    if (isProgramURLValid(programUrl)) {
+                        argsMap.put("url", programUrl);
+                    } else {
+                        // Remove the url param if the value is not valid.
+                        String cleanURL = Window.Location.createUrlBuilder()
+                                .removeParameter("url")
+                                .buildString();
+                        Window.Location.replace(cleanURL);
+                    }
                 }
             }
         }
@@ -56,6 +64,32 @@ public class GwtLauncher extends GwtApplication {
                 new GwtAYPSG());
         return new JOric(joricRunner, gwtDialogHandler, argsMap);
     }
+    
+    private boolean isProgramURLValid(String url) {
+        String lcProgramURL = url.toLowerCase();
+        if ((lcProgramURL.endsWith(".dsk")) || (lcProgramURL.endsWith(".tap"))) {
+            // If the extension looks fine, then check if the URL itself is valid.
+            return isURLValid(url);
+        } else {
+            if (lcProgramURL.endsWith(".zip")) {
+                logToJSConsole("Sorry, JOric does not support ZIP files yet, but will do soon.");
+            } else if (lcProgramURL.endsWith(".tgz")) {
+                logToJSConsole("Sorry, JOric does not support tgz files.");
+            } else {
+                logToJSConsole("Sorry, the URL provided does not appear to be for a recognised Oric program file format.");
+            }
+            return false;
+        }
+    }
+    
+    private final native boolean isURLValid(String url)/*-{
+        try {
+            new URL(string);
+            return true;
+        } catch (err) {
+            return false;
+        }
+    }-*/;
     
     private final native void logToJSConsole(String message)/*-{
         console.log(message);
