@@ -43,7 +43,7 @@ public class GwtLauncher extends GwtApplication {
             } else {
                 // JOric also supports loading from a provided URL.
                 String programUrl = Window.Location.getParameter("url");
-                logToJSConsole("programUrl: " + programUrl);
+                logToJSConsole("Attempting to load program from URL: " + programUrl);
                 if ((programUrl != null) && (!programUrl.trim().equals(""))) {
                     if (isProgramURLValid(programUrl)) {
                         argsMap.put("url", programUrl);
@@ -52,8 +52,7 @@ public class GwtLauncher extends GwtApplication {
                         String cleanURL = Window.Location.createUrlBuilder()
                                 .removeParameter("url")
                                 .buildString();
-                        //Window.Location.replace(cleanURL);
-                        logToJSConsole("cleanURL: " + cleanURL);
+                        updateURLWithoutReloading(cleanURL);
                     }
                 }
             }
@@ -71,7 +70,6 @@ public class GwtLauncher extends GwtApplication {
         String lcProgramURL = url.toLowerCase();
         if ((lcProgramURL.endsWith(".dsk")) || (lcProgramURL.endsWith(".tap"))) {
             // If the extension looks fine, then check if the URL itself is valid.
-            logToJSConsole("Program URL ends with valid extension. Checking URL itself...");
             return isURLValid(url);
         } else {
             if (lcProgramURL.endsWith(".zip")) {
@@ -90,9 +88,14 @@ public class GwtLauncher extends GwtApplication {
             new URL(url);
             return true;
         } catch (err) {
-            console.log("Sorry, there was an error validating the program URL: " + err);
+            console.log("Sorry, the program URL does not appear to be well formed.");
             return false;
         }
+    }-*/;
+    
+    // NOTE: This version does not add anything to the history.
+    private static native void updateURLWithoutReloading(String newURL) /*-{
+        $wnd.history.replaceState(newURL, "", newURL);
     }-*/;
     
     private final native void logToJSConsole(String message)/*-{
