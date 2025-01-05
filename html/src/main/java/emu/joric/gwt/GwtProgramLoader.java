@@ -11,7 +11,7 @@ public class GwtProgramLoader implements ProgramLoader {
 
     @Override
     public void fetchProgram(AppConfigItem appConfigItem, Consumer<Program> programConsumer) {
-        logToJSConsole("Fetching program " + appConfigItem.getName());
+        logToJSConsole("Fetching program '" + appConfigItem.getName() + "'");
         
         Program program = null;
         if ((appConfigItem.getFileType() != null) && (appConfigItem.getFileType().length() > 0)) {

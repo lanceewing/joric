@@ -90,8 +90,6 @@ public class GwtJOricRunner extends JOricRunner {
             }
             newURL += slugify(appConfigItem.getName());
             
-            logToJSConsole("newURL: " + newURL);
-            
             updateURLWithoutReloading(newURL);
         }
         
