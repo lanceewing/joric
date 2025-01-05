@@ -31,8 +31,6 @@ public class GwtLauncher extends GwtApplication {
         Map<String, String> argsMap = new HashMap<>();
         
         String urlPath = Window.Location.getPath();
-        logToJSConsole("urlPath: " + urlPath);
-        logToJSConsole("url param: " + Window.Location.getParameter("url"));
         
         // JOric supports loading games with a hash path.
         if ("/".equals(urlPath) || "".equals(urlPath)) {
@@ -45,7 +43,6 @@ public class GwtLauncher extends GwtApplication {
             } else {
                 // JOric also supports loading from a provided URL.
                 String programUrl = Window.Location.getParameter("url");
-                logToJSConsole("programUrl:"  + programUrl);
                 if ((programUrl != null) && (!programUrl.trim().equals(""))) {
                     argsMap.put("url", programUrl);
                 }

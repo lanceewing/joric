@@ -79,10 +79,7 @@ public class JOric extends Game {
                 String programUrl = args.get("url");
                 String lcProgramUrl = programUrl.toLowerCase();
                 
-                logToJSConsole("Found url arg: " + lcProgramUrl);
-                
                 if ((lcProgramUrl.endsWith(".dsk")) || lcProgramUrl.endsWith(".tap")) {
-                    logToJSConsole("Building AppConfigItem");
                     AppConfigItem adhocProgram = new AppConfigItem();
                     adhocProgram.setName("Adhoc Oric Program");
                     adhocProgram.setFilePath("https://oric.games/programs?url=" + programUrl);
@@ -97,7 +94,6 @@ public class JOric extends Game {
         setScreen(homeScreen);
         
         if (appConfigItem != null) {
-            logToJSConsole("Auto starting program: " + appConfigItem.getName());
             homeScreen.processProgramSelection(appConfigItem);
         }
         
@@ -154,8 +150,4 @@ public class JOric extends Game {
         // Save the preferences when the emulator is closed.
         preferences.flush();
     }
-    
-    private final native void logToJSConsole(String message)/*-{
-        console.log(message);
-    }-*/;
 }
