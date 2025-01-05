@@ -273,7 +273,7 @@ public class GwtJOricRunner extends JOricRunner {
         
         clearUrl();
         
-        Gdx.graphics.setTitle("AGILE - The web-based Sierra On-Line Adventure Game Interpreter (AGI)");
+        Gdx.graphics.setTitle("JOric - The web-based Oric emulator built with libGDX");
     }
 
     @Override
