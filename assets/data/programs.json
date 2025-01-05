@@ -971,10 +971,11 @@
       "ram": "RAM_48K"
     },
     {
-      "name": "Zip n Zap [B]",
-      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FZ%2FZip%20n%20Zap%2FZip%20n%20Zap.dsk",
-      "fileType": "TAPE",
-      "iconPath": "",
+      "name": "Zip n Zap",
+      "displayName": "Zip n Zap",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org//games/software//z/zipnzap/ZIPNZAP.DSK",
+      "fileType": "DISK",
+      "iconPath": "screenshots/Z/Zip n Zap/Zip_n_Zap.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
