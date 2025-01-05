@@ -75,6 +75,20 @@ public class JOric extends Game {
                 // Start by checking to see if the programs.json has an entry.
                 appConfigItem = homeScreen.getAppConfigItemByProgramUri(args.get("uri"));
             }
+            else if (args.containsKey("url")) {
+                String programUrl = args.get("url");
+                String lcProgramUrl = programUrl.toLowerCase();
+                
+                if ((lcProgramUrl.endsWith(".dsk")) || lcProgramUrl.endsWith(".tap")) {
+                    AppConfigItem adhocProgram = new AppConfigItem();
+                    adhocProgram.setName("Adhoc Oric Program");
+                    adhocProgram.setFilePath("https://oric.games/programs?url=" + programUrl);
+                    adhocProgram.setMachineType("PAL");
+                    adhocProgram.setRam("RAM_48K");
+                    adhocProgram.setFileType(lcProgramUrl.endsWith(".dsk")? "DISK" : "TAPE");
+                    appConfigItem = adhocProgram;
+                }
+            }
         }
         
         setScreen(homeScreen);

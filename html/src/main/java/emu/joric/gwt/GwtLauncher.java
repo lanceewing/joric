@@ -40,6 +40,12 @@ public class GwtLauncher extends GwtApplication {
                     String programId = hash.substring(2);
                     argsMap.put("uri", programId);
                 }
+            } else {
+                // JOric also supports loading from a provided URL.
+                String programUrl = Window.Location.getParameter("url");
+                if ((programUrl != null) && (!programUrl.trim().equals(""))) {
+                    argsMap.put("url", programUrl);
+                }
             }
         }
         
