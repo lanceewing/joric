@@ -18,7 +18,7 @@ export async function onRequest(context) {
             return new Response("Missing target URL.", { status: 400 });
         }
 
-        if ((url.origin == "https://oric.games") && 
+        if (((url.origin == "https://oric.games") || (url.origin == "https://agile.agifans.com")) && 
             (targetUrl.startsWith("https://www.defence-force.org/") || 
              targetUrl.startsWith("https://cdn.oric.org/"))) {
 
