@@ -161,20 +161,20 @@ public class GwtJOricRunner extends JOricRunner {
         // all SharedArrayBuffer objects to the webworker.
         GwtKeyboardMatrix gwtKeyboardMatrix = (GwtKeyboardMatrix)keyboardMatrix;
         GwtPixelData gwtPixelData = (GwtPixelData)pixelData;
-        // TODO: Add PSG.
+        gwtPixelData.clearPixels();
+        GwtAYPSG gwtPSG = (GwtAYPSG)psg;
         JavaScriptObject keyMatrixSAB = gwtKeyboardMatrix.getSharedArrayBuffer();
         JavaScriptObject pixelDataSAB = gwtPixelData.getSharedArrayBuffer();
-        // TODO: Add PSG.
-        JavaScriptObject audioDataSAB = null;
+        JavaScriptObject audioDataSAB = gwtPSG.getSharedArrayBuffer();
         
         // We currently send one message to Initialise, using the SharedArrayBuffers,
         // then another message to Start the machine with the given game data. The 
         // game data is "transferred", whereas the others are not but rather shared.
         worker.postObject("Initialise", createInitialiseObject(
                 keyMatrixSAB, 
-                pixelDataSAB));
+                pixelDataSAB,
+                audioDataSAB));
         worker.postArrayBufferAndObject("Start", 
-                // TODO: Include ROMS. Need encoder/decoder for ROMs and program.
                 programArrayBuffer,
                 createStartObject(
                         appConfigItem.getName(),
@@ -183,6 +183,8 @@ public class GwtJOricRunner extends JOricRunner {
                         appConfigItem.getMachineType(),
                         appConfigItem.getRam())
                 );
+        
+        psg.resumeSound();
     }
     
     /**
@@ -191,15 +193,18 @@ public class GwtJOricRunner extends JOricRunner {
      * 
      * @param keyMatrixSAB 
      * @param pixelDataSAB 
+     * @param audioDataSAB 
      * 
      * @return The created object.
      */
     private native JavaScriptObject createInitialiseObject(
             JavaScriptObject keyMatrixSAB, 
-            JavaScriptObject pixelDataSAB)/*-{
+            JavaScriptObject pixelDataSAB,
+            JavaScriptObject audioDataSAB)/*-{
         return { 
             keyMatrixSAB: keyMatrixSAB,
-            pixelDataSAB: pixelDataSAB
+            pixelDataSAB: pixelDataSAB,
+            audioDataSAB: audioDataSAB
         };
     }-*/;
     
@@ -262,7 +267,7 @@ public class GwtJOricRunner extends JOricRunner {
         // Kill off the web worker immediately. Ensure that any playing sound is stopped.
         paused = false;
         worker.terminate();
-        // TODO: Stop sound processing.
+        psg.pauseSound();
         stopped = true;
     }
     

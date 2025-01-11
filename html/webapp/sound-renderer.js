@@ -31,10 +31,11 @@ class RingBuffer {
      * are available.
      * 
      * @param {Float32Array} elements The array to pop the items into.
+	 * @param {number} [offset=0] Optional offset. Defaults to 0.
      * 
      * @return The actual number of items that were popped.
      */
-    pop(elements) {
+    pop(elements, offset = 0) {
         const rd = Atomics.load(this.read_ptr, 0);
         const wr = Atomics.load(this.write_ptr, 0);
 
@@ -118,7 +119,7 @@ class SoundRenderer extends AudioWorkletProcessor {
      */
     onmessage(event) {
         // Receive the SharedArrayBuffer from the UI thread.
-        const { audioBufferSAB } = event;
+        const { audioBufferSAB } = event.data;
         
         this.sampleSharedQueue = new RingBuffer(audioBufferSAB);
         

@@ -16,7 +16,6 @@ import emu.joric.gwt.GwtKeyboardMatrix;
 import emu.joric.gwt.GwtPixelData;
 import emu.joric.gwt.GwtProgramLoader;
 import emu.joric.memory.RamType;
-import emu.joric.util.StringUtils;
 
 public class JOricWebWorker extends DedicatedWorkerEntryPoint implements MessageHandler {
 
@@ -61,10 +60,10 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
             case "Initialise":
                 JavaScriptObject keyMatrixSAB = getNestedObject(eventObject, "keyMatrixSAB");
                 JavaScriptObject pixelDataSAB = getNestedObject(eventObject, "pixelDataSAB");
+                JavaScriptObject audioDataSAB = getNestedObject(eventObject, "audioDataSAB");
                 keyboardMatrix = new GwtKeyboardMatrix(keyMatrixSAB);
                 pixelData = new GwtPixelData(pixelDataSAB);
-                // TODO: Add PSG. Audio frame array.
-                psg = new GwtAYPSG();
+                psg = new GwtAYPSG(audioDataSAB);
                 break;
                 
             case "Start":
