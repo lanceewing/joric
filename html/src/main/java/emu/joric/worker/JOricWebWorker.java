@@ -49,8 +49,11 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
      */
     private boolean warpSpeed;
     
-    private long lastTime;
+    private double lastTime = -1;
     private long deltaTime;
+    
+    private double startTime;
+    private long cycleCount;
     
     @Override
     public void onMessage(MessageEvent event) {
@@ -80,8 +83,13 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
                 nanosPerFrame = (1000000000 / machineType.getFramesPerSecond());
                 machine = new Machine(psg, keyboardMatrix, pixelData);
                 machine.init(basicRom, microdiscRom, program, machineType, ramType);
-                lastTime = TimeUtils.nanoTime() - nanosPerFrame;
+                // TODO: lastTime = TimeUtils.nanoTime() - nanosPerFrame;
                 performAnimationFrame(0);
+                break;
+                
+            case "AudioWorkletReady":
+                logToJSConsole("Enabling PSG sample writing...");
+                psg.enableWriteSamples();
                 break;
                 
             default:
@@ -142,6 +150,66 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
     }
     
     public void performAnimationFrame(double timestamp) {
+        // TODO: Instead of using currentTime, use availableRead up to 3072.
+        
+        // Audio currentTime is in seconds, so multiply by 1000 to get ms.
+        double currentAudioTime = psg.getSampleSharedQueue().getCurrentTime() * 1000;
+        
+        // Emulate up to 140000 cycles ahead of audio time.
+        timestamp = (currentAudioTime > 0? (currentAudioTime + 140) : timestamp);
+        
+        if (lastTime >= 0) {
+            double elapsedTime = (timestamp - startTime);
+            long expectedCycleCount = Math.round(elapsedTime * 1000);
+            
+            if ((currentAudioTime > 0) && (psg.isWriteSamplesEnabled())) {
+                // If the AudioWorklet is running, then adjust expected cycle count
+                // to a value that would leave the available samples in the queue 
+                // at a roughly fixed number. This is to avoid under or over generating
+                // samples, being always a given number of samples ahead in the buffer.
+                int currentBufferSize = psg.getSampleSharedQueue().availableRead();
+                int samplesToGenerate = (currentBufferSize >= 3072? 0 : 3072 - currentBufferSize);
+                
+                long cyclesToGenerateSamples = (int)(samplesToGenerate * GwtAYPSG.CYCLES_PER_SAMPLE);
+                expectedCycleCount = cycleCount + cyclesToGenerateSamples;
+            }
+            
+            // Emulate the required number of cycles.
+            do {
+                machine.emulateCycle();
+                cycleCount++;
+            } while (cycleCount <= expectedCycleCount);
+            
+        }
+        
+        lastTime = timestamp;
+        
+        requestNextAnimationFrame();
+    }
+    
+    public void performAnimationFrame3(double timestamp) {
+        // TODO: Decide between passed in timestamp and performance.now()
+        timestamp = getPerformanceNowTimestamp();
+        
+        if (lastTime >= 0) {
+            float deltaTime = (float)(timestamp - lastTime);
+            
+            // There are 1,000,000 cycles per second, so the delta, which is in
+            // milliseconds, so deltaTime * 1000 is the number of cycles to emulate.
+            // TODO: Should it round the value, either up or down.
+            long cyclesToEmulate = Math.round(deltaTime * 1000);
+            do {
+                machine.emulateCycle();
+                cyclesToEmulate--;
+            } while (cyclesToEmulate > 0);
+        }
+        
+        lastTime = timestamp;
+        
+        requestNextAnimationFrame();
+    }
+    
+    public void performAnimationFrame2(double timestamp) {
         // Calculate the time since the last call.
         long currentTime = TimeUtils.nanoTime();
         deltaTime += (currentTime - lastTime);
@@ -177,6 +245,10 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
         $self.requestAnimationFrame($self.performAnimationFrame);
     }-*/;
 
+    private native double getPerformanceNowTimestamp()/*-{
+        return performance.now();
+    }-*/;
+    
     private native String getEventType(JavaScriptObject obj)/*-{
         return obj.name;
     }-*/;

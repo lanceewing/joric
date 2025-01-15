@@ -28,7 +28,7 @@ public class SharedQueue {
         // extra 8 bytes are for the write and read pointers, so that they also are
         // shared by both ends.
         var BYTES_PER_ELEMENT = 4;
-        var bytes = 8 + (capacity + 1) * BYTES_PER_ELEMENT;
+        var bytes = 16 + (capacity + 1) * BYTES_PER_ELEMENT;
         return new SharedArrayBuffer(bytes);
     }-*/;
     
@@ -48,11 +48,12 @@ public class SharedQueue {
         // -4 for the read ptr (uint32_t offsets)
         // capacity counts the empty slot to distinguish between full and empty.
         var BYTES_PER_ELEMENT = 4;
-        this._capacity = (sab.byteLength - 8) / BYTES_PER_ELEMENT;
+        this._capacity = (sab.byteLength - 16) / BYTES_PER_ELEMENT;
         this.buf = sab;
         this.write_ptr = new Uint32Array(this.buf, 0, 1);
         this.read_ptr = new Uint32Array(this.buf, 4, 1);
-        this.storage = new Float32Array(this.buf, 8, this._capacity);
+        this.currentTime = new Float64Array(this.buf, 8, 1);
+        this.storage = new Float32Array(this.buf, 16, this._capacity);
     }-*/;
     
     /**
@@ -160,7 +161,23 @@ public class SharedQueue {
         return this._capacity - 1;
     }-*/;
     
+    /**
+     * @return The number of elements available for reading. This can be late, and
+     * report less elements that is actually in the queue, when something has just
+     * been enqueued.
+     */
+    public native int availableRead()/*-{
+        var rd = Atomics.load(this.read_ptr, 0);
+        var wr = Atomics.load(this.write_ptr, 0);
+        return this.@emu.joric.gwt.SharedQueue::_available_read(II)(rd, wr);
+    }-*/;
     
+    /**
+     * @return The currently stored value for the currentTime field.
+     */
+    public native double getCurrentTime()/*-{
+        return this.currentTime[0];
+    }-*/;
     
     /**
      * @return Number of elements available for reading, given a read and write
@@ -169,7 +186,7 @@ public class SharedQueue {
     private native int _available_read(int rd, int wr)/*-{
         return (wr + (this.@emu.joric.gwt.SharedQueue::_storage_capacity()()) - rd) % (this.@emu.joric.gwt.SharedQueue::_storage_capacity()());
     }-*/;
-
+    
     /**
      * @return Number of elements available from writing, given a read and write
      * pointer.

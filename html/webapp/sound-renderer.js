@@ -7,8 +7,10 @@
  * Original JS code: https://github.com/padenot/ringbuf.js/blob/main/js/ringbuf.js
  */
 class RingBuffer {
-  
+    
     /**
+     * Constructor for RingBuffer.
+     * 
      * @param {*} sab The SharedArrayBuffer to use for storage. 
      */
     constructor(sab) {
@@ -18,11 +20,12 @@ class RingBuffer {
         // -4 for the read ptr (uint32_t offsets)
         // capacity counts the empty slot to distinguish between full and empty.
         var BYTES_PER_ELEMENT = 4;
-        this._capacity = (sab.byteLength - 8) / BYTES_PER_ELEMENT;
+        this._capacity = (sab.byteLength - 16) / BYTES_PER_ELEMENT;
         this.buf = sab;
         this.write_ptr = new Uint32Array(this.buf, 0, 1);
         this.read_ptr = new Uint32Array(this.buf, 4, 1);
-        this.storage = new Float32Array(this.buf, 8, this._capacity);
+        this.currentTime = new Float64Array(this.buf, 8, 1);
+        this.storage = new Float32Array(this.buf, 16, this._capacity);
     }
 
     /**
@@ -31,7 +34,7 @@ class RingBuffer {
      * are available.
      * 
      * @param {Float32Array} elements The array to pop the items into.
-	 * @param {number} [offset=0] Optional offset. Defaults to 0.
+     * @param {number} [offset=0] Optional offset. Defaults to 0.
      * 
      * @return The actual number of items that were popped.
      */
@@ -55,7 +58,50 @@ class RingBuffer {
         return to_read;
     }
 
-    // private methods //
+    /**
+     * @return The number of elements available for reading. This can be late, and
+     * report less elements that is actually in the queue, when something has just
+     * been enqueued.
+     */
+    availableRead() {
+        const rd = Atomics.load(this.read_ptr, 0);
+        const wr = Atomics.load(this.write_ptr, 0);
+        return this._available_read(rd, wr);
+    }
+    
+    /**
+     * @return True if the ring buffer is empty false otherwise. This can be late
+     * on the reader side: it can return true even if something has just been
+     * pushed.
+     */
+    empty() {
+        const rd = Atomics.load(this.read_ptr, 0);
+        const wr = Atomics.load(this.write_ptr, 0);
+        
+        return wr === rd;
+    }
+
+    /**
+     * @return True if the ring buffer is full, false otherwise. This can be late
+     * on the write side: it can return true when something has just been popped.
+     */
+    full() {
+        const rd = Atomics.load(this.read_ptr, 0);
+        const wr = Atomics.load(this.write_ptr, 0);
+        
+        return (wr + 1) % this._storage_capacity() === rd;
+    }
+
+    /**
+     * Sets the currentTime field to the given value.
+     * 
+     * @param {Number} currentTime The value to set the currentTime field to.
+     */
+    setCurrentTime(currentTime) {
+        this.currentTime[0] = currentTime;
+    }
+
+    // private methods
 
     /**
      * @return Number of elements available for reading, given a read and write
@@ -100,11 +146,23 @@ class RingBuffer {
  */
 class SoundRenderer extends AudioWorkletProcessor {
     
+    // To output 22050 samples per second, 128 each call.
+    static CALLS_PER_SECOND = (22050 / 128);
+    
+    // The number of calls since the last debug logging reset.
+    callCount = 0;
+    
+    startTime = 0;
+    
+    deltaCount = 0;
+    
     /**
-	 * Constructor for SoundRenderer.
-	 */
+     * Constructor for SoundRenderer.
+     */
     constructor() {
         super();
+        
+        this.startTime = Date.now();
         
         // Set to true after the SharedArrayBuffer is received.
         this.ready = false;
@@ -115,13 +173,16 @@ class SoundRenderer extends AudioWorkletProcessor {
     /**
      * Used to receive the SharedArrayBuffer from which it will read input data.
      * 
-     * @param {*} event 
+     * @param {MessageEvent} event 
      */
     onmessage(event) {
         // Receive the SharedArrayBuffer from the UI thread.
         const { audioBufferSAB } = event.data;
         
         this.sampleSharedQueue = new RingBuffer(audioBufferSAB);
+        
+        // Tells the AudioWorkletNode that we're ready now for sample data.
+        this.port.postMessage({ready: true});
         
         // Let the process() method know that it can start reading.
         this.ready = true;
@@ -139,16 +200,52 @@ class SoundRenderer extends AudioWorkletProcessor {
      * @param outputs An array of outputs that is similar to the inputs parameter in structure. It is intended to be filled during the execution of the process() method. Each of the output channels is filled with zeros by default — the processor will output silence unless the output arrays are modified.
      */
     process(inputs, outputs) {
+        let timeThisCall = Date.now();
         
         // The inputs is ignored. We get up to samples from the ring buffer instead.
         // We have only one output, with one channel (mono), sample rate 22050.
         // Sample values are float values between -1 and 1.
         
+        // (currentFrame / currentTime) = 22050, i.e. the sampleRate
+        
         if (this.ready) {
-			// This will read up to the length of the channel array, usually 128. If
-			// there isn't that many samples, then it populates as much as it can and
-			// leaves the rest at 0, which would be silence.
-            this.sampleSharedQueue.pop(outputs[0][0]);
+            
+            // Set the audio context currentTime in the SharedArrayBuffer.
+            this.sampleSharedQueue.setCurrentTime(currentTime);
+        
+            // This will read up to the length of the channel array, usually 128. If
+            // there isn't that many samples, then it populates as much as it can and
+            // leaves the rest at 0, which would be silence.
+            let bytesPopped = this.sampleSharedQueue.pop(outputs[0][0]);
+            
+            if (bytesPopped < 128) {
+                console.log("Insufficient bytes to fill audio output: " + bytesPopped);
+            }
+            
+            this.deltaCount++;
+            
+            if (outputs[0][0].length != 128) {
+                console.log("Output sample array is longer than 128!");
+            }
+            
+            // TODO: Set CYCLES_PER_SAMPLE in SharedArrayBuffer based on consumption rate.
+            
+            if (this.callCount++ >= SoundRenderer.CALLS_PER_SECOND) {
+                this.callCount = 0;
+                
+                // TODO: Reset the startTime when new game starts.
+                
+                // TODO: Store currentTime in the shared array buffer, as a new field.
+                
+                // TODO: Machine should fall back on performance.now() if currentTime not set.
+                
+                console.log("Available to read = " + this.sampleSharedQueue.availableRead() + 
+                            ", output array len = " + outputs[0][0].length +
+                            ", currentTime = " + currentTime + 
+                            ", elapsedTime = " + ((timeThisCall - this.startTime) / 1000) +
+                            ", average delta = " + ((timeThisCall - this.startTime) / this.deltaCount) +
+                            ", output rate = " + (currentFrame / currentTime));
+            }
         }
 
         // Returning true tells audio thread we're still outputing.

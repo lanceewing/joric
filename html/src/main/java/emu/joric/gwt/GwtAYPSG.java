@@ -1,5 +1,6 @@
 package emu.joric.gwt;
 
+import com.badlogic.gdx.utils.TimeUtils;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.typedarrays.shared.Float32Array;
 import com.google.gwt.typedarrays.shared.TypedArrays;
@@ -13,9 +14,10 @@ public class GwtAYPSG implements AYPSG {
 
     // The Oric runs at 1 MHz.
     private static final int CLOCK_1MHZ = 1000000;
-    private static final int SAMPLE_RATE = 22050; // 44100
+    private static final int SAMPLE_RATE = 22050;
     private static final int CYCLES_PER_SECOND = 1000000;
-    private static final float CYCLES_PER_SAMPLE = ((float) CYCLES_PER_SECOND / (float) SAMPLE_RATE);
+    
+    public static final double CYCLES_PER_SAMPLE = ((float) CYCLES_PER_SECOND / (float) SAMPLE_RATE);
 
     // Not entirely sure what these volume levels should be. With LEVEL_DIVISOR set
     // to 4, and volumes A, B, and C all at 15, then max sample is at 32760, which 
@@ -70,11 +72,21 @@ public class GwtAYPSG implements AYPSG {
 
     private Float32Array sampleBuffer;
     private int sampleBufferOffset = 0;
-    private float cyclesToNextSample;
+    private double cyclesToNextSample;
     private SharedQueue sampleSharedQueue;
     
+    // TODO: Remove these after debugging timing issue.
+    private long cycleCount;
+    private long startTime;
+    private long sampleCount;
+    
+    private long origAvailable;
+    private long lastAvailable;
+    
+    private boolean writeSamplesEnabled;
+    
     private PSGAudioWorklet audioWorklet;
-
+    
     /**
      * The AY-3-8912 in the Oric gets its data from the 6522 VIA chip.
      */
@@ -82,10 +94,12 @@ public class GwtAYPSG implements AYPSG {
 
     /**
      * Constructor for GwtAYPSG (invoked by the UI thread).
+     * 
+     * @param gwtJOricRunner 
      */
-    public GwtAYPSG() {
-        this(null);
-        initialiseAudioWorklet();
+    public GwtAYPSG(GwtJOricRunner gwtJOricRunner) {
+        this((JavaScriptObject)null);
+        initialiseAudioWorklet(gwtJOricRunner);
     }
 
     /**
@@ -94,6 +108,8 @@ public class GwtAYPSG implements AYPSG {
      * @param audioBufferSAB SharedArrayBuffer for the audio ring buffer.
      */
     public GwtAYPSG(JavaScriptObject audioBufferSAB) {
+        this.startTime = TimeUtils.millis();
+        
         if (audioBufferSAB == null) {
             // TODO: 22050 is probably too big. That is 1 second. Adjust after testing.
             audioBufferSAB = SharedQueue.getStorageForCapacity(22050);
@@ -105,7 +121,7 @@ public class GwtAYPSG implements AYPSG {
         this.sampleBuffer = TypedArrays.createFloat32Array(1024);
         this.sampleBufferOffset = 0;
     }
-
+    
     /**
      * Initialise the AY38912 PSG.
      * 
@@ -138,10 +154,35 @@ public class GwtAYPSG implements AYPSG {
     }
 
     /**
+     * Turns on sample writing to the sample buffer.
+     */
+    public void enableWriteSamples() {
+        writeSamplesEnabled = true;
+    }
+    
+    /**
+     * Returns whether the sample writing is currently enabled.
+     * 
+     * @return true if the sample writing is currently enabled, otherwise false.
+     */
+    public boolean isWriteSamplesEnabled() {
+        return writeSamplesEnabled;
+    }
+    
+    /**
+     * Turn off sample writing to the sample buffer.
+     */
+    public void disableWriteSamples() {
+        writeSamplesEnabled = false;
+    }
+    
+    /**
      * Emulates a single cycle of activity for the AY-3-8912. This involves
      * responding to the CA2 and CB2 lines coming in from the 6522 VIA chip
      */
     public void emulateCycle() {
+        cycleCount++;
+        
         // Bus Control 1 is connected to the VIA CA2 line in the Oric.
         busControl1 = via.getCa2();
 
@@ -167,8 +208,28 @@ public class GwtAYPSG implements AYPSG {
 
         // If enough cycles have elapsed since the last sample, then output another.
         if (--cyclesToNextSample <= 0) {
-            writeSample();
+            
             cyclesToNextSample += CYCLES_PER_SAMPLE;
+            
+            // No point writing samples until we know that the AudioWorklet is ready.
+            if (writeSamplesEnabled) {
+                writeSample();
+                
+                // TODO: Make the 3072 value dynamic/different.
+                
+                long available = sampleSharedQueue.availableRead();
+                if (available < 3072) {
+                    //if (available < lastAvailable) {
+                        cyclesToNextSample -= 0.1;
+                    //}
+                } else if (available > 3072) {
+                    //if (available > lastAvailable) {
+                        cyclesToNextSample += 0.1;
+                    //}
+                }
+                
+                lastAvailable = available;
+            }
         }
     }
 
@@ -186,19 +247,24 @@ public class GwtAYPSG implements AYPSG {
      */
     public void resumeSound() {
         if (sampleSharedQueue != null) {
-            logToJSConsole("Clearing sample queue...");
-            int totalCleared = 0;
-            int itemsRead = 0;
-            Float32Array data = TypedArrays.createFloat32Array(1024);
-            do {
-                itemsRead = sampleSharedQueue.pop(data);
-                totalCleared += itemsRead;
-            } while (itemsRead == 1024);
-            logToJSConsole("Cleared " + totalCleared + " old samples.");
+            if (!sampleSharedQueue.isEmpty()) {
+                logToJSConsole("Clearing sample queue...");
+                int totalCleared = 0;
+                int itemsRead = 0;
+                Float32Array data = TypedArrays.createFloat32Array(1024);
+                do {
+                    itemsRead = sampleSharedQueue.pop(data);
+                    totalCleared += itemsRead;
+                } while (itemsRead == 1024);
+                logToJSConsole("Cleared " + totalCleared + " old samples.");
+            }
         }
         if (audioWorklet != null) {
             logToJSConsole("Resuming PSGAudioWorker...");
             audioWorklet.resume();
+            if (audioWorklet.isReady()) {
+                audioWorklet.notifyAudioReady();
+            }
         }
     }
 
@@ -472,19 +538,37 @@ public class GwtAYPSG implements AYPSG {
         // Conversion to -1.0 to 1.0, which is what the AudioWorkletProcessor needs.
         sampleBuffer.set(sampleBufferOffset, ((sample - 16384.0f) / 16384.0f));
 
+        // Increment total sample count, so that we can keep in sync with cycle count.
+        sampleCount++;
+        
         // If the sample buffer is full, write it out to the shared queue.
         if ((sampleBufferOffset++) == sampleBuffer.length()) {
             sampleSharedQueue.push(sampleBuffer);
             sampleBufferOffset = 0;
+            
+            float elapsedTimeInSecs = (TimeUtils.millis() - this.startTime) / 1000.0f;
+            float cyclesPerSecond = cycleCount / elapsedTimeInSecs;
+            
+            //this.frameCount += sampleBuffer.length();
+            //logToJSConsole("GwtAYPSG - Sample rate = " + (frameCount / elapsedTimeInSecs) + 
+            //        ", Cycle rate = " + cyclesPerSecond);
+            
+            //logToJSConsole("GwtAYPSG - elapsedTimeInSecs = " + elapsedTimeInSecs + 
+            //        ", cycle rate = " + cyclesPerSecond + 
+            //        ", audio time = " + sampleSharedQueue.getCurrentTime());
         }
     }
 
+    public SharedQueue getSampleSharedQueue() {
+        return sampleSharedQueue;
+    }
+    
     JavaScriptObject getSharedArrayBuffer() {
         return sampleSharedQueue.getSharedArrayBuffer();
     }
 
-    private void initialiseAudioWorklet() {
-        this.audioWorklet = new PSGAudioWorklet(sampleSharedQueue);
+    private void initialiseAudioWorklet(GwtJOricRunner gwtJOricRunner) {
+        this.audioWorklet = new PSGAudioWorklet(sampleSharedQueue, gwtJOricRunner);
     }
     
     private final native void logToJSConsole(String message)/*-{

@@ -50,7 +50,6 @@ public abstract class JOricRunner {
     protected KeyboardMatrix keyboardMatrix;
     protected PixelData pixelData;
     protected AYPSG psg;
-    // TODO: Add audio buffer.
     
     protected boolean exit = false;
     protected boolean paused = true;

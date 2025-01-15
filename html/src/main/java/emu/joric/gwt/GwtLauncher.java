@@ -61,8 +61,7 @@ public class GwtLauncher extends GwtApplication {
         GwtDialogHandler gwtDialogHandler = new GwtDialogHandler();
         JOricRunner joricRunner = new GwtJOricRunner(
                 new GwtKeyboardMatrix(), 
-                new GwtPixelData(),
-                new GwtAYPSG());
+                new GwtPixelData());
         return new JOric(joricRunner, gwtDialogHandler, argsMap);
     }
     

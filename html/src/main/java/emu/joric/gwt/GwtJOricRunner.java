@@ -15,7 +15,6 @@ import emu.joric.KeyboardMatrix;
 import emu.joric.PixelData;
 import emu.joric.Program;
 import emu.joric.config.AppConfigItem;
-import emu.joric.sound.AYPSG;
 import emu.joric.worker.MessageEvent;
 import emu.joric.worker.MessageHandler;
 import emu.joric.worker.Worker;
@@ -42,10 +41,11 @@ public class GwtJOricRunner extends JOricRunner {
      * 
      * @param keyboardMatrix
      * @param pixelData
-     * @param psg
      */
-    public GwtJOricRunner(KeyboardMatrix keyboardMatrix, PixelData pixelData, AYPSG psg) {
-        super(keyboardMatrix, pixelData, psg);
+    public GwtJOricRunner(KeyboardMatrix keyboardMatrix, PixelData pixelData) {
+        super(keyboardMatrix, pixelData, null);
+        
+        psg = new GwtAYPSG(this);
         
         registerPopStateEventHandler();
     }
@@ -184,7 +184,7 @@ public class GwtJOricRunner extends JOricRunner {
                         appConfigItem.getRam())
                 );
         
-        psg.resumeSound();
+        gwtPSG.resumeSound();
     }
     
     /**
@@ -360,6 +360,10 @@ public class GwtJOricRunner extends JOricRunner {
     @Override
     public boolean isRunning() {
         return (worker != null);
+    }
+    
+    public Worker getCurrentWorker() {
+        return worker;
     }
     
     private final native void logToJSConsole(String message)/*-{
