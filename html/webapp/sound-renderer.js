@@ -216,26 +216,14 @@ class SoundRenderer extends AudioWorkletProcessor {
             // This will read up to the length of the channel array, usually 128. If
             // there isn't that many samples, then it populates as much as it can and
             // leaves the rest at 0, which would be silence.
-            let bytesPopped = this.sampleSharedQueue.pop(outputs[0][0]);
-            
-            if (bytesPopped < 128) {
-                console.log("Insufficient bytes to fill audio output: " + bytesPopped);
-            }
+            this.sampleSharedQueue.pop(outputs[0][0]);
             
             this.deltaCount++;
-            
-            if (outputs[0][0].length != 128) {
-                console.log("Output sample array is longer than 128!");
-            }
-            
-            // TODO: Set CYCLES_PER_SAMPLE in SharedArrayBuffer based on consumption rate.
             
             if (this.callCount++ >= SoundRenderer.CALLS_PER_SECOND) {
                 this.callCount = 0;
                 
                 // TODO: Reset the startTime when new game starts.
-                
-                // TODO: Store currentTime in the shared array buffer, as a new field.
                 
                 // TODO: Machine should fall back on performance.now() if currentTime not set.
                 
@@ -251,8 +239,6 @@ class SoundRenderer extends AudioWorkletProcessor {
         // Returning true tells audio thread we're still outputing.
         return true;
     }
-    
-    
 }
 
 registerProcessor("sound-renderer", SoundRenderer);

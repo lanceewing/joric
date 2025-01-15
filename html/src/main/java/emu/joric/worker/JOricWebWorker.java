@@ -188,7 +188,7 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
                 // at a roughly fixed number. This is to avoid under or over generating
                 // samples, being always a given number of samples ahead in the buffer.
                 int currentBufferSize = psg.getSampleSharedQueue().availableRead();
-                int samplesToGenerate = (currentBufferSize >= 3072? 0 : 3072 - currentBufferSize);
+                int samplesToGenerate = (currentBufferSize >= GwtAYPSG.SAMPLE_LATENCY? 0 : GwtAYPSG.SAMPLE_LATENCY - currentBufferSize);
                 long cyclesRequiredToGenerateSamples = (int)(samplesToGenerate * GwtAYPSG.CYCLES_PER_SAMPLE);
                 expectedCycleCount = cycleCount + cyclesRequiredToGenerateSamples;
             }

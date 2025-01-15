@@ -24,6 +24,9 @@ public class GwtAYPSG implements AYPSG {
     // The number of cycles it takes to generate a single sample.
     public static final double CYCLES_PER_SAMPLE = ((float) CYCLES_PER_SECOND / (float) SAMPLE_RATE);
 
+    // Number of samples to queue before being output to the audio hardware.
+    public static final int SAMPLE_LATENCY = 3072;
+    
     // Not entirely sure what these volume levels should be. With LEVEL_DIVISOR set
     // to 4, and volumes A, B, and C all at 15, then max sample is at 32760, which 
     // is just under the limit.
@@ -85,9 +88,6 @@ public class GwtAYPSG implements AYPSG {
     private long startTime;
     private long sampleCount;
     
-    private long origAvailable;
-    private long lastAvailable;
-    
     private boolean writeSamplesEnabled;
     
     private PSGAudioWorklet audioWorklet;
@@ -116,7 +116,6 @@ public class GwtAYPSG implements AYPSG {
         this.startTime = TimeUtils.millis();
         
         if (audioBufferSAB == null) {
-            // TODO: 22050 is probably too big. That is 1 second. Adjust after testing.
             audioBufferSAB = SharedQueue.getStorageForCapacity(22050);
         }
         this.sampleSharedQueue = new SharedQueue(audioBufferSAB);
@@ -219,21 +218,6 @@ public class GwtAYPSG implements AYPSG {
             // No point writing samples until we know that the AudioWorklet is ready.
             if (writeSamplesEnabled) {
                 writeSample();
-                
-                // TODO: Make the 3072 value dynamic/different.
-                
-                long available = sampleSharedQueue.availableRead();
-                if (available < 3072) {
-                    //if (available < lastAvailable) {
-                        cyclesToNextSample -= 0.1;
-                    //}
-                } else if (available > 3072) {
-                    //if (available > lastAvailable) {
-                        cyclesToNextSample += 0.1;
-                    //}
-                }
-                
-                lastAvailable = available;
             }
         }
     }
@@ -551,8 +535,8 @@ public class GwtAYPSG implements AYPSG {
             sampleSharedQueue.push(sampleBuffer);
             sampleBufferOffset = 0;
             
-            float elapsedTimeInSecs = (TimeUtils.millis() - this.startTime) / 1000.0f;
-            float cyclesPerSecond = cycleCount / elapsedTimeInSecs;
+            //float elapsedTimeInSecs = (TimeUtils.millis() - this.startTime) / 1000.0f;
+            //float cyclesPerSecond = cycleCount / elapsedTimeInSecs;
             
             //this.frameCount += sampleBuffer.length();
             //logToJSConsole("GwtAYPSG - Sample rate = " + (frameCount / elapsedTimeInSecs) + 
