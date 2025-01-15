@@ -10,6 +10,10 @@ import emu.joric.io.Via;
 import emu.joric.snap.Snapshot;
 import emu.joric.sound.AYPSG;
 
+/**
+ * GWT/HTML5/Web implementation of the AY-3-8912 interface. Uses the Web Audio API, 
+ * specifically an AudioWorklet.
+ */
 public class GwtAYPSG implements AYPSG {
 
     // The Oric runs at 1 MHz.
@@ -17,6 +21,7 @@ public class GwtAYPSG implements AYPSG {
     private static final int SAMPLE_RATE = 22050;
     private static final int CYCLES_PER_SECOND = 1000000;
     
+    // The number of cycles it takes to generate a single sample.
     public static final double CYCLES_PER_SAMPLE = ((float) CYCLES_PER_SECOND / (float) SAMPLE_RATE);
 
     // Not entirely sure what these volume levels should be. With LEVEL_DIVISOR set

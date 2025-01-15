@@ -17,6 +17,9 @@ import emu.joric.gwt.GwtPixelData;
 import emu.joric.gwt.GwtProgramLoader;
 import emu.joric.memory.RamType;
 
+/**
+ * Web worker that performs the actual emulation of the Oric machine.
+ */
 public class JOricWebWorker extends DedicatedWorkerEntryPoint implements MessageHandler {
 
     private DedicatedWorkerGlobalScope scope;
@@ -149,9 +152,26 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
         return appConfigItem;
     }
     
+    /**
+     * This method is the main emulator loop that is run for each animation frame. The
+     * web worker uses requestAnimationFrame to request that this method is called on 
+     * each frame. As this is GWT, it does so via a native method below. This particular
+     * implementation uses an approach where it only emulates as many cycles required to
+     * fill the sample buffer up to a certain number of samples, e.g. 3072. This value
+     * will be tweaked during testing on different browsers and devices to choose the 
+     * most appropriate. It needs to balance protecting against delays in the web worker
+     * generating samples, perhaps due to an animation frame being skipped, and not 
+     * introducing too much delay in the sound that is heard. A value of 3072 would be 
+     * a delay of 3072/22050*1000=139ms. That fraction of a second may not be noticeable
+     * but going much higher would become a perceivable latency/lag. In an ideal world,
+     * the web worker would write out 128 samples and the Web Audio thread would read
+     * that and output it immediately, but in reality both sides do sometimes pause
+     * slightly, and so we need a "buffer" of already prepared samples for the audio
+     * thread, thus the 3072 sample figure.
+     * 
+     * @param timestamp
+     */
     public void performAnimationFrame(double timestamp) {
-        // TODO: Instead of using currentTime, use availableRead up to 3072.
-        
         // Audio currentTime is in seconds, so multiply by 1000 to get ms.
         double currentAudioTime = psg.getSampleSharedQueue().getCurrentTime() * 1000;
         
@@ -169,9 +189,8 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
                 // samples, being always a given number of samples ahead in the buffer.
                 int currentBufferSize = psg.getSampleSharedQueue().availableRead();
                 int samplesToGenerate = (currentBufferSize >= 3072? 0 : 3072 - currentBufferSize);
-                
-                long cyclesToGenerateSamples = (int)(samplesToGenerate * GwtAYPSG.CYCLES_PER_SAMPLE);
-                expectedCycleCount = cycleCount + cyclesToGenerateSamples;
+                long cyclesRequiredToGenerateSamples = (int)(samplesToGenerate * GwtAYPSG.CYCLES_PER_SAMPLE);
+                expectedCycleCount = cycleCount + cyclesRequiredToGenerateSamples;
             }
             
             // Emulate the required number of cycles.
@@ -179,7 +198,6 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
                 machine.emulateCycle();
                 cycleCount++;
             } while (cycleCount <= expectedCycleCount);
-            
         }
         
         lastTime = timestamp;
@@ -187,8 +205,15 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
         requestNextAnimationFrame();
     }
     
-    public void performAnimationFrame3(double timestamp) {
-        // TODO: Decide between passed in timestamp and performance.now()
+    /**
+     * An alternative implementation of frame loop that emulates as many cycles as
+     * required to match the delta, where the delta is calculated based on the 
+     * performance.now() values (not the passed in timestamp).
+     * 
+     * @param timestamp
+     */
+    public void performAnimationFrameAlt3(double timestamp) {
+        // This is, in theory, a more accurate timestamp.
         timestamp = getPerformanceNowTimestamp();
         
         if (lastTime >= 0) {
@@ -196,7 +221,6 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
             
             // There are 1,000,000 cycles per second, so the delta, which is in
             // milliseconds, so deltaTime * 1000 is the number of cycles to emulate.
-            // TODO: Should it round the value, either up or down.
             long cyclesToEmulate = Math.round(deltaTime * 1000);
             do {
                 machine.emulateCycle();
@@ -209,6 +233,16 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
         requestNextAnimationFrame();
     }
     
+    /**
+     * Original implementation of the frame loop that uses the machine.update() method
+     * of the Machine, which emulates a complete video frame of data. This isn't ideal
+     * though, as it is difficult to keep the web worker in sync with the Web Audio 
+     * audio thread. It is easier to emulate a varying number of cycles based on how 
+     * many are required to catch up based on the current time, which is an approach 
+     * that the other two implementations above use.
+     * 
+     * @param timestamp
+     */
     public void performAnimationFrame2(double timestamp) {
         // Calculate the time since the last call.
         long currentTime = TimeUtils.nanoTime();

@@ -184,6 +184,7 @@ public class GwtJOricRunner extends JOricRunner {
                         appConfigItem.getRam())
                 );
         
+        // Resume sound output whenever a new instance of JOric is starting up.
         gwtPSG.resumeSound();
     }
     
