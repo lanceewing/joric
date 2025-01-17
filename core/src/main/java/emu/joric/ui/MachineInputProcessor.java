@@ -1,6 +1,7 @@
 package emu.joric.ui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Input.Buttons;
@@ -27,6 +28,22 @@ public class MachineInputProcessor extends InputAdapter {
      */
     private KeyboardType keyboardType;
 
+    /**
+     * The current alignment of the joystick on screen, if active, otherwise
+     * set to the OFF value.
+     */
+    private JoystickAlignment joystickAlignment = JoystickAlignment.OFF;
+    
+    /**
+     * Whether or not the speaker is currently active, i.e. sound is on.
+     */
+    private boolean speakerOn;
+    
+    /**
+     * The current offset from centre of the camera in the X direction.
+     */
+    private float cameraXOffset;
+    
     /**
      * Invoked by JOric whenever it would like to show a dialog, such as when it
      * needs the user to confirm an action, or to choose a file.
@@ -65,6 +82,16 @@ public class MachineInputProcessor extends InputAdapter {
     }
 
     /**
+     * The width of the screen/window before full screen mode was activated.
+     */
+    private int screenWidthBeforeFullScreen;
+    
+    /**
+     * The height of the screen/width before ful screen mode was activated.
+     */
+    private int screenHeightBeforeFullScreen;
+    
+    /**
      * Constructor for MachineInputProcessor.
      * 
      * @param machineScreen
@@ -77,8 +104,7 @@ public class MachineInputProcessor extends InputAdapter {
         this.viewportManager = ViewportManager.getInstance();
 
         // Initialise the touch info for max num of pointers (multi touch). We create
-        // these up
-        // front and reuse them so as to avoid garbage collection.
+        // these up front and reuse them so as to avoid garbage collection.
         this.touches = new TouchInfo[MAX_SIMULTANEOUS_TOUCH_EVENTS];
         for (int i = 0; i < MAX_SIMULTANEOUS_TOUCH_EVENTS; i++) {
             touches[i] = new TouchInfo();
@@ -150,67 +176,45 @@ public class MachineInputProcessor extends InputAdapter {
             if (keycode != null) {
                 processVirtualKeyboardKeyUp(keycode);
             }
-        } else if (keyboardType.equals(KeyboardType.MOBILE_ON_SCREEN)) {
-            // If the onscreen keyboard is being shown then if we receive a tap event, it
-            // won't be
-            // on the virtual keyboard but must therefore be outside it. So we hide the
-            // keyboard.
-            Gdx.input.setOnscreenKeyboardVisible(false);
-            keyboardType = KeyboardType.OFF;
-
-        } else if (!keyboardType.equals(KeyboardType.OFF)) {
-            // If rendered keyboard is being shown, and the tap isn't within the keyboard,
-            // but is
-            // instead above the close height, then we close it.
-            if (touchXY.y > keyboardType.getCloseHeight()) {
-                keyboardType = KeyboardType.OFF;
-            }
-
         } else {
             // TODO: Need to handle the magic numbers in this block in a better way.
             boolean keyboardClicked = false;
-            boolean joystickClicked = false;
             boolean backArrowClicked = false;
+            boolean fullScreenClicked = false;
+            boolean speakerClicked = false;
 
             if (viewportManager.isPortrait()) {
                 // Portrait.
-                if (touchXY.y < 130) {
-                    if (touchXY.x < 140) {
-                        joystickClicked = true;
-
-                    } else if (touchXY.x > (viewportManager.getWidth() - 145)) {
-                        // If not Android, then right area is Back button.
-                        if (Gdx.app.getType().equals(ApplicationType.Android)) {
-                            keyboardClicked = true;
-                        } else {
-                            backArrowClicked = true;
-                        }
+                if (touchXY.y < 135) {
+                    if (touchXY.x < 126) {
+                        fullScreenClicked = true;
+                    } else if (touchXY.x > (viewportManager.getWidth() - 126)) {
+                        backArrowClicked = true;
                     } else {
-                        // Mobile soft keyboard is only available in portrait mode (debug only)
-                        int midWidth = (int) (viewportManager.getWidth() - viewportManager.getWidth() / 2);
-                        if ((touchXY.x > (midWidth - 70)) && (touchXY.y < (midWidth + 70))) {
-                            if (Gdx.app.getType().equals(ApplicationType.Android)) {
-                                Gdx.input.setOnscreenKeyboardVisible(true);
-                                keyboardType = KeyboardType.MOBILE_ON_SCREEN;
-                            } else {
-                                keyboardClicked = true;
-                            }
+                        float thirdPos = (viewportManager.getWidth() / 3);
+                        float twoThirdPos = (viewportManager.getWidth() - (viewportManager.getWidth() / 3));
+                        if ((touchXY.x > (thirdPos - 42)) && (touchXY.x < (thirdPos + 84))) {
+                            speakerClicked = true;
+                        }
+                        else if ((touchXY.x > (twoThirdPos - 84)) && (touchXY.x < (twoThirdPos + 42))) {
+                            keyboardClicked = true;
                         }
                     }
                 }
             } else {
                 // Landscape.
                 int screenTop = (int) viewportManager.getHeight();
-                if (touchXY.y > (screenTop - 140)) {
-                    if (touchXY.x < 140) {
-                        joystickClicked = true;
-
-                    } else if (touchXY.x > (viewportManager.getWidth() - 150)) {
-                        keyboardClicked = true;
+                if (touchXY.y > (screenTop - 104)) {
+                    if (touchXY.x < 112) {
+                        speakerClicked = true;
+                    } else if (touchXY.x > (viewportManager.getWidth() - 112)) {
+                        fullScreenClicked = true;
                     }
-                } else if (touchXY.y < 140) {
-                    if (touchXY.x > (viewportManager.getWidth() - 150)) {
+                } else if (touchXY.y < 104) {
+                    if (touchXY.x > (viewportManager.getWidth() - 112)) {
                         backArrowClicked = true;
+                    } else if (touchXY.x < 112) {
+                        keyboardClicked = true;
                     }
                 }
             }
@@ -226,9 +230,35 @@ public class MachineInputProcessor extends InputAdapter {
 
             // TODO: Add back in after proper joystick implementation.
             //if (joystickClicked) {
-            //    keyboardType = KeyboardType.JOYSTICK;
+            //    // Rotate the joystick screen alignment.
+            //    joystickAlignment = joystickAlignment.rotateValue();
+            //    if (!viewportManager.isPortrait()) {
+            //        if (joystickAlignment.equals(JoystickAlignment.MIDDLE)) {
+            //            joystickAlignment = joystickAlignment.rotateValue();
+            //        }
+            //       if ((viewportManager.getOricScreenBase() > 0) || (viewportManager.getSidePaddingWidth() <= 64)) {
+            //            if (joystickAlignment.equals(JoystickAlignment.LEFT)) {
+            //                joystickAlignment = joystickAlignment.rotateValue();
+            //            }
+            //        }
+            //    }
             //}
 
+            if (speakerClicked) {
+                speakerOn = !speakerOn;
+                machineScreen.getJoricRunner().changeSound(speakerOn);
+            }
+            
+            if (fullScreenClicked) {
+                Boolean fullScreen = Gdx.graphics.isFullscreen();
+                if (fullScreen == true) {
+                    switchOutOfFullScreen();
+                }
+                else {
+                    switchIntoFullScreen();
+                }
+            }
+            
             if (backArrowClicked) {
                 if (Gdx.app.getType().equals(ApplicationType.Desktop) && Gdx.graphics.isFullscreen()) {
                     // Dialog won't show for desktop unless we exit full screen,
@@ -253,6 +283,29 @@ public class MachineInputProcessor extends InputAdapter {
         return true;
     }
 
+    /**
+     * Switches to full screen mode, storing the width and height beforehand so 
+     * that it can be restored when switching back.
+     */
+    public void switchIntoFullScreen() {
+        keyboardType = KeyboardType.OFF;
+        Graphics.DisplayMode currentMode = Gdx.graphics.getDisplayMode();
+        screenWidthBeforeFullScreen = Gdx.graphics.getWidth();
+        screenHeightBeforeFullScreen = Gdx.graphics.getHeight();
+        Gdx.graphics.setFullscreenMode(currentMode);
+    }
+    
+    /**
+     * Switches out of full screen mode back to the windowed mode, restoring the
+     * saved width and height.
+     */
+    public void switchOutOfFullScreen() {
+        if (screenWidthBeforeFullScreen > (screenHeightBeforeFullScreen * 1.32f)) {
+            keyboardType = KeyboardType.OFF;
+        }
+        Gdx.graphics.setWindowedMode(screenWidthBeforeFullScreen, screenHeightBeforeFullScreen);
+    }
+    
     /**
      * Called when a finger or the mouse was dragged.
      * 
@@ -301,7 +354,7 @@ public class MachineInputProcessor extends InputAdapter {
      * @param height The new screen height.
      */
     public void resize(int width, int height) {
-        if (keyboardType.isRendered() && !keyboardType.equals(KeyboardType.JOYSTICK)) {
+        if (keyboardType.isRendered()) {
             // Switch keyboard layout based on the orientation.
             keyboardType = (height > width ? KeyboardType.PORTRAIT : KeyboardType.LANDSCAPE);
         }
@@ -326,5 +379,60 @@ public class MachineInputProcessor extends InputAdapter {
     
     private void processVirtualKeyboardKeyUp(int keycode) {
         getKeyboardMatrix().keyUp(keycode & 0xFF);
+    }
+    
+    /**
+     * Gets the current joystick screen alignment, i.e. where to place it on the 
+     * screen (left aligned, middle aligned, right aligned, or turned off)
+     * 
+     * @return The current joystick screen alignment.
+     */
+    public JoystickAlignment getJoystickAlignment() {
+        return joystickAlignment;
+    }
+    
+    /**
+     * Sets the current joystick screen alignment, i.e. where to place it on the 
+     * screen (left aligned, middle aligned, right aligned, or turned off)
+     * 
+     * @param joystickAlignment
+     */
+    public void setJoystickAlignment(JoystickAlignment joystickAlignment) {
+        this.joystickAlignment = joystickAlignment;
+    }
+
+    public static enum JoystickAlignment {
+        OFF, RIGHT, MIDDLE, LEFT;
+        
+        JoystickAlignment rotateValue() {
+            return values()[(ordinal() + 1) % 4];
+        }
+    }
+
+    /**
+     * Returns whether the speaker is on or not.
+     * 
+     * @return
+     */
+    public boolean isSpeakerOn() {
+        return speakerOn;
+    }
+
+    /**
+     * Sets whether the speaker is on or not.
+     * 
+     * @param speakerOn
+     */
+    public void setSpeakerOn(boolean speakerOn) {
+        this.speakerOn = speakerOn;
+    }
+
+    /**
+     * Sets the current offset from centre of the camera in the X direction.
+     * 
+     * @param cameraXOffset The current offset from centre of the camera in the X direction.
+     */
+    public void setCameraXOffset(float cameraXOffset) {
+        this.cameraXOffset = cameraXOffset;
     }
 }

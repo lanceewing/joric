@@ -26,6 +26,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import emu.joric.config.AppConfigItem;
 import emu.joric.ui.DialogHandler;
 import emu.joric.ui.MachineInputProcessor;
+import emu.joric.ui.MachineInputProcessor.JoystickAlignment;
 import emu.joric.ui.ViewportManager;
 
 /**
@@ -79,9 +80,12 @@ public class MachineScreen implements Screen {
     private Map<MachineType, Texture[]> machineTypeTextures;
 
     // UI components.
+    private Texture muteIcon;
+    private Texture unmuteIcon;
     private Texture joystickIcon;
     private Texture keyboardIcon;
     private Texture backIcon;
+    private Texture fullScreenIcon;
 
     private ViewportManager viewportManager;
 
@@ -134,9 +138,12 @@ public class MachineScreen implements Screen {
 
         createScreenResourcesForMachineType(MachineType.PAL);
 
+        muteIcon = new Texture("png/mute_icon.png");
+        unmuteIcon = new Texture("png/unmute_icon.png");
         keyboardIcon = new Texture("png/keyboard_icon.png");
         joystickIcon = new Texture("png/joystick_icon.png");
         backIcon = new Texture("png/back_arrow.png");
+        fullScreenIcon = new Texture("png/full_screen.png");
 
         // Create the portrait and landscape joystick touchpads.
         portraitTouchpad = createTouchpad(300);
@@ -281,6 +288,7 @@ public class MachineScreen implements Screen {
     private void draw(float delta) {
         // Get the KeyboardType currently being used by the MachineScreenProcessor.
         KeyboardType keyboardType = machineInputProcessor.getKeyboardType();
+        JoystickAlignment joystickAlignment = machineInputProcessor.getJoystickAlignment();
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -303,47 +311,77 @@ public class MachineScreen implements Screen {
         batch.setProjectionMatrix(viewportManager.getCurrentCamera().combined);
         batch.enableBlending();
         batch.begin();
-        if (keyboardType.equals(KeyboardType.JOYSTICK)) {
-            if (viewportManager.isPortrait()) {
-                // batch.draw(keyboardType.getTexture(KeyboardType.LEFT), 0, 0);
-                batch.draw(keyboardType.getTexture(KeyboardType.RIGHT), viewportManager.getWidth() - 135, 0);
-            } else {
-                // batch.draw(keyboardType.getTexture(KeyboardType.LEFT), 0, 0, 201, 201);
-                batch.draw(keyboardType.getTexture(KeyboardType.RIGHT), viewportManager.getWidth() - 135, 0);
-            }
-        } else if (keyboardType.isRendered()) {
-            batch.setColor(c.r, c.g, c.b, keyboardType.getOpacity());
-            batch.draw(keyboardType.getTexture(), 0, keyboardType.getRenderOffset());
-        } else if (keyboardType.equals(KeyboardType.OFF)) {
-            // The keyboard and joystick icons are rendered only when an input type isn't
-            // showing.
-            batch.setColor(c.r, c.g, c.b, 0.5f);
-            if (viewportManager.isPortrait()) {
-                // TODO: Add back in after proper joystick implementation.
-                //batch.draw(joystickIcon, 0, 0);
-                if (Gdx.app.getType().equals(ApplicationType.Android)) {
-                    // Main Oric keyboard on the left.
-                    batch.draw(keyboardIcon, viewportManager.getWidth() - 145, 0);
-                    // Mobile keyboard for debug purpose. Wouldn't normally make this available.
-                    batch.setColor(c.r, c.g, c.b, 0.15f);
-                    batch.draw(keyboardIcon, viewportManager.getWidth() - viewportManager.getWidth() / 2 - 70, 0);
-
-                } else {
-                    // Desktop puts Oric keyboard button in the middle.
-                    batch.draw(keyboardIcon, viewportManager.getWidth() - viewportManager.getWidth() / 2 - 70, 0);
-                    // and the back button on the right.
-                    batch.draw(backIcon, viewportManager.getWidth() - 145, 0);
-                }
-
-            } else {
-                // TODO: Add back in after proper joystick implementation.
-                //batch.draw(joystickIcon, 0, viewportManager.getHeight() - 140);
-                batch.draw(keyboardIcon, viewportManager.getWidth() - 150, viewportManager.getHeight() - 125);
-                batch.draw(backIcon, viewportManager.getWidth() - 150, 0);
+        
+        // The keyboard is always render in portrait mode, as there is space for it,
+        // but in landscape mode, it needs to be enabled via the keyboard icon.
+        if (keyboardType.isRendered() || viewportManager.isPortrait()) {
+            if (keyboardType.getTexture() != null) {
+                batch.setColor(c.r, c.g, c.b, keyboardType.getOpacity());
+                batch.draw(
+                        keyboardType.getTexture(), 
+                        0, keyboardType.getRenderOffset(), 
+                        keyboardType.getTexture().getWidth(), 
+                        keyboardType.getHeight());
             }
         }
+        
+        batch.setColor(c.r, c.g, c.b, 0.5f);
+        
+        //if (keyboardType.equals(KeyboardType.JOYSTICK)) {
+        //    if (viewportManager.isPortrait()) {
+        //        // batch.draw(keyboardType.getTexture(KeyboardType.LEFT), 0, 0);
+        //        batch.draw(keyboardType.getTexture(KeyboardType.RIGHT), viewportManager.getWidth() - 135, 0);
+        //    } else {
+        //        // batch.draw(keyboardType.getTexture(KeyboardType.LEFT), 0, 0, 201, 201);
+        //        batch.draw(keyboardType.getTexture(KeyboardType.RIGHT), viewportManager.getWidth() - 135, 0);
+        //    }
+        //} else if (keyboardType.isRendered()) {
+        //    batch.setColor(c.r, c.g, c.b, keyboardType.getOpacity());
+        //    batch.draw(keyboardType.getTexture(), 0, keyboardType.getRenderOffset());
+        //} else if (keyboardType.equals(KeyboardType.OFF)) {
+
+        Texture speakerIcon = machineInputProcessor.isSpeakerOn()? muteIcon : unmuteIcon;
+        
+        if (viewportManager.isPortrait()) {
+            // TODO: Add back in after proper joystick implementation.
+            //batch.draw(joystickIcon, 0, 0);
+            if (Gdx.app.getType().equals(ApplicationType.Android)) {
+                // Main Oric keyboard on the left.
+                batch.draw(keyboardIcon, viewportManager.getWidth() - 145, 0);
+                // Mobile keyboard for debug purpose. Wouldn't normally make this available.
+                batch.setColor(c.r, c.g, c.b, 0.15f);
+                batch.draw(keyboardIcon, viewportManager.getWidth() - viewportManager.getWidth() / 2 - 70, 0);
+
+            } else {
+                // Desktop puts Oric keyboard button in the middle.
+                //batch.draw(keyboardIcon, viewportManager.getWidth() - viewportManager.getWidth() / 2 - 70, 0);
+                // and the back button on the right.
+                //batch.draw(backIcon, viewportManager.getWidth() - 145, 0);
+                
+                // Portrait
+                batch.draw(fullScreenIcon, 20, 20);
+                batch.draw(speakerIcon, (viewportManager.getWidth() / 3) - 32, 20);
+                batch.draw(keyboardIcon, (viewportManager.getWidth() - (viewportManager.getWidth() / 3)) - 64, 20);
+                batch.draw(backIcon, viewportManager.getWidth() - 116, 20);
+            }
+
+        } else {
+            // TODO: Add back in after proper joystick implementation.
+            //batch.draw(joystickIcon, 0, viewportManager.getHeight() - 140);
+            //batch.draw(keyboardIcon, viewportManager.getWidth() - 150, viewportManager.getHeight() - 125);
+            //batch.draw(backIcon, viewportManager.getWidth() - 150, 0);
+            
+            // Landscape
+            batch.draw(speakerIcon, 16, viewportManager.getHeight() - 112);
+            batch.draw(fullScreenIcon, viewportManager.getWidth() - 112, viewportManager.getHeight() - 112);
+            batch.draw(backIcon, viewportManager.getWidth() - 112, 16);
+            batch.draw(keyboardIcon, 16, 0);
+        }
+        
         batch.end();
-        if (keyboardType.equals(KeyboardType.JOYSTICK)) {
+        
+        // The joystick touch pad is updated and rendered via the Stage.
+        if (!joystickAlignment.equals(JoystickAlignment.OFF)) {
             float joyX = 0;
             float joyY = 0;
             if (viewportManager.isPortrait()) {
@@ -479,6 +517,7 @@ public class MachineScreen implements Screen {
         
         if (appConfigItem != null) {
             joricRunner.start(appConfigItem);
+            // TODO: machineInputProcessor.setSpeakerOn(joricRunner.isSoundOn());
         }
     }
 
@@ -493,6 +532,8 @@ public class MachineScreen implements Screen {
         KeyboardType.dispose();
         keyboardIcon.dispose();
         joystickIcon.dispose();
+        backIcon.dispose();
+        fullScreenIcon.dispose();
         batch.dispose();
         joricRunner.stop();
         disposeScreens();
@@ -521,6 +562,10 @@ public class MachineScreen implements Screen {
         return joricRunner;
     }
 
+    public MachineInputProcessor getMachineInputProcessor() {
+        return machineInputProcessor;
+    }
+    
     /**
      * Returns user to the Home screen.
      */

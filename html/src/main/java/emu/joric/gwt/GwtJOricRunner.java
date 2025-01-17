@@ -363,10 +363,23 @@ public class GwtJOricRunner extends JOricRunner {
         return (worker != null);
     }
     
+    @Override
+    public void changeSound(boolean soundOn) {
+        super.changeSound(soundOn);
+        
+        // In addition to the default behaviour, the GWT platform needs to send 
+        // a message to the web worker, in the case of sound off.
+        if (soundOn) {
+            // Nothing to do. We'll get the audio ready callback later on.
+        } else {
+            worker.postObject("SoundOff", JavaScriptObject.createObject());
+        }
+    }
+
     public Worker getCurrentWorker() {
         return worker;
     }
-    
+
     private final native void logToJSConsole(String message)/*-{
         console.log(message);
     }-*/;

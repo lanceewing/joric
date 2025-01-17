@@ -52,10 +52,12 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
      */
     private boolean warpSpeed;
     
+    // Used by the old implementations.
     private double lastTime = -1;
     private long deltaTime;
     
-    private double startTime;
+    // Used by the current implementation.
+    private double startTime = 0;
     private long cycleCount;
     
     @Override
@@ -93,6 +95,11 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
             case "AudioWorkletReady":
                 logToJSConsole("Enabling PSG sample writing...");
                 psg.enableWriteSamples();
+                break;
+                
+            case "SoundOff":
+                logToJSConsole("Disabling PSG sample writing...");
+                psg.disableWriteSamples();
                 break;
                 
             default:
@@ -172,35 +179,41 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
      * @param timestamp
      */
     public void performAnimationFrame(double timestamp) {
-        // Audio currentTime is in seconds, so multiply by 1000 to get ms.
-        double currentAudioTime = psg.getSampleSharedQueue().getCurrentTime() * 1000;
+        // Audio currentTime is in seconds, so multiply by 1000 to get ms. This is 
+        // not used but is instead for debugging, if required.
+        //double currentAudioTime = psg.getSampleSharedQueue().getCurrentTime() * 1000;
         
-        // Emulate up to 140000 cycles ahead of audio time.
-        timestamp = (currentAudioTime > 0? (currentAudioTime + 140) : timestamp);
+        long expectedCycleCount = 0;
         
-        if (lastTime >= 0) {
+        if (psg.isWriteSamplesEnabled()) {
+            cycleCount = 0;
+            
+            // If the AudioWorklet is running, then adjust expected cycle count
+            // to a value that would leave the available samples in the queue 
+            // at a roughly fixed number. This is to avoid under or over generating
+            // samples, being always a given number of samples ahead in the buffer.
+            int currentBufferSize = psg.getSampleSharedQueue().availableRead();
+            int samplesToGenerate = (currentBufferSize >= GwtAYPSG.SAMPLE_LATENCY? 0 : GwtAYPSG.SAMPLE_LATENCY - currentBufferSize);
+            expectedCycleCount = (int)(samplesToGenerate * GwtAYPSG.CYCLES_PER_SAMPLE);
+            
+            // While the emulation cycle rate is throttling by the audio thread 
+            // output rate, we keep resetting the startTime, in case sound is turned
+            // off for the next frame.
+            startTime = timestamp;
+            
+        } else {
+            // If we are not writing samples, i.e. sound is turned off, then rate
+            // of emulating cycles is controlled by the animation frame timestamp.
             double elapsedTime = (timestamp - startTime);
-            long expectedCycleCount = Math.round(elapsedTime * 1000);
-            
-            if ((currentAudioTime > 0) && (psg.isWriteSamplesEnabled())) {
-                // If the AudioWorklet is running, then adjust expected cycle count
-                // to a value that would leave the available samples in the queue 
-                // at a roughly fixed number. This is to avoid under or over generating
-                // samples, being always a given number of samples ahead in the buffer.
-                int currentBufferSize = psg.getSampleSharedQueue().availableRead();
-                int samplesToGenerate = (currentBufferSize >= GwtAYPSG.SAMPLE_LATENCY? 0 : GwtAYPSG.SAMPLE_LATENCY - currentBufferSize);
-                long cyclesRequiredToGenerateSamples = (int)(samplesToGenerate * GwtAYPSG.CYCLES_PER_SAMPLE);
-                expectedCycleCount = cycleCount + cyclesRequiredToGenerateSamples;
-            }
-            
-            // Emulate the required number of cycles.
-            do {
-                machine.emulateCycle();
-                cycleCount++;
-            } while (cycleCount <= expectedCycleCount);
+            expectedCycleCount = Math.round(elapsedTime * 1000);
         }
         
-        lastTime = timestamp;
+        // Emulate the required number of cycles.
+        do {
+            machine.emulateCycle();
+            cycleCount++;
+        } while (cycleCount <= expectedCycleCount);
+
         
         requestNextAnimationFrame();
     }

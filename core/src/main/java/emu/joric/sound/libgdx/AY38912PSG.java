@@ -190,8 +190,13 @@ public class AY38912PSG implements AYPSG {
   public void resumeSound() {
     // For libgdx, there is no resume sound.
   }
+  
+  @Override
+  public boolean isSoundOn() {
+    return true;
+  }
 
-  /**
+/**
    * Stops and closes the audio line.
    */
   public void dispose() {

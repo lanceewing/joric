@@ -106,6 +106,17 @@ public class PSGAudioWorklet {
         if (worker != null) {
             logToJSConsole("Sending AudioWorkletReady message to web worker...");
             worker.postObject("AudioWorkletReady", JavaScriptObject.createObject());
+            if (gwtJOricRunner.getMachineInputProcessor() != null) {
+                logToJSConsole("Worker is running, so turning speaker on...");
+                gwtJOricRunner.getMachineInputProcessor().setSpeakerOn(true);
+            }
+        } else {
+            // If worker isn't running, then suspend audio for now.
+            suspend();
+            logToJSConsole("Worker not running, so turnning speaker off.");
+            if (gwtJOricRunner.getMachineInputProcessor() != null) {
+                gwtJOricRunner.getMachineInputProcessor().setSpeakerOn(false);
+            }
         }
     }
     
@@ -129,6 +140,16 @@ public class PSGAudioWorklet {
         if (this.audioContext && (this.audioContext.state === "running")) {
             this.audioContext.suspend();
         }
+    }-*/;
+    
+    /**
+     * Returns whether the audio worklet is currently running. If suspended, it
+     * will return false.
+     * 
+     * @return
+     */
+    public native boolean isRunning()/*-{
+        return (this.audioContext && (this.audioContext.state === "running"));
     }-*/;
     
     private final native void logToJSConsole(String message)/*-{

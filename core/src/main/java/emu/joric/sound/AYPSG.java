@@ -22,6 +22,8 @@ public interface AYPSG {
   public void pauseSound();
   
   public void resumeSound();
+  
+  public boolean isSoundOn();
 
   public void dispose();
   

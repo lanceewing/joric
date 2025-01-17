@@ -162,7 +162,7 @@ class SoundRenderer extends AudioWorkletProcessor {
     constructor() {
         super();
         
-        this.startTime = Date.now();
+        this.startTime = currentTime * 1000;
         
         // Set to true after the SharedArrayBuffer is received.
         this.ready = false;
@@ -200,7 +200,7 @@ class SoundRenderer extends AudioWorkletProcessor {
      * @param outputs An array of outputs that is similar to the inputs parameter in structure. It is intended to be filled during the execution of the process() method. Each of the output channels is filled with zeros by default — the processor will output silence unless the output arrays are modified.
      */
     process(inputs, outputs) {
-        let timeThisCall = Date.now();
+        let timeThisCall = currentTime * 1000;
         
         // The inputs is ignored. We get up to samples from the ring buffer instead.
         // We have only one output, with one channel (mono), sample rate 22050.
@@ -223,14 +223,9 @@ class SoundRenderer extends AudioWorkletProcessor {
             if (this.callCount++ >= SoundRenderer.CALLS_PER_SECOND) {
                 this.callCount = 0;
                 
-                // TODO: Reset the startTime when new game starts.
-                
-                // TODO: Machine should fall back on performance.now() if currentTime not set.
-                
                 console.log("Available to read = " + this.sampleSharedQueue.availableRead() + 
                             ", output array len = " + outputs[0][0].length +
                             ", currentTime = " + currentTime + 
-                            ", elapsedTime = " + ((timeThisCall - this.startTime) / 1000) +
                             ", average delta = " + ((timeThisCall - this.startTime) / this.deltaCount) +
                             ", output rate = " + (currentFrame / currentTime));
             }

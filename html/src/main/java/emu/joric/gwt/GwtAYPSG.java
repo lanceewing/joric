@@ -122,7 +122,7 @@ public class GwtAYPSG implements AYPSG {
 
         // 1024 is about 46ms of sample data, and is 8 frames of data for the
         // audio worklet processor.
-        this.sampleBuffer = TypedArrays.createFloat32Array(1024);
+        this.sampleBuffer = TypedArrays.createFloat32Array(512);
         this.sampleBufferOffset = 0;
     }
     
@@ -161,6 +161,7 @@ public class GwtAYPSG implements AYPSG {
      * Turns on sample writing to the sample buffer.
      */
     public void enableWriteSamples() {
+        logToJSConsole("Enabling writing of samples...");
         writeSamplesEnabled = true;
     }
     
@@ -237,6 +238,7 @@ public class GwtAYPSG implements AYPSG {
     public void resumeSound() {
         if (sampleSharedQueue != null) {
             if (!sampleSharedQueue.isEmpty()) {
+                // Clear out the old data from when it was last playing.
                 logToJSConsole("Clearing sample queue...");
                 int totalCleared = 0;
                 int itemsRead = 0;
@@ -246,6 +248,10 @@ public class GwtAYPSG implements AYPSG {
                     totalCleared += itemsRead;
                 } while (itemsRead == 1024);
                 logToJSConsole("Cleared " + totalCleared + " old samples.");
+                
+                // Now fill with silence, so that we do not slow down emulation rate.
+                int silentSampleCount = GwtAYPSG.SAMPLE_LATENCY - (GwtAYPSG.SAMPLE_RATE / 60);
+                sampleSharedQueue.push(TypedArrays.createFloat32Array(silentSampleCount));
             }
         }
         if (audioWorklet != null) {
@@ -255,6 +261,17 @@ public class GwtAYPSG implements AYPSG {
                 audioWorklet.notifyAudioReady();
             }
         }
+    }
+    
+    /**
+     * Returns true if sound is currently being produce; otherwise false.
+     * 
+     * @return
+     */
+    @Override
+    public boolean isSoundOn() {
+        logToJSConsole("Audio worklet running? : " + audioWorklet.isRunning());
+        return audioWorklet.isRunning();
     }
 
     /**

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 
 import emu.joric.config.AppConfigItem;
 import emu.joric.sound.AYPSG;
+import emu.joric.ui.MachineInputProcessor;
 
 /**
  * Using this JOricRunner with a Thread/Web Worker is an alternative to relying on 
@@ -163,7 +164,27 @@ public abstract class JOricRunner {
     public boolean isPaused() {
         return paused;
     }
+    
+    public void changeSound(boolean soundOn) {
+        if (soundOn) {
+            psg.resumeSound();
+        } else {
+            psg.pauseSound();
+        }
+    }
 
+    public boolean isSoundOn() {
+        return psg.isSoundOn();
+    }
+    
+    public MachineScreen getMachineScreen() {
+        return machineScreen;
+    }
+    
+    public MachineInputProcessor getMachineInputProcessor() {
+        return (machineScreen != null? machineScreen.getMachineInputProcessor() : null);
+    }
+    
     public abstract void start(AppConfigItem appConfigItem);
 
     public abstract void reset();
