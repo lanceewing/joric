@@ -78,9 +78,9 @@ public class ViewportManager {
         // 1.13 when icons are no longer overlapping
         // 1.00 square
         // 0.80 where keyboard top matches screen base
-        // TODO: This is from AGILE.
-        //portrait = (height > (width / 0.80f));
-        portrait = (height > width);
+        // TODO: This is from AGILE. Needs tweaking for Oric.
+        portrait = (height > (width / 0.80f));
+        //portrait = (height > width);
         getCurrentViewport().update(width, height, true);
     }
 
@@ -115,8 +115,7 @@ public class ViewportManager {
      * @return
      */
     public boolean doesScreenFitWidth() {
-        // TODO: For Oric, it is not 1.32f
-        return !(getHeight() > (getWidth() / 1.32f));
+        return !(getHeight() > (getWidth() / 1.25f));
     }
 
     /**
@@ -126,8 +125,7 @@ public class ViewportManager {
      * @return
      */
     public float getOricScreenWidth() {
-        // TODO: For Oric, it is not 1.32f
-        return (getHeight() * 1.32f);
+        return (getHeight() * 1.25f);
     }
     
     /**
@@ -150,8 +148,7 @@ public class ViewportManager {
      * @return The Y value of the base of the Oric screen.
      */
     public int getOricScreenBase() {
-        // TODO: For Oric, it is not 1.32f
-        return (int)(getHeight() - (getWidth() / 1.32));
+        return (int)(getHeight() - (getWidth() / 1.25));
     }
     
     /**

@@ -204,17 +204,63 @@ public class MachineInputProcessor extends InputAdapter {
             } else {
                 // Landscape.
                 int screenTop = (int) viewportManager.getHeight();
-                if (touchXY.y > (screenTop - 104)) {
-                    if (touchXY.x < 112) {
-                        speakerClicked = true;
-                    } else if (touchXY.x > (viewportManager.getWidth() - 112)) {
-                        fullScreenClicked = true;
+                if (cameraXOffset == 0) {
+                    if ((viewportManager.getOricScreenBase() > 0) || (viewportManager.getSidePaddingWidth() <= 64)) {
+                        if (touchXY.y < 104) {
+                            float leftAdjustment = (viewportManager.getWidth() / 4) - 32;
+                            if ((touchXY.x >= ((viewportManager.getWidth() / 2) - 48) - leftAdjustment) && 
+                                (touchXY.x <= ((viewportManager.getWidth() / 2) + 48) - leftAdjustment)) {
+                                fullScreenClicked = true;
+                            }
+                            else 
+                            if ((touchXY.x >= ((viewportManager.getWidth() - (viewportManager.getWidth() / 3)) - 64) - leftAdjustment) && 
+                                (touchXY.x <= ((viewportManager.getWidth() - (viewportManager.getWidth() / 3)) + 32) - leftAdjustment)) {
+                                speakerClicked = true;
+                            }
+                            else
+                            if ((touchXY.x >= ((viewportManager.getWidth() - (viewportManager.getWidth() / 6)) - 80) - leftAdjustment) && 
+                                (touchXY.x <= ((viewportManager.getWidth() - (viewportManager.getWidth() / 6)) + 16) - leftAdjustment)) {
+                                keyboardClicked = true;
+                            }
+                            else
+                            if ((touchXY.x >= (viewportManager.getWidth() - 112) - leftAdjustment) && 
+                                (touchXY.x <= (viewportManager.getWidth() - 16) - leftAdjustment)) {
+                                backArrowClicked = true;
+                            }
+                        }
+                    } else {
+                        // Screen in middle.
+                        if (touchXY.y > (screenTop - 104)) {
+                            if (touchXY.x < 112) {
+                                speakerClicked = true;
+                            } else if (touchXY.x > (viewportManager.getWidth() - 112)) {
+                                fullScreenClicked = true;
+                            }
+                        } else if (touchXY.y < 104) {
+                            if (touchXY.x > (viewportManager.getWidth() - 112)) {
+                                backArrowClicked = true;
+                            } else if (touchXY.x < 112) {
+                                keyboardClicked = true;
+                            }
+                        }
                     }
-                } else if (touchXY.y < 104) {
-                    if (touchXY.x > (viewportManager.getWidth() - 112)) {
-                        backArrowClicked = true;
-                    } else if (touchXY.x < 112) {
-                        keyboardClicked = true;
+                }
+                else {
+                    // All buttons on same side
+                    if (((touchXY.x < 128) && (cameraXOffset < 0)) || 
+                        ((touchXY.x > (viewportManager.getWidth() - 128)) && (cameraXOffset > 0))) {
+                        if (touchXY.y > (screenTop - 128)) {
+                            fullScreenClicked = true;
+                        }
+                        else if ((touchXY.y < (screenTop - 212)) && (touchXY.y > (screenTop - 340))) {
+                            speakerClicked = true;
+                        }
+                        else if ((touchXY.y > 212) && (touchXY.y < 340)) {
+                            keyboardClicked = true;
+                        }
+                        else if ((touchXY.y > 0) && (touchXY.y < 128)) {
+                            backArrowClicked = true;
+                        }
                     }
                 }
             }
@@ -300,7 +346,7 @@ public class MachineInputProcessor extends InputAdapter {
      * saved width and height.
      */
     public void switchOutOfFullScreen() {
-        if (screenWidthBeforeFullScreen > (screenHeightBeforeFullScreen * 1.32f)) {
+        if (screenWidthBeforeFullScreen > (screenHeightBeforeFullScreen * 1.25f)) {
             keyboardType = KeyboardType.OFF;
         }
         Gdx.graphics.setWindowedMode(screenWidthBeforeFullScreen, screenHeightBeforeFullScreen);
@@ -354,10 +400,28 @@ public class MachineInputProcessor extends InputAdapter {
      * @param height The new screen height.
      */
     public void resize(int width, int height) {
-        if (keyboardType.isRendered()) {
-            // Switch keyboard layout based on the orientation.
-            keyboardType = (height > width ? KeyboardType.PORTRAIT : KeyboardType.LANDSCAPE);
+        if (height > (width / 1.25f)) {
+            // Change to portrait if it is not already a portrait keyboard.
+            if (!keyboardType.isPortrait()) {
+                keyboardType = KeyboardType.PORTRAIT;
+            }
+            
+            // For non-standard portrait sizes, where the keyboard would overlap the
+            // screen, we turn the keyboard off on resize.
+            if (((float)height/width) < 1.77) {
+                keyboardType = KeyboardType.OFF;
+            }
+        } else if (keyboardType.isRendered()) {
+            // If it wasn't previously landscape, then turn it off.
+            if (!keyboardType.isLandscape()) {
+                keyboardType = KeyboardType.OFF;
+            }
         }
+        // TODO: Remove after testing.
+        //if (keyboardType.isRendered()) {
+        //    // Switch keyboard layout based on the orientation.
+        //    keyboardType = (height > width ? KeyboardType.PORTRAIT : KeyboardType.LANDSCAPE);
+        //}
     }
 
     /**

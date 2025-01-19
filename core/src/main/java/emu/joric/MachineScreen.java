@@ -37,6 +37,12 @@ import emu.joric.ui.ViewportManager;
  */
 public class MachineScreen implements Screen {
 
+    // The Oric pixels allegedly have a 5:4 ratio
+    private static final int ORIC_SCREEN_WIDTH = 240;
+    private static final int ORIC_SCREEN_HEIGHT = 224;
+    private static final int ADJUSTED_WIDTH = ((ORIC_SCREEN_HEIGHT / 4) * 5);
+    private static final int ADJUSTED_HEIGHT = ORIC_SCREEN_HEIGHT;
+    
     /**
      * The Game object for JOric. Allows us to easily change screens.
      */
@@ -294,16 +300,43 @@ public class MachineScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // Render the Oric screen.
+        float cameraXOffset = 0;
+        float cameraYOffset = 0;
+        float sidePaddingWidth = viewportManager.getSidePaddingWidth();
+        
+        if (viewportManager.doesScreenFitWidth()) {
+            // Override default screen centering logic to allow for narrower screens, so 
+            // that the joystick can be rendered as a decent size.
+            float oricWidthRatio = (viewportManager.getOricScreenWidth() / ADJUSTED_WIDTH);
+            if ((sidePaddingWidth > 64) && (sidePaddingWidth < 232)) {
+                // 232 = 2 * min width on sides.
+                // 64 = when icon on one side is perfectly centred.
+                float unadjustedXOffset = Math.min(232 - sidePaddingWidth, sidePaddingWidth);
+                cameraXOffset = (unadjustedXOffset / oricWidthRatio);
+                if (joystickAlignment.equals(JoystickAlignment.LEFT)) {
+                    cameraXOffset *= -1;
+                }
+            }
+        } else {
+            float oricScreenHeight = (viewportManager.getWidth() / 1.25f);
+            float oricHeightRatio = (oricScreenHeight / ADJUSTED_HEIGHT);
+            float topPadding = ((viewportManager.getHeight() - oricScreenHeight) / 2);
+            cameraYOffset = (topPadding / oricHeightRatio);
+        }
+        machineInputProcessor.setCameraXOffset(cameraXOffset);
+        camera.position.set((ADJUSTED_WIDTH / 2) + cameraXOffset, (ADJUSTED_HEIGHT / 2) - cameraYOffset, 0.0f);
+        camera.update();
         camera.update();
         batch.setProjectionMatrix(camera.combined);
         batch.disableBlending();
         batch.begin();
         Color c = batch.getColor();
         batch.setColor(c.r, c.g, c.b, 1f);
-        batch.draw(screens[drawScreen], 0, 0, ((machineType.getVisibleScreenHeight() / 4) * 5),
-                machineType.getVisibleScreenHeight(), machineType.getHorizontalOffset(),
-                machineType.getVerticalOffset(), machineType.getVisibleScreenWidth(),
-                machineType.getVisibleScreenHeight(), false, false);
+        batch.draw(
+                screens[drawScreen], 
+                0, 0, ADJUSTED_WIDTH, ADJUSTED_HEIGHT,
+                0, 0, ORIC_SCREEN_WIDTH, ORIC_SCREEN_HEIGHT, 
+                false, false);
         batch.end();
 
         // Render the UI elements, e.g. the keyboard and joystick icons.
@@ -327,55 +360,45 @@ public class MachineScreen implements Screen {
         
         batch.setColor(c.r, c.g, c.b, 0.5f);
         
-        //if (keyboardType.equals(KeyboardType.JOYSTICK)) {
-        //    if (viewportManager.isPortrait()) {
-        //        // batch.draw(keyboardType.getTexture(KeyboardType.LEFT), 0, 0);
-        //        batch.draw(keyboardType.getTexture(KeyboardType.RIGHT), viewportManager.getWidth() - 135, 0);
-        //    } else {
-        //        // batch.draw(keyboardType.getTexture(KeyboardType.LEFT), 0, 0, 201, 201);
-        //        batch.draw(keyboardType.getTexture(KeyboardType.RIGHT), viewportManager.getWidth() - 135, 0);
-        //    }
-        //} else if (keyboardType.isRendered()) {
-        //    batch.setColor(c.r, c.g, c.b, keyboardType.getOpacity());
-        //    batch.draw(keyboardType.getTexture(), 0, keyboardType.getRenderOffset());
-        //} else if (keyboardType.equals(KeyboardType.OFF)) {
-
+        // Speaker icon changes depending on state.
         Texture speakerIcon = machineInputProcessor.isSpeakerOn()? muteIcon : unmuteIcon;
         
         if (viewportManager.isPortrait()) {
-            // TODO: Add back in after proper joystick implementation.
-            //batch.draw(joystickIcon, 0, 0);
-            if (Gdx.app.getType().equals(ApplicationType.Android)) {
-                // Main Oric keyboard on the left.
-                batch.draw(keyboardIcon, viewportManager.getWidth() - 145, 0);
-                // Mobile keyboard for debug purpose. Wouldn't normally make this available.
-                batch.setColor(c.r, c.g, c.b, 0.15f);
-                batch.draw(keyboardIcon, viewportManager.getWidth() - viewportManager.getWidth() / 2 - 70, 0);
-
-            } else {
-                // Desktop puts Oric keyboard button in the middle.
-                //batch.draw(keyboardIcon, viewportManager.getWidth() - viewportManager.getWidth() / 2 - 70, 0);
-                // and the back button on the right.
-                //batch.draw(backIcon, viewportManager.getWidth() - 145, 0);
-                
-                // Portrait
-                batch.draw(fullScreenIcon, 20, 20);
-                batch.draw(speakerIcon, (viewportManager.getWidth() / 3) - 32, 20);
-                batch.draw(keyboardIcon, (viewportManager.getWidth() - (viewportManager.getWidth() / 3)) - 64, 20);
-                batch.draw(backIcon, viewportManager.getWidth() - 116, 20);
-            }
-
+            // Portrait
+            batch.draw(fullScreenIcon, 20, 20);
+            batch.draw(speakerIcon, (viewportManager.getWidth() / 3) - 32, 20);
+            batch.draw(keyboardIcon, (viewportManager.getWidth() - (viewportManager.getWidth() / 3)) - 64, 20);
+            batch.draw(backIcon, viewportManager.getWidth() - 116, 20);
         } else {
-            // TODO: Add back in after proper joystick implementation.
-            //batch.draw(joystickIcon, 0, viewportManager.getHeight() - 140);
-            //batch.draw(keyboardIcon, viewportManager.getWidth() - 150, viewportManager.getHeight() - 125);
-            //batch.draw(backIcon, viewportManager.getWidth() - 150, 0);
-            
             // Landscape
-            batch.draw(speakerIcon, 16, viewportManager.getHeight() - 112);
-            batch.draw(fullScreenIcon, viewportManager.getWidth() - 112, viewportManager.getHeight() - 112);
-            batch.draw(backIcon, viewportManager.getWidth() - 112, 16);
-            batch.draw(keyboardIcon, 16, 0);
+            if (cameraXOffset == 0) {
+                // Middle.
+                if ((viewportManager.getOricScreenBase() > 0) || (sidePaddingWidth <= 64)) {
+                    // The area between full landscape and full portrait.
+                    float leftAdjustment = (viewportManager.getWidth() / 4) - 32;
+                    batch.draw(fullScreenIcon, ((viewportManager.getWidth() / 2) - 48) - leftAdjustment, 16);
+                    batch.draw(speakerIcon, ((viewportManager.getWidth() - (viewportManager.getWidth() / 3)) - 64) - leftAdjustment, 16);
+                    batch.draw(keyboardIcon, ((viewportManager.getWidth() - (viewportManager.getWidth() / 6)) - 80) - leftAdjustment, 16);
+                    batch.draw(backIcon, (viewportManager.getWidth() - 112) - leftAdjustment, 16);
+                } else {
+                    batch.draw(speakerIcon, 16, viewportManager.getHeight() - 112);
+                    batch.draw(fullScreenIcon, viewportManager.getWidth() - 112, viewportManager.getHeight() - 112);
+                    batch.draw(backIcon, viewportManager.getWidth() - 112, 16);
+                    batch.draw(keyboardIcon, 16, 0);
+                }
+            } else if (cameraXOffset < 0) {
+                // Left
+                batch.draw(speakerIcon, 16, viewportManager.getHeight() - 324);
+                batch.draw(fullScreenIcon, 16, viewportManager.getHeight() - 112);
+                batch.draw(backIcon, 16, 16);
+                batch.draw(keyboardIcon, 16, 228);
+            } else if (cameraXOffset > 0) {
+                // Right
+                batch.draw(speakerIcon, viewportManager.getWidth() - 112, viewportManager.getHeight() - 324);
+                batch.draw(fullScreenIcon, viewportManager.getWidth() - 112, viewportManager.getHeight() - 112);
+                batch.draw(backIcon, viewportManager.getWidth() - 112, 16);
+                batch.draw(keyboardIcon, viewportManager.getWidth() - 112, 228);
+            }
         }
         
         batch.end();
