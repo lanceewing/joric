@@ -22,9 +22,9 @@ public enum KeyboardType {
             },
             "png/keyboard_landscape.png",
             0.4f,
-            0,
-            15,
-            1890,
+            110,
+            253,
+            1414,
             0
           ),
     PORTRAIT(
