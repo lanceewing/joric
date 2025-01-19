@@ -3,7 +3,6 @@ package emu.joric;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
