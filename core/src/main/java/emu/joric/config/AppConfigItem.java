@@ -2,6 +2,8 @@ package emu.joric.config;
 
 public class AppConfigItem {
 
+    private String gameId;
+    
     private String name = "";
 
     private String displayName;
@@ -30,6 +32,14 @@ public class AppConfigItem {
     public AppConfigItem() {
     }
 
+    public String getGameId() {
+        return gameId;
+    }
+
+    public void setGameId(String gameId) {
+        this.gameId = gameId;
+    }
+    
     /**
      * @return the fileLocation
      */

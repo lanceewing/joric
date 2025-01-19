@@ -78,5 +78,9 @@ public class GwtDialogHandler implements DialogHandler {
         });
     }-*/;
     
+    @Override
+    public boolean isDialogOpen() {
+        return dialogOpen;
+    }
     
 }

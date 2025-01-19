@@ -29,4 +29,12 @@ public interface DialogHandler {
   
   public void promptForTextInput(String message, String initialValue, TextInputResponseHandler textInputResponseHandler);
   
+  
+  /**
+   * Returns true if a dialog is currently open.
+   * 
+   * @return true if a dialog is currently open.
+   */
+  public boolean isDialogOpen();
+  
 }

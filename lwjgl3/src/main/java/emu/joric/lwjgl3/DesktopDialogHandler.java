@@ -14,13 +14,16 @@ import emu.joric.ui.TextInputResponseHandler;
 
 public class DesktopDialogHandler implements DialogHandler {
 
+    private boolean dialogOpen;
+    
     @Override
     public void confirm(final String message, final ConfirmResponseHandler responseHandler) {
         Gdx.app.postRunnable(new Runnable() {
-
             @Override
             public void run() {
-                int output = JOptionPane.showConfirmDialog(null, "Please confirm", message, JOptionPane.YES_NO_OPTION);
+                dialogOpen = true;
+                int output = JOptionPane.showConfirmDialog(null, message, "Please confirm", JOptionPane.YES_NO_OPTION);
+                dialogOpen = false;
                 if (output != 0) {
                     responseHandler.no();
                 } else {
@@ -48,7 +51,9 @@ public class DesktopDialogHandler implements DialogHandler {
                 FileNameExtensionFilter filter = new FileNameExtensionFilter("TAP and DSK files", "tap", "dsk");
                 jfc.addChoosableFileFilter(filter);
 
+                dialogOpen = true;
                 int returnValue = jfc.showOpenDialog(null);
+                dialogOpen = false;
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
                     System.out.println(jfc.getSelectedFile().getPath());
                     openFileResponseHandler.openFileResult(true, jfc.getSelectedFile().getPath());
@@ -65,9 +70,11 @@ public class DesktopDialogHandler implements DialogHandler {
         Gdx.app.postRunnable(new Runnable() {
             @Override
             public void run() {
+                dialogOpen = true;
                 String text = (String) JOptionPane.showInputDialog(null, message, "Please enter value",
                         JOptionPane.INFORMATION_MESSAGE, null, null, initialValue != null ? initialValue : "");
-
+                dialogOpen = false;
+                
                 if (text != null) {
                     textInputResponseHandler.inputTextResult(true, text);
                 } else {
@@ -75,5 +82,11 @@ public class DesktopDialogHandler implements DialogHandler {
                 }
             }
         });
+    }
+    
+
+    @Override
+    public boolean isDialogOpen() {
+        return dialogOpen;
     }
 }
