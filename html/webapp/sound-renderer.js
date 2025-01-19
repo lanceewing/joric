@@ -223,11 +223,11 @@ class SoundRenderer extends AudioWorkletProcessor {
             if (this.callCount++ >= SoundRenderer.CALLS_PER_SECOND) {
                 this.callCount = 0;
                 
-                console.log("Available to read = " + this.sampleSharedQueue.availableRead() + 
-                            ", output array len = " + outputs[0][0].length +
-                            ", currentTime = " + currentTime + 
-                            ", average delta = " + ((timeThisCall - this.startTime) / this.deltaCount) +
-                            ", output rate = " + (currentFrame / currentTime));
+                //console.log("Available to read = " + this.sampleSharedQueue.availableRead() + 
+                //            ", output array len = " + outputs[0][0].length +
+                //            ", currentTime = " + currentTime + 
+                //            ", average delta = " + ((timeThisCall - this.startTime) / this.deltaCount) +
+                //            ", output rate = " + (currentFrame / currentTime));
             }
         }
 
