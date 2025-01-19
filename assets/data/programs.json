@@ -533,9 +533,9 @@
     },
     {
       "name": "Oric Tech",
-      "filePath": "disks/OricTech.dsk",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/o/oric_tech/VIP2015.dsk",
       "fileType": "DISK",
-      "iconPath": "",
+      "iconPath": "screenshots/O/OricTech/OricTech.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -646,9 +646,9 @@
     },
     {
       "name": "Rambo",
-      "filePath": "disks/rambo.dsk",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/r/rambo_music/rambo.dsk",
       "fileType": "DISK",
-      "iconPath": "",
+      "iconPath": "screenshots/R/Rambo/Rambo.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
