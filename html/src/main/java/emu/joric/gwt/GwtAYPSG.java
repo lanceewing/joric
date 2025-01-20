@@ -31,7 +31,8 @@ public class GwtAYPSG implements AYPSG {
     // to 4, and volumes A, B, and C all at 15, then max sample is at 32760, which 
     // is just under the limit.
     private final static int LEVEL_DIVISOR = 4;
-    private final static int[] VOLUME_LEVELS = { 0x003C / LEVEL_DIVISOR, 0x0055 / LEVEL_DIVISOR, 0x0079 / LEVEL_DIVISOR,
+    private final static int[] VOLUME_LEVELS = { 
+            0x0000 / LEVEL_DIVISOR, 0x0055 / LEVEL_DIVISOR, 0x0079 / LEVEL_DIVISOR,
             0x00AB / LEVEL_DIVISOR, 0x00F1 / LEVEL_DIVISOR, 0x0155 / LEVEL_DIVISOR, 0x01E3 / LEVEL_DIVISOR,
             0x02AA / LEVEL_DIVISOR, 0x03C5 / LEVEL_DIVISOR, 0x0555 / LEVEL_DIVISOR, 0x078B / LEVEL_DIVISOR,
             0x0AAB / LEVEL_DIVISOR, 0x0F16 / LEVEL_DIVISOR, 0x1555 / LEVEL_DIVISOR, 0x1E2B / LEVEL_DIVISOR,
@@ -562,6 +563,11 @@ public class GwtAYPSG implements AYPSG {
             //logToJSConsole("GwtAYPSG - elapsedTimeInSecs = " + elapsedTimeInSecs + 
             //        ", cycle rate = " + cyclesPerSecond + 
             //        ", audio time = " + sampleSharedQueue.getCurrentTime());
+            
+            logToJSConsole("GwtAYPSG - volumeA: " + volumeA + 
+                    ", volumeB: " + volumeB + ", volumeC: " + volumeC + 
+                    ", cntA: " + cnt[A] + ", cntB: " + cnt[B] + 
+                    ", cntC: " + cnt[C] + ", sample: " + sample);
         }
     }
 
