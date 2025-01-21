@@ -308,7 +308,7 @@ public class MachineInputProcessor extends InputAdapter {
             if (backArrowClicked) {
                 if (Gdx.app.getType().equals(ApplicationType.Desktop) && Gdx.graphics.isFullscreen()) {
                     // Dialog won't show for desktop unless we exit full screen,
-                    // TODO: switchOutOfFullScreen();
+                    switchOutOfFullScreen();
                 }
                 
                 dialogHandler.confirm("Are you sure you want to quit the game?", 

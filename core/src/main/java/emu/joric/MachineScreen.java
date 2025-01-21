@@ -258,8 +258,7 @@ public class MachineScreen implements Screen {
             // will mean that the AGI game screen starts out black for the next game.
             copyPixels();
             if (Gdx.graphics.isFullscreen()) {
-                // TODO: We don't yet support full screen.
-                //machineScreenInputProcessor.switchOutOfFullScreen();
+                machineInputProcessor.switchOutOfFullScreen();
             }
             joric.setScreen(joric.getHomeScreen());
             return;
