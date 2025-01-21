@@ -686,8 +686,7 @@ public class HomeScreen extends InputAdapter implements Screen {
                 "JOric v1.0.0\n\n" + 
                 "To start, simply swipe or click to the right.\n\n" + 
                 "Or use the ?url= request parameter to point directly to a .dsk or .tap file.\n\n" + 
-                "Most games are available on www.oric.org and www.defence-force.org\n" + 
-                "...or as attachments in the forum.defence-force.org forums.\n\n" + 
+                "Most games are available on www.oric.org.\n\n" + 
                 "Source code: https://github.com/lanceewing/joric\n\n",
                 new TextInputResponseHandler() {
                     @Override
