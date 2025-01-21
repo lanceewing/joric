@@ -41,6 +41,7 @@ import emu.joric.ui.DialogHandler;
 import emu.joric.ui.ConfirmResponseHandler;
 import emu.joric.ui.PagedScrollPane;
 import emu.joric.ui.PaginationWidget;
+import emu.joric.ui.TextInputResponseHandler;
 import emu.joric.ui.ViewportManager;
 
 /**
@@ -664,7 +665,7 @@ public class HomeScreen extends InputAdapter implements Screen {
                 if (appConfigItem != null) {
                     processProgramSelection(appConfigItem);
                 } else if (appName.equals("INFO")) {
-                    // TODO: showAboutJOricDialog();
+                    showAboutJOricDialog();
                 }
             } else {
                 // Add miscellaneous program option (i.e. the plus icon).
@@ -678,6 +679,57 @@ public class HomeScreen extends InputAdapter implements Screen {
         MachineScreen machineScreen = joric.getMachineScreen();
         machineScreen.initMachine(appConfigItem, true);
         joric.setScreen(machineScreen);
+    }
+    
+    private void showAboutJOricDialog() {
+        dialogHandler.showAboutDialog(
+                "JOric v1.0.0\n\n" + 
+                "To start, simply swipe or click to the right.\n\n" + 
+                "Or use the ?url= request parameter to point directly to a .dsk or .tap file.\n\n" + 
+                "Most games are available on www.oric.org and www.defence-force.org\n" + 
+                "...or as attachments in the forum.defence-force.org forums.\n\n" + 
+                "Source code: https://github.com/lanceewing/joric\n\n",
+                new TextInputResponseHandler() {
+                    @Override
+                    public void inputTextResult(boolean success, String button) {
+                        if (success && !button.equals("OK")) {
+                            // State management.
+                            switch (button) {
+                                case "EXPORT":
+                                    exportState();
+                                    break;
+                                case "IMPORT":
+                                    importState();
+                                    break;
+                                case "CLEAR":
+                                    clearState();
+                                    break;
+                                case "RESET":
+                                    resetState();
+                                    break;
+                                default:
+                                    // Nothing to do.
+                                    break;
+                            }
+                        }
+                    }
+                });
+    }
+    
+    private void exportState() {
+        
+    }
+    
+    private void importState() {
+        
+    }
+    
+    private void clearState() {
+        
+    }
+    
+    private void resetState() {
+        
     }
     
     private int getIndexOfFirstProgramStartingWithChar(char letter) {

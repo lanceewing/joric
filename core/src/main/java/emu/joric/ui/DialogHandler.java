@@ -26,9 +26,21 @@ public interface DialogHandler {
    */
   public void openFileDialog(String title, String startPath, OpenFileResponseHandler openFileResponseHandler);
 
-  
+  /**
+   * Invoked when AGILE wants to ask what type of game import to perform.
+   * 
+   * @param appConfigItem Optional selected game that is being imported.
+   * @param importTypeResponseHandler The handler to be invoked with the user's response.
+   */
   public void promptForTextInput(String message, String initialValue, TextInputResponseHandler textInputResponseHandler);
   
+  /**
+   * Shows the About AGILE message dialog.
+   * 
+   * @param aboutMessage The About message to display.
+   * @param textInputResponseHandler Optional state management button response.
+   */
+  public void showAboutDialog(String aboutMessage, TextInputResponseHandler textInputResponseHandler);
   
   /**
    * Returns true if a dialog is currently open.

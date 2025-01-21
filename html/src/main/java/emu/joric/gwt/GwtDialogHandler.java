@@ -79,6 +79,44 @@ public class GwtDialogHandler implements DialogHandler {
     }-*/;
     
     @Override
+    public void showAboutDialog(String aboutMessage, TextInputResponseHandler textInputResponseHandler) {
+        Gdx.app.postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                dialogOpen = true;
+                showHtmlAboutDialog(aboutMessage, textInputResponseHandler);
+            }
+        });
+    }
+    
+    private final native void showHtmlAboutDialog(String message, TextInputResponseHandler textInputResponseHandler)/*-{
+        var that = this;
+        message = message.replace(/(?:\r\n|\r|\n)/g, "<br>");
+        message = message.replace(/www.oric.org/g, "<a href='https://www.oric.org'  target='_blank'>www.oric.org</a>");
+        message = message.replace(/forum.defence-force.org/g, "<a href='https://forum.defence-force.org/'  target='_blank'>forum.defence-force.org</a>");
+        message = message.replace(/www.defence-force.org/g, "<a href='https://www.defence-force.org/'  target='_blank'>defence-force.org</a>");
+        message = message.replace(/https:\/\/github.com\/lanceewing\/joric/g, "<a href='https://github.com/lanceewing/joric' target='_blank'>https://github.com/lanceewing/joric</a>");
+        this.dialog.alert('', { 
+                showStateButtons: false, 
+                template:  '<b>' + message + '</b>'
+            }).then(function (res) {
+                if (res) {
+                    if (res === true) {
+                       // OK button.
+                        textInputResponseHandler.@emu.joric.ui.TextInputResponseHandler::inputTextResult(ZLjava/lang/String;)(true, "OK");
+                    }
+                    else {
+                        textInputResponseHandler.@emu.joric.ui.TextInputResponseHandler::inputTextResult(ZLjava/lang/String;)(true, res);
+                    }
+                }
+                else {
+                    textInputResponseHandler.@emu.joric.ui.TextInputResponseHandler::inputTextResult(ZLjava/lang/String;)(false, null);
+                }
+                that.@emu.joric.gwt.GwtDialogHandler::dialogOpen = false;
+            });
+    }-*/;
+    
+    @Override
     public boolean isDialogOpen() {
         return dialogOpen;
     }
