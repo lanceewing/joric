@@ -67,18 +67,14 @@ public class GwtLauncher extends GwtApplication {
     
     private boolean isProgramURLValid(String url) {
         String lcProgramURL = url.toLowerCase();
-        if ((lcProgramURL.endsWith(".dsk")) || (lcProgramURL.endsWith(".tap"))) {
-            // If the extension looks fine, then check if the URL itself is valid.
-            return isURLValid(url);
-        } else {
-            if (lcProgramURL.endsWith(".zip")) {
-                logToJSConsole("Sorry, JOric does not support ZIP files yet, but will do soon.");
-            } else if (lcProgramURL.endsWith(".tgz")) {
-                logToJSConsole("Sorry, JOric does not support tgz files.");
-            } else {
-                logToJSConsole("Sorry, the URL provided does not appear to be for a recognised Oric program file format.");
-            }
+        if (lcProgramURL.endsWith(".zip")) {
+            logToJSConsole("Sorry, JOric does not support ZIP files yet, but will do soon.");
             return false;
+        } else if (lcProgramURL.endsWith(".tgz")) {
+            logToJSConsole("Sorry, JOric does not support tgz files.");
+            return false;
+        } else {
+            return isURLValid(url);
         }
     }
     

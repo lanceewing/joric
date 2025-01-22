@@ -528,10 +528,6 @@ public class HomeScreen extends InputAdapter implements Screen {
                 try {
                     // See if there is screenshot icon in the assets folder.
                     Pixmap iconPixmap = new Pixmap(Gdx.files.internal(iconPath));
-                    if ("UNK".equals(type)) {
-                        iconPixmap.setColor(0.0f, 0.0f, 0.0f, 0.5f);
-                        iconPixmap.fillRectangle(0, 0, iconPixmap.getWidth(), iconPixmap.getHeight());
-                    }
                     
                     // If there is, then it's expected to be 320x200, so we scale it to right aspect ratio.
                     Pixmap iconStretchedPixmap = new Pixmap(width, height, iconPixmap.getFormat());
@@ -573,15 +569,11 @@ public class HomeScreen extends InputAdapter implements Screen {
                 if ((gameId != null) && "ADD_GAME".equals(gameId)) {
                     label = new Label("Add Game", skin);
                 } else {
-                    //label = new Label("[empty]", skin);
                     label = new Label("", skin);
                 }
                 label.setColor(new Color(1f, 1f, 1f, 0.6f));
             } else {
                 label = new Label(labelText, skin);
-                if ("UNK".equals(type)) {
-                    label.setColor(new Color(1f, 1f, 1f, 0.6f));
-                }
             }
             label.setFontScale(2f);
             label.setAlignment(Align.top);
