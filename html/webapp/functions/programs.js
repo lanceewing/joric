@@ -20,6 +20,7 @@ export async function onRequest(context) {
 
         if ((url.origin == "https://oric.games") && 
             (targetUrl.startsWith("https://www.defence-force.org/") || 
+             targetUrl.startsWith("https://forum.defence-force.org/") || 
              targetUrl.startsWith("https://cdn.oric.org/"))) {
 
             // Rewrite request to point to target URL. This also makes the request 
