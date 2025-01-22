@@ -564,10 +564,10 @@ public class GwtAYPSG implements AYPSG {
             //        ", cycle rate = " + cyclesPerSecond + 
             //        ", audio time = " + sampleSharedQueue.getCurrentTime());
             
-            logToJSConsole("GwtAYPSG - volumeA: " + volumeA + 
-                    ", volumeB: " + volumeB + ", volumeC: " + volumeC + 
-                    ", cntA: " + cnt[A] + ", cntB: " + cnt[B] + 
-                    ", cntC: " + cnt[C] + ", sample: " + sample);
+            //logToJSConsole("GwtAYPSG - volumeA: " + volumeA + 
+            //        ", volumeB: " + volumeB + ", volumeC: " + volumeC + 
+            //        ", cntA: " + cnt[A] + ", cntB: " + cnt[B] + 
+            //        ", cntC: " + cnt[C] + ", sample: " + sample);
         }
     }
 
