@@ -7,6 +7,7 @@
   <inherits name="com.badlogic.gdx.backends.gdx_backends_gwt" />
   <inherits name="emu.joric.JOric" />
   <inherits name='com.google.gwt.webworker.WebWorker' />
+  <inherits name='com.akjava.gwt.jszip.GWTJSZip'/>
   <inherits name="PieMenu"/>
   <entry-point class="emu.joric.gwt.GwtLauncher" />
   <set-configuration-property name="gdx.assetpath" value="../assets" />
