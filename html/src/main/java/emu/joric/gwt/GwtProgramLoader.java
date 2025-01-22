@@ -14,29 +14,27 @@ public class GwtProgramLoader implements ProgramLoader {
         logToJSConsole("Fetching program '" + appConfigItem.getName() + "'");
         
         Program program = null;
-        if ((appConfigItem.getFileType() != null) && (appConfigItem.getFileType().length() > 0)) {
-            String binaryStr = getBinaryResource(appConfigItem.getFilePath());
-            if (binaryStr != null) {
-                program = new Program();
-                
-                // Use the data to identify the type of program.
-                byte[] data = convertBinaryStringToBytes(binaryStr);
-                
-                if ((data[0] == 0x16) && (data[1] == 0x16) && (data[2] == 0x16)) {
-                    // At least 3 0x16 bytes followed by a 0x24 is a tape file.
-                    appConfigItem.setFileType("TAPE");
-                }
-                else if ((data[0] == 0x4D) && (data[1] == 0x46) && (data[2] == 0x4D)) {
-                    // MFM_DISK - 4D 46 4D 5F 44 49 53 4B
-                    appConfigItem.setFileType("DISK");
-                }
-                else {
-                    logToJSConsole("Sorry, the URL provided does not appear to be for a recognised Oric program file format.");
-                    appConfigItem.setFileType("UNK");
-                }
-                
-                program.setProgramData(data);
+        String binaryStr = getBinaryResource(appConfigItem.getFilePath());
+        if (binaryStr != null) {
+            program = new Program();
+            
+            // Use the data to identify the type of program.
+            byte[] data = convertBinaryStringToBytes(binaryStr);
+            
+            if ((data[0] == 0x16) && (data[1] == 0x16) && (data[2] == 0x16)) {
+                // At least 3 0x16 bytes followed by a 0x24 is a tape file.
+                appConfigItem.setFileType("TAPE");
             }
+            else if ((data[0] == 0x4D) && (data[1] == 0x46) && (data[2] == 0x4D)) {
+                // MFM_DISK - 4D 46 4D 5F 44 49 53 4B
+                appConfigItem.setFileType("DISK");
+            }
+            else {
+                logToJSConsole("Sorry, the URL provided does not appear to be for a recognised Oric program file format.");
+                appConfigItem.setFileType("UNK");
+            }
+            
+            program.setProgramData(data);
         }
         
         programConsumer.accept(program);
