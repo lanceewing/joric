@@ -3,7 +3,6 @@ export async function onRequest(context) {
     const request = context.request;
     
     const corsHeaders = {
-        "Access-Control-Allow-Origin": "https://oric.games",
         "Access-Control-Allow-Methods": "GET,HEAD,POST,OPTIONS",
         "Access-Control-Max-Age": "86400",
         "Vary": "Origin",
@@ -18,7 +17,8 @@ export async function onRequest(context) {
             return new Response("Missing target URL.", { status: 400 });
         }
 
-        if ((url.origin == "https://oric.games") && 
+        if (((url.origin == "https://oric.games") || 
+             (url.origin == "https://agile.agifans.com")) && 
             (targetUrl.startsWith("https://www.defence-force.org/") || 
              targetUrl.startsWith("https://forum.defence-force.org/") || 
              targetUrl.startsWith("https://cdn.oric.org/"))) {
@@ -36,7 +36,7 @@ export async function onRequest(context) {
             response = new Response(response.body, response);
             
             // Set CORS headers
-            response.headers.set("Access-Control-Allow-Origin", "https://oric.games");
+            response.headers.set("Access-Control-Allow-Origin", url.origin);
 
             // Append to/Add Vary header so browser will cache response correctly
             response.headers.append("Vary", "Origin");
@@ -65,9 +65,14 @@ export async function onRequest(context) {
             request.headers.get("Access-Control-Request-Headers") !== null
         ) {
             // Handle CORS preflight requests.
+            let allowOriginHeaderValue = 
+                (request.headers.get("Origin") == "https://agile.agifans.com")?
+                "https://agile.agifans.com" : "https://oric.games";
+            
             return new Response(null, {
                 headers: {
                     ...corsHeaders,
+                    "Access-Control-Allow-Origin": allowOriginHeaderValue,
                     "Access-Control-Allow-Headers": request.headers.get(
                         "Access-Control-Request-Headers",
                     ),
