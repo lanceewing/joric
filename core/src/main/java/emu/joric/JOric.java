@@ -77,17 +77,13 @@ public class JOric extends Game {
             }
             else if (args.containsKey("url")) {
                 String programUrl = args.get("url");
-                String lcProgramUrl = programUrl.toLowerCase();
                 
-                if ((lcProgramUrl.endsWith(".dsk")) || lcProgramUrl.endsWith(".tap")) {
-                    AppConfigItem adhocProgram = new AppConfigItem();
-                    adhocProgram.setName("Adhoc Oric Program");
-                    adhocProgram.setFilePath("https://oric.games/programs?url=" + programUrl);
-                    adhocProgram.setMachineType("PAL");
-                    adhocProgram.setRam("RAM_48K");
-                    adhocProgram.setFileType(lcProgramUrl.endsWith(".dsk")? "DISK" : "TAPE");
-                    appConfigItem = adhocProgram;
-                }
+                AppConfigItem adhocProgram = new AppConfigItem();
+                adhocProgram.setName("Adhoc Oric Program");
+                adhocProgram.setFilePath("https://oric.games/programs?url=" + programUrl);
+                adhocProgram.setMachineType("PAL");
+                adhocProgram.setRam("RAM_48K");
+                appConfigItem = adhocProgram;
             }
         }
         
