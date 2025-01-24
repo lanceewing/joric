@@ -185,6 +185,7 @@ public class HomeScreen extends InputAdapter implements Screen {
         }
         
         PagedScrollPane pagedScrollPane = new PagedScrollPane();
+        pagedScrollPane.setAppConfig(appConfig);
         pagedScrollPane.setFlingTime(0.01f);
 
         int itemsPerPage = columns * rows;
@@ -365,23 +366,47 @@ public class HomeScreen extends InputAdapter implements Screen {
             }
         }
         else if (!modifierDown && !dialogHandler.isDialogOpen()) {
-            if (keycode == Keys.LEFT) {
+            if (keycode == Keys.PAGE_UP) {
                 float newScrollX = MathUtils.clamp(pagedScrollPane.getScrollX() - pageWidth, 0, pagedScrollPane.getMaxX());
                 pagedScrollPane.setScrollX(newScrollX);
                 pagedScrollPane.setLastScrollX(newScrollX);
             }
-            else if (keycode == Keys.RIGHT) {
+            else if (keycode == Keys.PAGE_DOWN) {
                 float newScrollX = MathUtils.clamp(pagedScrollPane.getScrollX() + pageWidth, 0, pagedScrollPane.getMaxX());
                 pagedScrollPane.setScrollX(newScrollX);
                 pagedScrollPane.setLastScrollX(newScrollX);
             }
-            else if (keycode == Keys.UP) {
+            else if (keycode == Keys.HOME) {
                 pagedScrollPane.setScrollX(0.0f);
                 pagedScrollPane.setLastScrollX(0.0f);
             }
-            else if (keycode == Keys.DOWN) {
+            else if (keycode == Keys.END) {
                 pagedScrollPane.setScrollX(pagedScrollPane.getMaxX());
                 pagedScrollPane.setLastScrollX(pagedScrollPane.getMaxX());
+            }
+            else if (keycode == Keys.UP) {
+                pagedScrollPane.prevProgramRow();
+            }
+            else if (keycode == Keys.LEFT) {
+                if (pagedScrollPane.getCurrentSelectionIndex() == 0) {
+                    float newScrollX = MathUtils.clamp(pagedScrollPane.getScrollX() - pageWidth, 0, pagedScrollPane.getMaxX());
+                    pagedScrollPane.setScrollX(newScrollX);
+                    pagedScrollPane.setLastScrollX(newScrollX);
+                } else {
+                    pagedScrollPane.prevProgram();
+                }
+            }
+            else if (keycode == Keys.RIGHT) {
+                if (pagedScrollPane.getCurrentPageNumber() == 0) {
+                    float newScrollX = MathUtils.clamp(pagedScrollPane.getScrollX() + pageWidth, 0, pagedScrollPane.getMaxX());
+                    pagedScrollPane.setScrollX(newScrollX);
+                    pagedScrollPane.setLastScrollX(newScrollX);
+                } else {
+                    pagedScrollPane.nextProgram();
+                }
+            }
+            else if (keycode == Keys.DOWN) {
+                pagedScrollPane.nextProgramRow();
             }
             else if ((keycode >= Keys.A) && (keycode <= Keys.Z)) {
                 // Shortcut keys for accessing games that start with each letter.

@@ -1,13 +1,19 @@
 package emu.joric.ui;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.WindowedMean;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.Table.Debug;
 import com.badlogic.gdx.utils.Array;
+
+import emu.joric.config.AppConfig;
+import emu.joric.config.AppConfigItem;
 
 public class PagedScrollPane extends ScrollPane {
 
@@ -19,6 +25,10 @@ public class PagedScrollPane extends ScrollPane {
 
     private Table content;
 
+    private int currentSelectionIndex;
+    
+    private AppConfig appConfig;
+    
     public PagedScrollPane() {
         super(null);
         setup();
@@ -39,10 +49,15 @@ public class PagedScrollPane extends ScrollPane {
         setup();
     }
 
+    public void setAppConfig(AppConfig appConfig) {
+        this.appConfig = appConfig;
+    }
+    
     private void setup() {
         content = new Table();
         content.defaults().space(50);
         super.setWidget(content);
+        Button.debugCellColor = new Color(1, 1, 1, 0.5f);
     }
 
     public void addPages(Actor... pages) {
@@ -104,19 +119,63 @@ public class PagedScrollPane extends ScrollPane {
         setScrollX(0);
     }
     
+    /**
+     * Gets the number of programs on each page.
+     * 
+     * @return The number of programs on each page.
+     */
     public int getProgramsPerPage() {
         int gamesPerPage = 0;
         if (content.getChildren().notEmpty()) {
+            // Checks the second page, so as to ignore title page.
             Table secondPage = (Table)content.getChild(1);
             gamesPerPage = secondPage.getColumns() * secondPage.getRows();
         }
         return gamesPerPage;
     }
     
+    /**
+     * Gets the number of columns in each page.
+     * 
+     * @return The number of columns in each page.
+     */
+    public int getNumOfColumns() {
+        int numOfColumns = 0;
+        if (content.getChildren().notEmpty()) {
+            Table secondPage = (Table)content.getChild(1);
+            numOfColumns = secondPage.getColumns();
+        }
+        return numOfColumns;
+    }
+    
+    /**
+     * Gets the number of rows in each page.
+     * 
+     * @return The number of rows in each page.
+     */
+    public int getNumOfRows() {
+        int numOfRows = 0;
+        if (content.getChildren().notEmpty()) {
+            Table secondPage = (Table)content.getChild(1);
+            numOfRows = secondPage.getRows();
+        }
+        return numOfRows;
+    }
+    
+    /**
+     * Gets the total number of pages on this paged scroll pane.
+     * 
+     * @return The total number of pages.
+     */
     public int getNumOfPages() {
         return content.getChildren().size;
     }
     
+    /**
+     * Gets the page number of the page currently being seen in this paged scroll pane.
+     * 
+     * @return The page number of the page currently being seen.
+     */
     public int getCurrentPageNumber() {
         int pageNumber = 0;
         if (content.getChildren().notEmpty()) {
@@ -126,6 +185,177 @@ public class PagedScrollPane extends ScrollPane {
         return pageNumber;
     }
     
+    /**
+     * Gets the Table representing the given page.
+     * 
+     * @param pageNum The number of the page to get the Table for.
+     * 
+     * @return The Table representing the specified page.
+     */
+    public Table getPage(int pageNum) {
+        return ((Table)content.getChild(pageNum));
+    }
+    
+    /**
+     * Gets the total number of programs on this paged scroll pane.
+     * 
+     * @return The total number of programs.
+     */
+    public int getNumOfPrograms() {
+        int numOfPrograms = 0;
+        for (AppConfigItem appConfigItem : appConfig.getApps()) {
+            if ((appConfigItem.getIconPath() != null) && (!appConfigItem.getIconPath().equals(""))) {
+                numOfPrograms++;
+            }
+        }
+        return numOfPrograms;
+    }
+    
+    /**
+     * Gets the Button at the given program index.
+     * 
+     * @param programIndex The index to get the program Button for.
+     * 
+     * @return The program Button at the given index.
+     */
+    public Button getProgramButton(int programIndex) {
+        int programsPerPage = getProgramsPerPage();
+        int page = programIndex / programsPerPage;
+        int programOnPageIndex = programIndex - (page * programsPerPage);
+        Table pageTable = (Table)content.getChild(page + 1);
+        
+        // First page is the title page, so we protect against that.
+        if (pageTable.getChildren().size > programOnPageIndex) {
+            if (pageTable.getChild(programOnPageIndex) instanceof Button) {
+                return (Button)pageTable.getChild(programOnPageIndex);
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+    
+    /**
+     * Gets the currently selected program index.
+     * 
+     * @return The currently selected program index.
+     */
+    public int getCurrentSelectionIndex() {
+        return currentSelectionIndex;
+    }
+    
+    /**
+     * Gets the program Button for the currently selected program.
+     * 
+     * @return The program Button for the currently selected program.
+     */
+    public Button getCurrentlySelectedProgramButton() {
+        return getProgramButton(currentSelectionIndex);
+    }
+    
+    /**
+     * Attempts to update the selected program to the one identified by the given
+     * program index, i.e. index into the list of program icons within this paged
+     * scroll pane.
+     * 
+     * @param newSelectionIndex The index of the program icon to select.
+     */
+    private void updateSelection(int newSelectionIndex) {
+        int numberOfPrograms = getNumOfPrograms();
+        
+        // Bounds checks.
+        if (newSelectionIndex < 0) {
+            newSelectionIndex = 0;
+        }
+        if (newSelectionIndex >= numberOfPrograms) {
+            newSelectionIndex = numberOfPrograms - 1;
+        }
+        
+        if (newSelectionIndex != currentSelectionIndex) {
+            // Remove highlight from previously selected program.
+            updateSelectionHighlight(currentSelectionIndex, false);
+            
+            // Add highlight to newly selected program.
+            updateSelectionHighlight(newSelectionIndex, true);
+            currentSelectionIndex = newSelectionIndex;
+            
+            // Move to the page that the program is on, if required. 
+            showProgramPage(currentSelectionIndex);
+        }
+        
+        System.out.println("numberOfPrograms: " + numberOfPrograms + 
+                ", newSelectionIndex: " + newSelectionIndex + 
+                ", currentSelectionIndex: " + currentSelectionIndex);
+    }
+    
+    /**
+     * Updates the highlight status of the program icon identified by the
+     * given index. It uses the libGDX built in "debug" highlighted feature
+     * as a simple way to highlight.
+     * 
+     * @param programIndex The index of the program to update the highlight for.
+     * @param highlight Whether or not to highlight the icon.
+     */
+    private void updateSelectionHighlight(int programIndex, boolean highlight) {
+        Button programButton = getProgramButton(programIndex);
+        if (programButton != null) {
+            programButton.debug(highlight? Debug.cell : Debug.none);
+        }
+    }
+    
+    /**
+     * Navigates to the next program.
+     */
+    public void nextProgram() {
+        updateSelection(currentSelectionIndex + 1);
+    }
+    
+    /**
+     * Navigates to the previous program.
+     */
+    public void prevProgram() {
+        updateSelection(currentSelectionIndex - 1);
+    }
+    
+    /**
+     * Navigates to the next row of programs.
+     */
+    public void nextProgramRow() {
+        updateSelection(currentSelectionIndex + getNumOfColumns());
+    }
+    
+    /**
+     * Navigates to the previous row of programs.
+     */
+    public void prevProgramRow() {
+        updateSelection(currentSelectionIndex - getNumOfColumns());
+    }
+    
+    /**
+     * This method is used by the key navigation, i.e. when it has calculated a specific
+     * program index to move to. The navigation keys are used to navigation +/- one
+     * item at a time, or page up/down at a time, then after the new index has been
+     * calculated, the PagedScrollPane moves to the new page, if required.
+     * 
+     * @param programIndex The index of the program to move to.
+     */
+    private void showProgramPage(int programIndex) {
+        // Apply scroll X without animating, i.e. move immediately to the page.
+        // TODO: stage.act(0f);
+        
+        // Work out how far to move from far left to get to program's page.
+        int programsPerPage = getProgramsPerPage();
+        float pageWidth = ViewportManager.getInstance().isPortrait()? 1130.0f : 1970.0f;
+        float newScrollX = pageWidth * (programIndex / programsPerPage) + pageWidth;
+        
+        setScrollX(newScrollX);
+        setLastScrollX(newScrollX);
+    }
+    
+    /**
+     * This method is used by the fling mechanism and not by key navigation.
+     */
     private void scrollToPage() {
         final float width = getWidth();
         final float scrollX = getScrollX();
