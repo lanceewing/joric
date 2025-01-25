@@ -1,14 +1,6 @@
 {
   "apps": [
     {
-      "name": "BASIC",
-      "filePath": "",
-      "fileType": "",
-      "iconPath": "screenshots/B/Basic/Basic.png",
-      "machineType": "PAL",
-      "ram": "RAM_48K"
-    },
-    {
       "name": "1337",
       "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2F0-9%2F1337%2F1337.dsk",
       "fileType": "DISK",
