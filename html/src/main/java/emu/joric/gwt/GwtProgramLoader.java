@@ -18,6 +18,12 @@ public class GwtProgramLoader implements ProgramLoader {
     public void fetchProgram(AppConfigItem appConfigItem, Consumer<Program> programConsumer) {
         logToJSConsole("Fetching program '" + appConfigItem.getName() + "'");
         
+        // For configs such as BASIC, there is no file path, so return without program.
+        if ("".equals(appConfigItem.getFilePath())) {
+            programConsumer.accept(null);
+            return;
+        }
+        
         Program program = null;
         byte[] programData = null;
         
