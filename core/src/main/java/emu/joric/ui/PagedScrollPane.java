@@ -261,7 +261,7 @@ public class PagedScrollPane extends ScrollPane {
      * 
      * @param newSelectionIndex The index of the program icon to select.
      */
-    private void updateSelection(int newSelectionIndex) {
+    public void updateSelection(int newSelectionIndex) {
         int numberOfPrograms = getNumOfPrograms();
         
         // Bounds checks.
@@ -293,7 +293,7 @@ public class PagedScrollPane extends ScrollPane {
      * @param programIndex The index of the program to update the highlight for.
      * @param highlight Whether or not to highlight the icon.
      */
-    private void updateSelectionHighlight(int programIndex, boolean highlight) {
+    public void updateSelectionHighlight(int programIndex, boolean highlight) {
         Button programButton = getProgramButton(programIndex);
         if (programButton != null) {
             programButton.debug(highlight? Debug.cell : Debug.none);
@@ -337,9 +337,6 @@ public class PagedScrollPane extends ScrollPane {
      * @param programIndex The index of the program to move to.
      */
     private void showProgramPage(int programIndex) {
-        // Apply scroll X without animating, i.e. move immediately to the page.
-        // TODO: stage.act(0f);
-        
         // Work out how far to move from far left to get to program's page.
         int programsPerPage = getProgramsPerPage();
         float pageWidth = ViewportManager.getInstance().isPortrait()? 1130.0f : 1970.0f;

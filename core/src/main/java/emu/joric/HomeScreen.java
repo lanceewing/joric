@@ -399,6 +399,7 @@ public class HomeScreen extends InputAdapter implements Screen {
             else if (keycode == Keys.RIGHT) {
                 if (pagedScrollPane.getCurrentPageNumber() == 0) {
                     float newScrollX = MathUtils.clamp(pagedScrollPane.getScrollX() + pageWidth, 0, pagedScrollPane.getMaxX());
+                    pagedScrollPane.updateSelectionHighlight(0, true);
                     pagedScrollPane.setScrollX(newScrollX);
                     pagedScrollPane.setLastScrollX(newScrollX);
                 } else {
