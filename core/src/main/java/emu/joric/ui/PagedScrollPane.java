@@ -283,10 +283,6 @@ public class PagedScrollPane extends ScrollPane {
             // Move to the page that the program is on, if required. 
             showProgramPage(currentSelectionIndex);
         }
-        
-        System.out.println("numberOfPrograms: " + numberOfPrograms + 
-                ", newSelectionIndex: " + newSelectionIndex + 
-                ", currentSelectionIndex: " + currentSelectionIndex);
     }
     
     /**
