@@ -262,6 +262,18 @@ public class PagedScrollPane extends ScrollPane {
      * @param newSelectionIndex The index of the program icon to select.
      */
     public void updateSelection(int newSelectionIndex) {
+        updateSelection(newSelectionIndex, false);
+    }
+    
+    /**
+     * Attempts to update the selected program to the one identified by the given
+     * program index, i.e. index into the list of program icons within this paged
+     * scroll pane.
+     * 
+     * @param newSelectionIndex The index of the program icon to select.
+     * @param showPage Whether to scroll to show the page the program is on, or not.
+     */
+    public void updateSelection(int newSelectionIndex, boolean showPage) {
         int numberOfPrograms = getNumOfPrograms();
         
         // Bounds checks.
@@ -280,8 +292,14 @@ public class PagedScrollPane extends ScrollPane {
             updateSelectionHighlight(newSelectionIndex, true);
             currentSelectionIndex = newSelectionIndex;
             
-            // Move to the page that the program is on, if required. 
-            showProgramPage(currentSelectionIndex);
+            if (showPage) {
+                // Move to the page that the program is on, if required. 
+                showProgramPage(currentSelectionIndex);
+            }
+        } else {
+            // In some scenarios, the currently selected one isn't highlighted, 
+            // so we always apply the highlight, which may not change anything.
+            updateSelectionHighlight(currentSelectionIndex, true);
         }
     }
     

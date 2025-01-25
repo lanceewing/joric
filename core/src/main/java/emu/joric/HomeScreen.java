@@ -1,6 +1,7 @@
 package emu.joric;
 
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -84,6 +85,11 @@ public class HomeScreen extends InputAdapter implements Screen {
     private InputMultiplexer landscapeInputProcessor;
 
     /**
+     * Holds a reference to the special app config item for BASIC.
+     */
+    private AppConfigItem basicAppConfigItem;
+    
+    /**
      * Holds a reference to the AppConfigItem for the last program that was
      * launched.
      */
@@ -103,6 +109,8 @@ public class HomeScreen extends InputAdapter implements Screen {
         Json json = new Json();
         String appConfigJson = Gdx.files.internal("data/programs.json").readString();
         AppConfig appConfig = json.fromJson(AppConfig.class, appConfigJson);
+        removeProgramsWithIcons(appConfig);
+        basicAppConfigItem = buildBasicAppConfigItem();
         appConfigMap = new TreeMap<String, AppConfigItem>();
         for (AppConfigItem appConfigItem : appConfig.getApps()) {
             appConfigMap.put(appConfigItem.getName(), appConfigItem);
@@ -134,6 +142,34 @@ public class HomeScreen extends InputAdapter implements Screen {
         landscapeInputProcessor.addProcessor(this);
     }
 
+    /**
+     * Removes programs from the AppConfig where the icon path is not set.
+     * 
+     * @param appConfig The AppConfig to remove the programs from.
+     */
+    private void removeProgramsWithIcons(AppConfig appConfig) {
+        if ((appConfig != null) && (appConfig.getApps() != null)) {
+            ArrayList<AppConfigItem> modifiedApps = new ArrayList<>();
+            for (AppConfigItem appConfigItem : appConfig.getApps()) {
+                if ((appConfigItem.getIconPath() != null) && (!appConfigItem.getIconPath().equals(""))) {
+                    modifiedApps.add(appConfigItem);
+                }
+            }
+            appConfig.setApps(modifiedApps);
+        }
+    }
+    
+    private AppConfigItem buildBasicAppConfigItem() {
+        AppConfigItem basicAppConfigItem = new AppConfigItem();
+        basicAppConfigItem.setName("BASIC");
+        basicAppConfigItem.setFilePath("");
+        basicAppConfigItem.setFileType("");
+        basicAppConfigItem.setIconPath("screenshots/B/Basic/Basic.png");
+        basicAppConfigItem.setMachineType("PAL");
+        basicAppConfigItem.setRam("RAM_48K");
+        return basicAppConfigItem;
+    }
+    
     private Stage createStage(Viewport viewport, PaginationWidget paginationWidget, AppConfig appConfig) {
         Stage stage = new Stage(viewport);
         addAppButtonsToStage(stage, paginationWidget, appConfig);
@@ -197,6 +233,10 @@ public class HomeScreen extends InputAdapter implements Screen {
         currentPage = new Table().pad(0, sidePadding, 0, sidePadding);
         currentPage.defaults().pad(0, horizPaddingUnit, 0, horizPaddingUnit);
 
+        // Add entry at the start for BASIC that will always be present
+        currentPage.add(buildAppButton(basicAppConfigItem)).expand().fill();
+        pageItemCount++;
+        
         for (AppConfigItem appConfigItem : appConfig.getApps()) {
             // Every itemsPerPage apps, add a new page.
             if (pageItemCount == itemsPerPage) {
@@ -409,12 +449,25 @@ public class HomeScreen extends InputAdapter implements Screen {
             else if (keycode == Keys.DOWN) {
                 pagedScrollPane.nextProgramRow();
             }
+            else if ((keycode == Keys.SPACE) || (keycode == Keys.ENTER)) {
+                Button button = pagedScrollPane.getCurrentlySelectedProgramButton();
+                if (button != null) {
+                    String appName = button.getName();
+                    if ((appName != null) && (!appName.equals(""))) {
+                        final AppConfigItem appConfigItem = (appName.equals("BASIC")?
+                                basicAppConfigItem : appConfigMap.get(appName));
+                        if (appConfigItem != null) {
+                            processProgramSelection(appConfigItem);
+                        }
+                    }
+                }
+            }
             else if ((keycode >= Keys.A) && (keycode <= Keys.Z)) {
                 // Shortcut keys for accessing games that start with each letter.
                 // Keys.A is 29, Keys.Z is 54. ASCII is A=65, Z=90. So we add 36.
                 int gameIndex = getIndexOfFirstProgramStartingWithChar((char)(keycode + 36));
                 if (gameIndex > -1) {
-                    // Add one to allow for the "Add Game" icon in the first slot.
+                    // Add one to allow for the "BASIC" icon in the first slot.
                     showProgramPage(gameIndex + 1, false);
                 }
             }
@@ -679,7 +732,8 @@ public class HomeScreen extends InputAdapter implements Screen {
             Actor actor = event.getListenerActor();
             String appName = actor.getName();
             if ((appName != null) && (!appName.equals(""))) {
-                final AppConfigItem appConfigItem = appConfigMap.get(appName);
+                final AppConfigItem appConfigItem = (appName.equals("BASIC")?
+                        basicAppConfigItem : appConfigMap.get(appName));
                 if (appConfigItem != null) {
                     processProgramSelection(appConfigItem);
                 } else if (appName.equals("INFO")) {
@@ -752,14 +806,12 @@ public class HomeScreen extends InputAdapter implements Screen {
     private int getIndexOfFirstProgramStartingWithChar(char letter) {
         int programIndex = 0;
         
-        for (int loopCount=0; loopCount < 2; loopCount++) {
-            for (AppConfigItem appConfigItem : appConfigMap.values()) {
-                programIndex++;
-                String programName = appConfigItem.getName();
-                if (programName.toUpperCase().startsWith("" + letter)) {
-                    return programIndex;
-                }
+        for (AppConfigItem appConfigItem : appConfigMap.values()) {
+            String programName = appConfigItem.getName();
+            if (programName.toUpperCase().startsWith("" + letter)) {
+                return programIndex;
             }
+            programIndex++;
         }
         
         return -1;
@@ -768,15 +820,14 @@ public class HomeScreen extends InputAdapter implements Screen {
     private int getProgramIndex(AppConfigItem program) {
         int programIndex = 0;
         
-        for (int loopCount=0; loopCount < 2; loopCount++) {
-            for (AppConfigItem appConfigItem : appConfigMap.values()) {
-                programIndex++;
-                if (appConfigItem.getName().equals(program.getName())) {
-                    return programIndex;
-                }
+        for (AppConfigItem appConfigItem : appConfigMap.values()) {
+            programIndex++;
+            if (appConfigItem.getName().equals(program.getName())) {
+                return programIndex;
             }
         }
         
+        // NOTE: BASIC will return 0, as it isn't in the Map.
         return 0;
     }
     
@@ -795,6 +846,9 @@ public class HomeScreen extends InputAdapter implements Screen {
         int programsPerPage = pagedScrollPane.getProgramsPerPage();
         float pageWidth = viewportManager.isPortrait()? 1130.0f : 1970.0f;
         float newScrollX = pageWidth * (programIndex / programsPerPage) + pageWidth;
+        
+        // Set program highlight to the program with the specified index.
+        pagedScrollPane.updateSelection(programIndex, false);
         
         pagedScrollPane.setScrollX(newScrollX);
         pagedScrollPane.setLastScrollX(newScrollX);
