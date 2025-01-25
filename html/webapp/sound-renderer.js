@@ -206,7 +206,13 @@ class SoundRenderer extends AudioWorkletProcessor {
         // We have only one output, with one channel (mono), sample rate 22050.
         // Sample values are float values between -1 and 1.
         
-        // (currentFrame / currentTime) = 22050, i.e. the sampleRate
+        let logDebugOutput = false;
+        
+        // TODO: Debug output. Remove later on.
+        if (this.callCount++ >= (SoundRenderer.CALLS_PER_SECOND * 5)) {
+            this.callCount = 0;
+            logDebugOutput = true;
+        }
         
         if (this.ready) {
             
@@ -220,16 +226,18 @@ class SoundRenderer extends AudioWorkletProcessor {
             
             this.deltaCount++;
             
-            if (this.callCount++ >= SoundRenderer.CALLS_PER_SECOND) {
-                this.callCount = 0;
-                
-                //console.log("Available to read = " + this.sampleSharedQueue.availableRead() + 
-                //            ", output array len = " + outputs[0][0].length +
-                //            ", currentTime = " + currentTime + 
-                //            ", average delta = " + ((timeThisCall - this.startTime) / this.deltaCount) +
-                //            ", output rate = " + (currentFrame / currentTime));
+            if (logDebugOutput) {
+                console.log("Available to read = " + this.sampleSharedQueue.availableRead() + 
+                            ", output array len = " + outputs[0][0].length +
+                            ", currentTime = " + currentTime + 
+                            ", average delta = " + ((timeThisCall - this.startTime) / this.deltaCount) +
+                            ", output rate = " + (currentFrame / currentTime));
             }
-        }
+        } else {
+			if (logDebugOutput) {
+				console.log("AudioWorkletProcessor not ready. SAB not received yet.");
+			}
+		}
 
         // Returning true tells audio thread we're still outputing.
         return true;
