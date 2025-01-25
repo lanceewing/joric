@@ -262,7 +262,7 @@ public class PagedScrollPane extends ScrollPane {
      * @param newSelectionIndex The index of the program icon to select.
      */
     public void updateSelection(int newSelectionIndex) {
-        updateSelection(newSelectionIndex, false);
+        updateSelection(newSelectionIndex, true);
     }
     
     /**
@@ -280,8 +280,8 @@ public class PagedScrollPane extends ScrollPane {
         if (newSelectionIndex < 0) {
             newSelectionIndex = 0;
         }
-        if (newSelectionIndex >= numberOfPrograms) {
-            newSelectionIndex = numberOfPrograms - 1;
+        if (newSelectionIndex > numberOfPrograms) {
+            newSelectionIndex = numberOfPrograms;
         }
         
         if (newSelectionIndex != currentSelectionIndex) {
