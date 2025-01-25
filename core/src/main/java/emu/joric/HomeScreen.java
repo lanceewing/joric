@@ -221,7 +221,7 @@ public class HomeScreen extends InputAdapter implements Screen {
         }
         
         PagedScrollPane pagedScrollPane = new PagedScrollPane();
-        pagedScrollPane.setAppConfig(appConfig);
+        pagedScrollPane.setHomeScreen(this);
         pagedScrollPane.setFlingTime(0.01f);
 
         int itemsPerPage = columns * rows;
@@ -864,5 +864,13 @@ public class HomeScreen extends InputAdapter implements Screen {
         } else {
             return null;
         }
+    }
+    
+    public boolean isMobile() {
+        return joric.getJOricRunner().isMobile();
+    }
+    
+    public Map<String, AppConfigItem> getAppConfigMap() {
+        return appConfigMap;
     }
 }

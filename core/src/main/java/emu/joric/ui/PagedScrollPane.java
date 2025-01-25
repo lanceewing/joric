@@ -1,5 +1,6 @@
 package emu.joric.ui;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.WindowedMean;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Table.Debug;
 import com.badlogic.gdx.utils.Array;
 
+import emu.joric.HomeScreen;
 import emu.joric.config.AppConfig;
 import emu.joric.config.AppConfigItem;
 
@@ -27,7 +29,7 @@ public class PagedScrollPane extends ScrollPane {
 
     private int currentSelectionIndex;
     
-    private AppConfig appConfig;
+    private HomeScreen homeScreen;
     
     public PagedScrollPane() {
         super(null);
@@ -49,8 +51,8 @@ public class PagedScrollPane extends ScrollPane {
         setup();
     }
 
-    public void setAppConfig(AppConfig appConfig) {
-        this.appConfig = appConfig;
+    public void setHomeScreen(HomeScreen homeScreen) {
+        this.homeScreen = homeScreen;
     }
     
     private void setup() {
@@ -202,13 +204,7 @@ public class PagedScrollPane extends ScrollPane {
      * @return The total number of programs.
      */
     public int getNumOfPrograms() {
-        int numOfPrograms = 0;
-        for (AppConfigItem appConfigItem : appConfig.getApps()) {
-            if ((appConfigItem.getIconPath() != null) && (!appConfigItem.getIconPath().equals(""))) {
-                numOfPrograms++;
-            }
-        }
-        return numOfPrograms;
+        return homeScreen.getAppConfigMap().size();
     }
     
     /**
@@ -314,7 +310,9 @@ public class PagedScrollPane extends ScrollPane {
     public void updateSelectionHighlight(int programIndex, boolean highlight) {
         Button programButton = getProgramButton(programIndex);
         if (programButton != null) {
-            programButton.debug(highlight? Debug.cell : Debug.none);
+            if (!homeScreen.isMobile()) {
+                programButton.debug(highlight? Debug.cell : Debug.none);
+            }
         }
     }
     
