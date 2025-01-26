@@ -20,6 +20,12 @@ public class PagedScrollPane extends ScrollPane {
 
     private float lastScrollX = 0;
 
+    private float lastVisualScrollX = 0;
+    
+    private boolean wasStillMovingLastAct;
+    
+    
+    
     private WindowedMean scrollXDeltaMean = new WindowedMean(5);
 
     private Table content;
@@ -76,13 +82,40 @@ public class PagedScrollPane extends ScrollPane {
             wasPanDragFling = false;
             scrollToPage();
             scrollXDeltaMean.clear();
-
         } else {
             if (isPanning() || isDragging() || isFlinging()) {
                 wasPanDragFling = true;
                 scrollXDeltaMean.addValue(getScrollX() - lastScrollX);
                 lastScrollX = getScrollX();
+            } else {
+                if (lastVisualScrollX != getVisualScrollX()) {
+                    wasStillMovingLastAct = true;
+                    updateSelectionToBeOnCurrentPage();
+                } else {
+                    if (wasStillMovingLastAct) {
+                        updateSelectionToBeOnCurrentPage();
+                    }
+                    wasStillMovingLastAct = false;
+                }
+                lastVisualScrollX = getVisualScrollX();
             }
+        }
+    }
+    
+    public void updateSelectionToBeOnCurrentPage() {
+        int pageNumber = getCurrentPageNumber();
+        if (pageNumber > 0) {
+            // We only set the selection if it isn't already on the current page.
+            int programsPerPage = getProgramsPerPage();
+            int firstOnPage = programsPerPage * (pageNumber - 1);
+            int lastOnPage = ((firstOnPage + programsPerPage) - 1);
+            if ((currentSelectionIndex < firstOnPage) || (currentSelectionIndex > lastOnPage)) {
+                int newSelectionIndex = getProgramsPerPage() * (pageNumber - 1);
+                updateSelection(newSelectionIndex, false);
+            }
+        } else {
+            // When on home screen, always set selection to first one.
+            updateSelection(0, false);
         }
     }
 
