@@ -1,6 +1,5 @@
 package emu.joric.ui;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.WindowedMean;
@@ -14,8 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table.Debug;
 import com.badlogic.gdx.utils.Array;
 
 import emu.joric.HomeScreen;
-import emu.joric.config.AppConfig;
-import emu.joric.config.AppConfigItem;
 
 public class PagedScrollPane extends ScrollPane {
 
@@ -342,6 +339,20 @@ public class PagedScrollPane extends ScrollPane {
      */
     public void prevProgramRow() {
         updateSelection(currentSelectionIndex - getNumOfColumns());
+    }
+    
+    /**
+     * Navigates to the next page of programs.
+     */
+    public void nextProgramPage() {
+        updateSelection(currentSelectionIndex + getProgramsPerPage(), false);
+    }
+    
+    /**
+     * Navigates to the previous page of programs.
+     */
+    public void prevProgramPage() {
+        updateSelection(currentSelectionIndex - getProgramsPerPage(), false);
     }
     
     /**

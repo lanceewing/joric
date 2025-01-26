@@ -407,11 +407,19 @@ public class HomeScreen extends InputAdapter implements Screen {
         }
         else if (!modifierDown && !dialogHandler.isDialogOpen()) {
             if (keycode == Keys.PAGE_UP) {
+                if (pagedScrollPane.getCurrentPageNumber() > 1) {
+                    pagedScrollPane.prevProgramPage();
+                }
                 float newScrollX = MathUtils.clamp(pagedScrollPane.getScrollX() - pageWidth, 0, pagedScrollPane.getMaxX());
                 pagedScrollPane.setScrollX(newScrollX);
                 pagedScrollPane.setLastScrollX(newScrollX);
             }
             else if (keycode == Keys.PAGE_DOWN) {
+                if (pagedScrollPane.getCurrentPageNumber() > 0) {
+                    pagedScrollPane.nextProgramPage();
+                } else {
+                    pagedScrollPane.updateSelection(0, false);
+                }
                 float newScrollX = MathUtils.clamp(pagedScrollPane.getScrollX() + pageWidth, 0, pagedScrollPane.getMaxX());
                 pagedScrollPane.setScrollX(newScrollX);
                 pagedScrollPane.setLastScrollX(newScrollX);
@@ -419,10 +427,12 @@ public class HomeScreen extends InputAdapter implements Screen {
             else if (keycode == Keys.HOME) {
                 pagedScrollPane.setScrollX(0.0f);
                 pagedScrollPane.setLastScrollX(0.0f);
+                pagedScrollPane.updateSelection(0, false);
             }
             else if (keycode == Keys.END) {
                 pagedScrollPane.setScrollX(pagedScrollPane.getMaxX());
                 pagedScrollPane.setLastScrollX(pagedScrollPane.getMaxX());
+                pagedScrollPane.updateSelection(appConfigMap.size(), false);
             }
             else if (keycode == Keys.UP) {
                 pagedScrollPane.prevProgramRow();
