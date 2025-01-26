@@ -60,10 +60,10 @@ public class PaginationWidget extends Widget {
                 //System.out.println("clicked: " + x + ", y: " + y);
                 if (y < PAGINATION_BAR_HEIGHT) {
                     if (x < ICON_SIZE) {
-                        homeScreen.keyUp(Keys.LEFT);
+                        homeScreen.keyUp(Keys.PAGE_UP);
                     }
                     if (x > (width - ICON_SIZE)) {
-                        homeScreen.keyUp(Keys.RIGHT);
+                        homeScreen.keyUp(Keys.PAGE_DOWN);
                     }
                 }
             }
