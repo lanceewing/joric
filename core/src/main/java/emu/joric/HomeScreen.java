@@ -457,7 +457,9 @@ public class HomeScreen extends InputAdapter implements Screen {
                 }
             }
             else if (keycode == Keys.DOWN) {
-                pagedScrollPane.nextProgramRow();
+                if (pagedScrollPane.getCurrentPageNumber() > 0) {
+                    pagedScrollPane.nextProgramRow();
+                }
             }
             else if ((keycode == Keys.SPACE) || (keycode == Keys.ENTER)) {
                 Button button = pagedScrollPane.getCurrentlySelectedProgramButton();
