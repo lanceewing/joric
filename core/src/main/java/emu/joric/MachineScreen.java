@@ -228,11 +228,11 @@ public class MachineScreen implements Screen {
                 Pixmap.Format.RGBA8888);
         Texture[] screens = new Texture[3];
         screens[0] = new Texture(screenPixmap, Pixmap.Format.RGBA8888, false);
-        screens[0].setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        screens[0].setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Nearest);
         screens[1] = new Texture(screenPixmap, Pixmap.Format.RGBA8888, false);
-        screens[1].setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        screens[1].setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Nearest);
         screens[2] = new Texture(screenPixmap, Pixmap.Format.RGBA8888, false);
-        screens[2].setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        screens[2].setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Nearest);
         
         Camera camera = new OrthographicCamera();
         Viewport viewport = new ExtendViewport(((machineType.getVisibleScreenHeight() / 4) * 5),
