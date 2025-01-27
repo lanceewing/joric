@@ -24,8 +24,6 @@ public class PagedScrollPane extends ScrollPane {
     
     private boolean wasStillMovingLastAct;
     
-    
-    
     private WindowedMean scrollXDeltaMean = new WindowedMean(5);
 
     private Table content;
@@ -62,9 +60,9 @@ public class PagedScrollPane extends ScrollPane {
         content = new Table();
         content.defaults().space(50);
         super.setWidget(content);
-        Button.debugCellColor = new Color(1, 1, 1, 0.5f);
+        Button.debugCellColor = new Color(1, 1, 1, 1.0f);
     }
-
+    
     public void addPages(Actor... pages) {
         for (Actor page : pages) {
             content.add(page).expandY().fillY();

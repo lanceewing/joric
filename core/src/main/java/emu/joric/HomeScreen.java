@@ -19,12 +19,16 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Table.DebugRect;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -595,6 +599,33 @@ public class HomeScreen extends InputAdapter implements Screen {
     }
     
     /**
+     * Custom button that renders the debug with a thicker line.
+     */
+    private static class ProgramButton extends Button {
+        
+        public ProgramButton(Skin skin) {
+            super(skin);
+        }
+        
+        public void drawDebug (ShapeRenderer shapes) {
+            if (!getDebug()) return;
+            shapes.set(ShapeType.Line);
+            shapes.setColor(new Color(1, 1, 1, 1.0f));
+            shapes.rect(
+                    getX(), 
+                    getY(), 
+                    getWidth(), 
+                    getHeight());
+            shapes.setColor(new Color(1, 1, 1, 0.7f));
+            shapes.rect(
+                    getX() + 1, 
+                    getY() + 1, 
+                    getWidth() - 2, 
+                    getHeight() - 2);
+        }
+    }
+    
+    /**
      * Creates a button using the given parameters.
      * 
      * @param name 
@@ -606,7 +637,7 @@ public class HomeScreen extends InputAdapter implements Screen {
      * @return The created Button.
      */
     private Button buildButton(String name, String labelText, String iconPath, int width, int height, String type, String gameId) {
-        Button button = new Button(skin);
+        Button button = new ProgramButton(skin);
         ButtonStyle style = button.getStyle();
         style.up = style.down = null;
 
