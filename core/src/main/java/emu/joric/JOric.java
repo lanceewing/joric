@@ -77,10 +77,9 @@ public class JOric extends Game {
             }
             else if (args.containsKey("url")) {
                 String programUrl = args.get("url");
-                
                 AppConfigItem adhocProgram = new AppConfigItem();
                 adhocProgram.setName("Adhoc Oric Program");
-                adhocProgram.setFilePath("https://oric.games/programs?url=" + programUrl);
+                adhocProgram.setFilePath(getFilePathForProgramUrl(programUrl));
                 adhocProgram.setMachineType("PAL");
                 adhocProgram.setRam("RAM_48K");
                 appConfigItem = adhocProgram;
@@ -97,6 +96,29 @@ public class JOric extends Game {
         Gdx.input.setCatchBackKey(true);
     }
 
+    /**
+     * Gets the filePath to use for the given program URL, when used with the
+     * ?url request parameter.
+     * 
+     * @param programUrl
+     * 
+     * @return
+     */
+    private String getFilePathForProgramUrl(String programUrl) {
+        if ((programUrl.startsWith("http://localhost/")) || 
+            (programUrl.startsWith("http://localhost:")) || 
+            (programUrl.startsWith("https://localhost/")) || 
+            (programUrl.startsWith("https://localhost:")) ||
+            (programUrl.startsWith("http://127.0.0.1/")) || 
+            (programUrl.startsWith("http://127.0.0.1:")) || 
+            (programUrl.startsWith("https://127.0.0.1/")) || 
+            (programUrl.startsWith("https://127.0.0.1:"))) {
+            return programUrl;
+        } else {
+            return ("https://oric.games/programs?url=" + programUrl);
+        }
+    }
+    
     /**
      * Gets the MachineScreen.
      * 
