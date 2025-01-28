@@ -7,6 +7,7 @@ import com.akjava.gwt.jszip.JSFile;
 import com.akjava.gwt.jszip.JSZip;
 import com.akjava.gwt.jszip.Uint8Array;
 import com.google.gwt.core.client.JsArrayString;
+import com.google.gwt.user.client.Window;
 
 import emu.joric.Program;
 import emu.joric.ProgramLoader;
@@ -27,7 +28,7 @@ public class GwtProgramLoader implements ProgramLoader {
         Program program = null;
         byte[] programData = null;
         
-        String binaryStr = getBinaryResource(appConfigItem.getFilePath());
+        String binaryStr = getBinaryResource(applyFilePathOverride(appConfigItem.getFilePath()));
         if (binaryStr != null) {
             // Use the data to identify the type of program.
             byte[] data = convertBinaryStringToBytes(binaryStr);
@@ -106,6 +107,15 @@ public class GwtProgramLoader implements ProgramLoader {
         return out.toByteArray();
     }
 
+    private String applyFilePathOverride(String filePath) {
+        if (Window.Location.getHostName() == "localhost") {
+            if (filePath.startsWith("https://oric.games/")) {
+                return filePath.replace("https://oric.games/", "http://localhost/");
+            }
+        }
+        return filePath;
+    }
+    
     /**
      * Fetches the given relative URL path as binary data returned in an ArrayBuffer.
      * 
