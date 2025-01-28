@@ -718,13 +718,17 @@ public class HomeScreen extends InputAdapter implements Screen {
      * @return
      */
     public AppConfigItem getAppConfigItemByProgramUri(String programUri) {
-        for (AppConfigItem appConfigItem : appConfigMap.values()) {
-            String uri = joric.getJOricRunner().slugify(appConfigItem.getName());
-            if (uri.equalsIgnoreCase(programUri)) {
-                return appConfigItem;
+        if (programUri.toLowerCase().equals("basic")) {
+            return basicAppConfigItem;
+        } else {
+            for (AppConfigItem appConfigItem : appConfigMap.values()) {
+                String uri = joric.getJOricRunner().slugify(appConfigItem.getName());
+                if (uri.equalsIgnoreCase(programUri)) {
+                    return appConfigItem;
+                }
             }
+            return null;
         }
-        return null;
     }
 
     /**
