@@ -40,6 +40,16 @@ public class MachineInputProcessor extends InputAdapter {
     private boolean speakerOn;
     
     /**
+     * Whether or not the screen is slightly blurred (linear vs nearest).
+     */
+    private boolean blurOff;
+    
+    /**
+     * Whether or not the machine is paused.
+     */
+    private boolean pauseOn;
+    
+    /**
      * The current offset from centre of the camera in the X direction.
      */
     private float cameraXOffset;
@@ -182,6 +192,8 @@ public class MachineInputProcessor extends InputAdapter {
             boolean backArrowClicked = false;
             boolean fullScreenClicked = false;
             boolean speakerClicked = false;
+            boolean blurClicked = false;
+            boolean pauseClicked = false;
 
             if (viewportManager.isPortrait()) {
                 // Portrait.
@@ -491,6 +503,42 @@ public class MachineInputProcessor extends InputAdapter {
         this.speakerOn = speakerOn;
     }
 
+    /**
+     * Returns whether the blur screen mode is on or not.
+     * 
+     * @return
+     */
+    public boolean isBlurOff() {
+        return blurOff;
+    }
+    
+    /**
+     * Sets whether the blur screen mode is on or not.
+     * 
+     * @param blurOn
+     */
+    public void setBlurOff(boolean blurOff) {
+        this.blurOff = blurOff;
+    }
+    
+    /**
+     * Returns whether pause is on or not.
+     * 
+     * @return
+     */
+    public boolean isPauseOn() {
+        return pauseOn;
+    }
+    
+    /**
+     * Sets whether pause is on or not.
+     * 
+     * @param pauseOn
+     */
+    public void setPauseOn(boolean pauseOn) {
+        this.pauseOn = pauseOn;
+    }
+    
     /**
      * Sets the current offset from centre of the camera in the X direction.
      * 
