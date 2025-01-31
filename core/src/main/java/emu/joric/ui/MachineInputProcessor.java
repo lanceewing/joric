@@ -228,24 +228,34 @@ public class MachineInputProcessor extends InputAdapter {
                 if (cameraXOffset == 0) {
                     if ((viewportManager.getOricScreenBase() > 0) || (viewportManager.getSidePaddingWidth() <= 64)) {
                         if (touchXY.y < 104) {
-                            float leftAdjustment = (viewportManager.getWidth() / 4) - 32;
-                            if ((touchXY.x >= ((viewportManager.getWidth() / 2) - 48) - leftAdjustment) && 
-                                (touchXY.x <= ((viewportManager.getWidth() / 2) + 48) - leftAdjustment)) {
+                            float leftAdjustment = (viewportManager.getWidth() / 4) - 48;
+                            if ((touchXY.x >= ((viewportManager.getWidth() - ((viewportManager.getWidth() * 6 ) / 12)) - 96) - leftAdjustment) && 
+                                (touchXY.x <= ((viewportManager.getWidth() - ((viewportManager.getWidth() * 6 ) / 12)) - 0) - leftAdjustment)) {
                                 fullScreenClicked = true;
                             }
+                            else
+                            if ((touchXY.x >= ((viewportManager.getWidth() - ((viewportManager.getWidth() * 5 ) / 12)) - 96) - leftAdjustment) && 
+                                (touchXY.x <= ((viewportManager.getWidth() - ((viewportManager.getWidth() * 5 ) / 12)) - 0) - leftAdjustment)) {
+                                blurUnblurClicked = true;
+                            } 
                             else 
-                            if ((touchXY.x >= ((viewportManager.getWidth() - (viewportManager.getWidth() / 3)) - 64) - leftAdjustment) && 
-                                (touchXY.x <= ((viewportManager.getWidth() - (viewportManager.getWidth() / 3)) + 32) - leftAdjustment)) {
+                            if ((touchXY.x >= ((viewportManager.getWidth() - ((viewportManager.getWidth() * 4 ) / 12)) - 96) - leftAdjustment) && 
+                                (touchXY.x <= ((viewportManager.getWidth() - ((viewportManager.getWidth() * 4 ) / 12)) - 0) - leftAdjustment)) {
                                 speakerClicked = true;
                             }
                             else
-                            if ((touchXY.x >= ((viewportManager.getWidth() - (viewportManager.getWidth() / 6)) - 80) - leftAdjustment) && 
-                                (touchXY.x <= ((viewportManager.getWidth() - (viewportManager.getWidth() / 6)) + 16) - leftAdjustment)) {
+                            if ((touchXY.x >= ((viewportManager.getWidth() - ((viewportManager.getWidth() * 3 ) / 12)) - 96) - leftAdjustment) && 
+                                (touchXY.x <= ((viewportManager.getWidth() - ((viewportManager.getWidth() * 3 ) / 12)) - 0) - leftAdjustment)) {
+                                pausePlayClicked = true;
+                            }
+                            else
+                            if ((touchXY.x >= ((viewportManager.getWidth() - ((viewportManager.getWidth() * 2 ) / 12)) - 96) - leftAdjustment) && 
+                                (touchXY.x <= ((viewportManager.getWidth() - ((viewportManager.getWidth() * 2 ) / 12)) - 0) - leftAdjustment)) {
                                 keyboardClicked = true;
                             }
                             else
-                            if ((touchXY.x >= (viewportManager.getWidth() - 112) - leftAdjustment) && 
-                                (touchXY.x <= (viewportManager.getWidth() - 16) - leftAdjustment)) {
+                            if ((touchXY.x >= ((viewportManager.getWidth() - ((viewportManager.getWidth() * 0 ) / 12)) - 96) - leftAdjustment) && 
+                                (touchXY.x <= ((viewportManager.getWidth() - ((viewportManager.getWidth() * 0 ) / 12)) - 0) - leftAdjustment)) {
                                 backArrowClicked = true;
                             }
                         }
