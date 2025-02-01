@@ -45,11 +45,6 @@ public class MachineInputProcessor extends InputAdapter {
     private boolean blurOff;
     
     /**
-     * Whether or not the machine is paused.
-     */
-    private boolean pauseOn;
-    
-    /**
      * The current offset from centre of the camera in the X direction.
      */
     private float cameraXOffset;
@@ -344,7 +339,11 @@ public class MachineInputProcessor extends InputAdapter {
             }
             
             if (pausePlayClicked) {
-                pauseOn = !pauseOn;
+                if (machineScreen.getJoricRunner().isPaused()) {
+                    machineScreen.getJoricRunner().resume();
+                } else {
+                    machineScreen.getJoricRunner().pause();
+                }
             }
             
             if (fullScreenClicked) {
@@ -559,24 +558,6 @@ public class MachineInputProcessor extends InputAdapter {
      */
     public void setBlurOff(boolean blurOff) {
         this.blurOff = blurOff;
-    }
-    
-    /**
-     * Returns whether pause is on or not.
-     * 
-     * @return
-     */
-    public boolean isPauseOn() {
-        return pauseOn;
-    }
-    
-    /**
-     * Sets whether pause is on or not.
-     * 
-     * @param pauseOn
-     */
-    public void setPauseOn(boolean pauseOn) {
-        this.pauseOn = pauseOn;
     }
     
     /**

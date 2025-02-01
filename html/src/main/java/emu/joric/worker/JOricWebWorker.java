@@ -102,6 +102,14 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
                 psg.disableWriteSamples();
                 break;
                 
+            case "Pause":
+                paused = true;
+                break;
+                
+            case "Unpause":
+                paused = false;
+                break;
+                
             default:
                 // Unknown message. Ignore.
         }
@@ -185,36 +193,42 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
         
         long expectedCycleCount = 0;
         
-        if (psg.isWriteSamplesEnabled()) {
+        if (paused) {
+            // While the machine is paused, we keep reseting the startTime and cycleCount.
             cycleCount = 0;
-            
-            // If the AudioWorklet is running, then adjust expected cycle count
-            // to a value that would leave the available samples in the queue 
-            // at a roughly fixed number. This is to avoid under or over generating
-            // samples, being always a given number of samples ahead in the buffer.
-            int currentBufferSize = psg.getSampleSharedQueue().availableRead();
-            int samplesToGenerate = (currentBufferSize >= GwtAYPSG.SAMPLE_LATENCY? 0 : GwtAYPSG.SAMPLE_LATENCY - currentBufferSize);
-            expectedCycleCount = (int)(samplesToGenerate * GwtAYPSG.CYCLES_PER_SAMPLE);
-            
-            // While the emulation cycle rate is throttling by the audio thread 
-            // output rate, we keep resetting the startTime, in case sound is turned
-            // off for the next frame.
             startTime = timestamp;
             
         } else {
-            // If we are not writing samples, i.e. sound is turned off, then rate
-            // of emulating cycles is controlled by the animation frame timestamp.
-            double elapsedTime = (timestamp - startTime);
-            expectedCycleCount = Math.round(elapsedTime * 1000);
+            if (psg.isWriteSamplesEnabled()) {
+                cycleCount = 0;
+                
+                // If the AudioWorklet is running, then adjust expected cycle count
+                // to a value that would leave the available samples in the queue 
+                // at a roughly fixed number. This is to avoid under or over generating
+                // samples, being always a given number of samples ahead in the buffer.
+                int currentBufferSize = psg.getSampleSharedQueue().availableRead();
+                int samplesToGenerate = (currentBufferSize >= GwtAYPSG.SAMPLE_LATENCY? 0 : GwtAYPSG.SAMPLE_LATENCY - currentBufferSize);
+                expectedCycleCount = (int)(samplesToGenerate * GwtAYPSG.CYCLES_PER_SAMPLE);
+                
+                // While the emulation cycle rate is throttling by the audio thread 
+                // output rate, we keep resetting the startTime, in case sound is turned
+                // off for the next frame.
+                startTime = timestamp;
+                
+            } else {
+                // If we are not writing samples, i.e. sound is turned off, then rate
+                // of emulating cycles is controlled by the animation frame timestamp.
+                double elapsedTime = (timestamp - startTime);
+                expectedCycleCount = Math.round(elapsedTime * 1000);
+            }
+            
+            // Emulate the required number of cycles.
+            do {
+                machine.emulateCycle();
+                cycleCount++;
+            } while (cycleCount <= expectedCycleCount);
         }
-        
-        // Emulate the required number of cycles.
-        do {
-            machine.emulateCycle();
-            cycleCount++;
-        } while (cycleCount <= expectedCycleCount);
 
-        
         requestNextAnimationFrame();
     }
     

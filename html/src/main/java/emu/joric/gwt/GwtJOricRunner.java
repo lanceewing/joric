@@ -285,6 +285,20 @@ public class GwtJOricRunner extends JOricRunner {
     }
 
     @Override
+    public void pause() {
+        super.pause();
+        
+        worker.postObject("Pause", JavaScriptObject.createObject());
+    }
+    
+    @Override
+    public void resume() {
+        super.resume();
+        
+        worker.postObject("Unpause", JavaScriptObject.createObject());
+    }
+    
+    @Override
     public boolean hasTouchScreen() {
         return hasTouchScreenHtml();
     }

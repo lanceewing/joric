@@ -369,7 +369,7 @@ public class MachineScreen implements Screen {
         // Some icons change depending on state.
         Texture speakerIcon = machineInputProcessor.isSpeakerOn()? muteIcon : unmuteIcon;
         Texture blurUnblurIcon = machineInputProcessor.isBlurOff()? blurIcon : unblurIcon;
-        Texture pausePlayIcon = machineInputProcessor.isPauseOn()? playIcon : pauseIcon;
+        Texture pausePlayIcon = joricRunner.isPaused()? playIcon : pauseIcon;
         
         if (viewportManager.isPortrait()) {
             // Portrait
