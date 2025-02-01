@@ -77,6 +77,7 @@ public class MachineScreen implements Screen {
     private Texture[] screens;
     private int drawScreen = 1;
     private int updateScreen = 0;
+    private int textureOffset = 0;
 
     // Screen resources for each MachineType.
     private Map<MachineType, Pixmap> machineTypePixmaps;
@@ -234,13 +235,21 @@ public class MachineScreen implements Screen {
         // required by the MachineType.
         Pixmap screenPixmap = new Pixmap(machineType.getTotalScreenWidth(), machineType.getTotalScreenHeight(), 
                 Pixmap.Format.RGBA8888);
-        Texture[] screens = new Texture[3];
+        Texture[] screens = new Texture[6];
+        // First three textures are the "blurred" image and the second three are 
+        // for the "sharp" image.
         screens[0] = new Texture(screenPixmap, Pixmap.Format.RGBA8888, false);
-        screens[0].setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Nearest);
+        screens[0].setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
         screens[1] = new Texture(screenPixmap, Pixmap.Format.RGBA8888, false);
-        screens[1].setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Nearest);
+        screens[1].setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
         screens[2] = new Texture(screenPixmap, Pixmap.Format.RGBA8888, false);
-        screens[2].setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Nearest);
+        screens[2].setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        screens[3] = new Texture(screenPixmap, Pixmap.Format.RGBA8888, false);
+        screens[3].setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        screens[4] = new Texture(screenPixmap, Pixmap.Format.RGBA8888, false);
+        screens[4].setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        screens[5] = new Texture(screenPixmap, Pixmap.Format.RGBA8888, false);
+        screens[5].setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         
         Camera camera = new OrthographicCamera();
         Viewport viewport = new ExtendViewport(((machineType.getVisibleScreenHeight() / 4) * 5),
@@ -291,7 +300,8 @@ public class MachineScreen implements Screen {
     
     public boolean copyPixels() {
         joricRunner.updatePixmap(screenPixmap);
-        screens[updateScreen].draw(screenPixmap, 0, 0);
+        screens[updateScreen + textureOffset].draw(screenPixmap, 0, 0);
+        // TODO:
         updateScreen = (updateScreen + 1) % 3;
         drawScreen = (drawScreen + 1) % 3;
         return true;
@@ -339,7 +349,7 @@ public class MachineScreen implements Screen {
         Color c = batch.getColor();
         batch.setColor(c.r, c.g, c.b, 1f);
         batch.draw(
-                screens[drawScreen], 
+                screens[drawScreen + textureOffset], 
                 0, 0, ADJUSTED_WIDTH, ADJUSTED_HEIGHT,
                 0, 0, ORIC_SCREEN_WIDTH, ORIC_SCREEN_HEIGHT, 
                 false, false);
@@ -368,7 +378,7 @@ public class MachineScreen implements Screen {
         
         // Some icons change depending on state.
         Texture speakerIcon = machineInputProcessor.isSpeakerOn()? muteIcon : unmuteIcon;
-        Texture blurUnblurIcon = machineInputProcessor.isBlurOff()? blurIcon : unblurIcon;
+        Texture blurUnblurIcon = machineInputProcessor.isBlurOn()? unblurIcon : blurIcon;
         Texture pausePlayIcon = joricRunner.isPaused()? playIcon : pauseIcon;
         
         if (viewportManager.isPortrait()) {
@@ -602,7 +612,19 @@ public class MachineScreen implements Screen {
             screens[0].dispose();
             screens[1].dispose();
             screens[2].dispose();
+            screens[3].dispose();
+            screens[4].dispose();
+            screens[5].dispose();
         }
+    }
+    
+    /**
+     * Changes the blur mode, to either be on or off.
+     * 
+     * @param blurOn
+     */
+    public void changeBlur(boolean blurOn) {
+        textureOffset = (blurOn? 3 : 0);
     }
 
     /**

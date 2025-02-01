@@ -42,7 +42,7 @@ public class MachineInputProcessor extends InputAdapter {
     /**
      * Whether or not the screen is slightly blurred (linear vs nearest).
      */
-    private boolean blurOff;
+    private boolean blurOn;
     
     /**
      * The current offset from centre of the camera in the X direction.
@@ -335,7 +335,8 @@ public class MachineInputProcessor extends InputAdapter {
             }
             
             if (blurUnblurClicked) {
-                blurOff = !blurOff;
+                blurOn = !blurOn;
+                machineScreen.changeBlur(blurOn);
             }
             
             if (pausePlayClicked) {
@@ -547,8 +548,8 @@ public class MachineInputProcessor extends InputAdapter {
      * 
      * @return
      */
-    public boolean isBlurOff() {
-        return blurOff;
+    public boolean isBlurOn() {
+        return blurOn;
     }
     
     /**
@@ -556,8 +557,8 @@ public class MachineInputProcessor extends InputAdapter {
      * 
      * @param blurOn
      */
-    public void setBlurOff(boolean blurOff) {
-        this.blurOff = blurOff;
+    public void setBlurOn(boolean blurOn) {
+        this.blurOn = blurOn;
     }
     
     /**
