@@ -288,14 +288,18 @@ public class GwtJOricRunner extends JOricRunner {
     public void pause() {
         super.pause();
         
-        worker.postObject("Pause", JavaScriptObject.createObject());
+        if (worker != null) {
+            worker.postObject("Pause", JavaScriptObject.createObject());
+        }
     }
     
     @Override
     public void resume() {
         super.resume();
         
-        worker.postObject("Unpause", JavaScriptObject.createObject());
+        if (worker != null) {
+            worker.postObject("Unpause", JavaScriptObject.createObject());
+        }
     }
     
     @Override
