@@ -110,7 +110,7 @@ public class ViewportManager {
     }
     
     /**
-     * Tests where the AGI screen exactly fits the width of the viewport.
+     * Tests where the Oric screen exactly fits the width of the viewport.
      * 
      * @return
      */

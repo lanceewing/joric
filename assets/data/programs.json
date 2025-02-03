@@ -206,9 +206,9 @@
     },
     {
       "name": "Diagnostic ROM",
-      "filePath": "roms/test108j.rom",
+      "filePath": "roms/test108k.rom",
       "fileType": "ROM",
-      "iconPath": "",
+      "iconPath": "screenshots/D/Diagnostic ROM/Diagnostic_ROM.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },

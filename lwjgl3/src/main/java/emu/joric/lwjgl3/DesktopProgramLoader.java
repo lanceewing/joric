@@ -6,6 +6,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.function.Consumer;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+
 import emu.joric.PixelData;
 import emu.joric.Program;
 import emu.joric.ProgramLoader;
@@ -22,27 +25,37 @@ public class DesktopProgramLoader implements ProgramLoader {
         Program program = null;
         BufferedInputStream bis = null;
         
-        try {
-            URL url = new URL(appConfigItem.getFilePath());
-            URLConnection connection = url.openConnection();
-            
-            int b = 0;
-            bis = new BufferedInputStream(connection.getInputStream());
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            while ((b = bis.read()) != -1 ) {
-                out.write(b);
+        if (!appConfigItem.getFilePath().startsWith("http")) {
+            FileHandle fileHandle = Gdx.files.internal(appConfigItem.getFilePath());
+            if (fileHandle != null) {
+                if (fileHandle.exists()) {
+                    program = new Program(appConfigItem, fileHandle.readBytes());
+                }
             }
-            
-            program = new Program(appConfigItem, out.toByteArray());
-            
-        } catch (Exception e) {
-            // Ignore.
-        } finally {
-            if (bis != null) {
-                try {
-                    bis.close();
-                } catch (Exception e2) {
-                 // Ignore.
+        } 
+        else {
+            try {
+                URL url = new URL(appConfigItem.getFilePath());
+                URLConnection connection = url.openConnection();
+                
+                int b = 0;
+                bis = new BufferedInputStream(connection.getInputStream());
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                while ((b = bis.read()) != -1 ) {
+                    out.write(b);
+                }
+                
+                program = new Program(appConfigItem, out.toByteArray());
+                
+            } catch (Exception e) {
+                // Ignore.
+            } finally {
+                if (bis != null) {
+                    try {
+                        bis.close();
+                    } catch (Exception e2) {
+                     // Ignore.
+                    }
                 }
             }
         }

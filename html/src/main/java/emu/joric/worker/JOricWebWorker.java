@@ -11,6 +11,7 @@ import emu.joric.Machine;
 import emu.joric.MachineType;
 import emu.joric.Program;
 import emu.joric.config.AppConfigItem;
+import emu.joric.cpu.Cpu6502;
 import emu.joric.gwt.GwtAYPSG;
 import emu.joric.gwt.GwtKeyboardMatrix;
 import emu.joric.gwt.GwtPixelData;
@@ -108,6 +109,12 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
                 
             case "Unpause":
                 paused = false;
+                break;
+                
+            case "SendNMI":
+                if (machine != null) {
+                    machine.getCpu().setInterrupt(Cpu6502.S_NMI);
+                }
                 break;
                 
             default:

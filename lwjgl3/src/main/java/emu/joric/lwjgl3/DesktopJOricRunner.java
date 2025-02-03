@@ -13,12 +13,15 @@ import emu.joric.MachineType;
 import emu.joric.PixelData;
 import emu.joric.Program;
 import emu.joric.config.AppConfigItem;
+import emu.joric.cpu.Cpu6502;
 import emu.joric.memory.RamType;
 import emu.joric.sound.AYPSG;
 
 public class DesktopJOricRunner extends JOricRunner {
 
     private Thread machineThread;
+    
+    private Machine machine;
     
     public DesktopJOricRunner(KeyboardMatrix keyboardMatrix, PixelData pixelData, AYPSG psg) {
         super(keyboardMatrix, pixelData, psg);
@@ -47,7 +50,7 @@ public class DesktopJOricRunner extends JOricRunner {
     
     private void runProgram(AppConfigItem appConfigItem, Program program) {
         // Create the Machine instance that will run the Oric program.
-        Machine machine = new Machine(psg, keyboardMatrix, pixelData);
+        machine = new Machine(psg, keyboardMatrix, pixelData);
         
         // Load the ROM files.
         byte[] basicRom = Gdx.files.internal("roms/basic11b.rom").readBytes();
@@ -97,6 +100,8 @@ public class DesktopJOricRunner extends JOricRunner {
                 lastTime = TimeUtils.nanoTime();
             }
         }
+        
+        machine = null;
     }
 
     @Override
@@ -124,6 +129,7 @@ public class DesktopJOricRunner extends JOricRunner {
     public void reset() {
         exit = false;
         machineThread = null;
+        machine = null;
     }
 
     @Override
@@ -172,5 +178,12 @@ public class DesktopJOricRunner extends JOricRunner {
     @Override
     public boolean isRunning() {
         return (machineThread != null);
+    }
+
+    @Override
+    public void sendNmi() {
+        if (machine != null) {
+            machine.getCpu().setInterrupt(Cpu6502.S_NMI);
+        }
     }
 }

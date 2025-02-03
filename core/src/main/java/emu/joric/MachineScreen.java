@@ -96,6 +96,7 @@ public class MachineScreen implements Screen {
     private Texture keyboardIcon;
     private Texture backIcon;
     private Texture fullScreenIcon;
+    private Texture nmiIcon;
 
     private ViewportManager viewportManager;
 
@@ -158,6 +159,7 @@ public class MachineScreen implements Screen {
         joystickIcon = new Texture("png/joystick_icon.png");
         backIcon = new Texture("png/back_arrow.png");
         fullScreenIcon = new Texture("png/full_screen.png");
+        nmiIcon = new Texture("png/nmi.png");
 
         // Create the portrait and landscape joystick touchpads.
         portraitTouchpad = createTouchpad(300);
@@ -324,10 +326,11 @@ public class MachineScreen implements Screen {
             // Override default screen centering logic to allow for narrower screens, so 
             // that the joystick can be rendered as a decent size.
             float oricWidthRatio = (viewportManager.getOricScreenWidth() / ADJUSTED_WIDTH);
-            if ((sidePaddingWidth > 64) && (sidePaddingWidth < 232)) {
-                // 232 = 2 * min width on sides.
+            if ((sidePaddingWidth > 64) && (sidePaddingWidth < 128)) {
+                // Icons on one side.
+                // 128 = 2 * min width on sides.
                 // 64 = when icon on one side is perfectly centred.
-                float unadjustedXOffset = Math.min(232 - sidePaddingWidth, sidePaddingWidth);
+                float unadjustedXOffset = Math.min(128 - sidePaddingWidth, sidePaddingWidth);
                 cameraXOffset = (unadjustedXOffset / oricWidthRatio);
                 if (joystickAlignment.equals(JoystickAlignment.LEFT)) {
                     cameraXOffset *= -1;
@@ -388,8 +391,7 @@ public class MachineScreen implements Screen {
             batch.draw(speakerIcon, (viewportManager.getWidth() / 3) - 32, 20);
             batch.draw(pausePlayIcon, (viewportManager.getWidth() / 2) - 48, 20);
             batch.draw(keyboardIcon, (viewportManager.getWidth() - (viewportManager.getWidth() / 3)) - 64, 20);
-            // TODO: Not sure what to do with joystick at the moment.
-            //batch.draw(joystickIcon, (viewportManager.getWidth() - (viewportManager.getWidth() / 6)) - 80, 20);
+            batch.draw(nmiIcon, (viewportManager.getWidth() - (viewportManager.getWidth() / 6)) - 80, 20);
             batch.draw(backIcon, viewportManager.getWidth() - 116, 20);
         } else {
             // Landscape
@@ -403,33 +405,36 @@ public class MachineScreen implements Screen {
                     batch.draw(speakerIcon,    ((viewportManager.getWidth() - ((viewportManager.getWidth() * 4 ) / 12)) - 96) - leftAdjustment, 16);
                     batch.draw(pausePlayIcon,  ((viewportManager.getWidth() - ((viewportManager.getWidth() * 3 ) / 12)) - 96) - leftAdjustment, 16);
                     batch.draw(keyboardIcon,   ((viewportManager.getWidth() - ((viewportManager.getWidth() * 2 ) / 12)) - 96) - leftAdjustment, 16);
-                    // TODO: Not sure what to do with joystick at the moment.
-                    //batch.draw(joystickIcon,   ((viewportManager.getWidth() - ((viewportManager.getWidth() * 1 ) / 12)) - 96) - leftAdjustment, 16);
+                    batch.draw(nmiIcon,        ((viewportManager.getWidth() - ((viewportManager.getWidth() * 1 ) / 12)) - 96) - leftAdjustment, 16);
                     batch.draw(backIcon,       ((viewportManager.getWidth() - ((viewportManager.getWidth() * 0 ) / 12)) - 96) - leftAdjustment, 16);
                 } else {
                     // Normal landscape.
-                    batch.draw(speakerIcon, 16, viewportManager.getHeight() - 112);
-                    batch.draw(pausePlayIcon, 16, (viewportManager.getHeight() / 2) - 48);
-                    batch.draw(keyboardIcon, 16, 0);
+                    batch.draw(speakerIcon,   16, viewportManager.getHeight() - 112);
+                    batch.draw(pausePlayIcon, 16, (viewportManager.getHeight() - (viewportManager.getHeight() / 3)) - 64);
+                    // Free slot.
+                    batch.draw(keyboardIcon,  16, 0);
                     batch.draw(fullScreenIcon, viewportManager.getWidth() - 112, viewportManager.getHeight() - 112);
-                    batch.draw(blurUnblurIcon, viewportManager.getWidth() - 112, (viewportManager.getHeight() / 2) - 48);
-                    batch.draw(backIcon, viewportManager.getWidth() - 112, 16);
+                    batch.draw(blurUnblurIcon, viewportManager.getWidth() - 112, (viewportManager.getHeight() - (viewportManager.getHeight() / 3)) - 64);
+                    batch.draw(nmiIcon,        viewportManager.getWidth() - 112, (viewportManager.getHeight() / 3) - 32);
+                    batch.draw(backIcon,       viewportManager.getWidth() - 112, 16);
                 }
             } else if (cameraXOffset < 0) {
                 // Left
-                batch.draw(fullScreenIcon, 16, viewportManager.getHeight() - 112);
-                batch.draw(blurUnblurIcon, 16, viewportManager.getHeight() - 324);
-                batch.draw(speakerIcon,    16, viewportManager.getHeight() - 536);
-                batch.draw(pausePlayIcon,  16, 440);
-                batch.draw(keyboardIcon,   16, 228);
+                batch.draw(fullScreenIcon, 16, (viewportManager.getHeight() - 112));
+                batch.draw(blurUnblurIcon, 16, (viewportManager.getHeight() - (viewportManager.getHeight() / 6)) - 80);
+                batch.draw(speakerIcon,    16, (viewportManager.getHeight() - (viewportManager.getHeight() / 3)) - 64);
+                batch.draw(pausePlayIcon,  16, (viewportManager.getHeight() / 2) - 48);
+                batch.draw(keyboardIcon,   16, (viewportManager.getHeight() / 3) - 32);
+                batch.draw(nmiIcon,        16, (viewportManager.getHeight() / 6) - 16);
                 batch.draw(backIcon,       16, 16);
             } else if (cameraXOffset > 0) {
                 // Right
-                batch.draw(fullScreenIcon, viewportManager.getWidth() - 112, viewportManager.getHeight() - 112);
-                batch.draw(blurUnblurIcon, viewportManager.getWidth() - 112, viewportManager.getHeight() - 324);
-                batch.draw(speakerIcon,    viewportManager.getWidth() - 112, viewportManager.getHeight() - 536);
-                batch.draw(pausePlayIcon,  viewportManager.getWidth() - 112, 440);
-                batch.draw(keyboardIcon,   viewportManager.getWidth() - 112, 228);
+                batch.draw(fullScreenIcon, viewportManager.getWidth() - 112, (viewportManager.getHeight() - 112));
+                batch.draw(blurUnblurIcon, viewportManager.getWidth() - 112, (viewportManager.getHeight() - (viewportManager.getHeight() / 6)) - 80);
+                batch.draw(speakerIcon,    viewportManager.getWidth() - 112, (viewportManager.getHeight() - (viewportManager.getHeight() / 3)) - 64);
+                batch.draw(pausePlayIcon,  viewportManager.getWidth() - 112, (viewportManager.getHeight() / 2) - 48);
+                batch.draw(keyboardIcon,   viewportManager.getWidth() - 112, (viewportManager.getHeight() / 3) - 32);
+                batch.draw(nmiIcon,        viewportManager.getWidth() - 112, (viewportManager.getHeight() / 6) - 16);
                 batch.draw(backIcon,       viewportManager.getWidth() - 112, 16);
             }
         }
@@ -596,6 +601,7 @@ public class MachineScreen implements Screen {
         pauseIcon.dispose();
         blurIcon.dispose();
         unblurIcon.dispose();
+        nmiIcon.dispose();
         batch.dispose();
         joricRunner.stop();
         disposeScreens();

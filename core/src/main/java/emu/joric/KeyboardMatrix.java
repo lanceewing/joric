@@ -201,5 +201,4 @@ public abstract class KeyboardMatrix extends InputAdapter {
     public abstract int getKeyMatrixRow(int row);
     
     public abstract void setKeyMatrixRow(int row, int value);
-    
 }

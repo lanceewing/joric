@@ -200,4 +200,7 @@ public abstract class JOricRunner {
     public abstract void cancelImport();
 
     public abstract boolean isRunning();
+    
+    public abstract void sendNmi();
+    
 }

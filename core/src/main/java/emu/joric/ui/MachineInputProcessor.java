@@ -189,6 +189,7 @@ public class MachineInputProcessor extends InputAdapter {
             boolean speakerClicked = false;
             boolean blurUnblurClicked = false;
             boolean pausePlayClicked = false;
+            boolean nmiClicked = false;
 
             if (viewportManager.isPortrait()) {
                 // Portrait.
@@ -202,6 +203,7 @@ public class MachineInputProcessor extends InputAdapter {
                         float halfPos = (viewportManager.getWidth() / 2);
                         float thirdPos = (viewportManager.getWidth() / 3);
                         float twoThirdPos = (viewportManager.getWidth() - (viewportManager.getWidth() / 3));
+                        float fiveSixths = (viewportManager.getWidth() - (viewportManager.getWidth() / 6));
                         
                         if ((touchXY.x > (sixthPos - 26)) && (touchXY.x < (sixthPos + 100))) {
                             blurUnblurClicked = true;
@@ -214,6 +216,9 @@ public class MachineInputProcessor extends InputAdapter {
                         }
                         else if ((touchXY.x > (twoThirdPos - 84)) && (touchXY.x < (twoThirdPos + 42))) {
                             keyboardClicked = true;
+                        }
+                        else if ((touchXY.x > (fiveSixths - 100)) && (touchXY.x < (fiveSixths + 26))) {
+                            nmiClicked = true;
                         }
                     }
                 }
@@ -249,6 +254,11 @@ public class MachineInputProcessor extends InputAdapter {
                                 keyboardClicked = true;
                             }
                             else
+                            if ((touchXY.x >= ((viewportManager.getWidth() - ((viewportManager.getWidth() * 1 ) / 12)) - 96) - leftAdjustment) && 
+                                (touchXY.x <= ((viewportManager.getWidth() - ((viewportManager.getWidth() * 1 ) / 12)) - 0) - leftAdjustment)) {
+                                nmiClicked = true;
+                            }
+                            else
                             if ((touchXY.x >= ((viewportManager.getWidth() - ((viewportManager.getWidth() * 0 ) / 12)) - 96) - leftAdjustment) && 
                                 (touchXY.x <= ((viewportManager.getWidth() - ((viewportManager.getWidth() * 0 ) / 12)) - 0) - leftAdjustment)) {
                                 backArrowClicked = true;
@@ -268,37 +278,54 @@ public class MachineInputProcessor extends InputAdapter {
                             } else if (touchXY.x < 112) {
                                 keyboardClicked = true;
                             }
-                        } else if ((touchXY.y > (viewportManager.getHeight() / 2) - 58) &&
-                                   (touchXY.y < (viewportManager.getHeight() / 2) + 58)) {
+                        } else if ((touchXY.y > (viewportManager.getHeight() - (viewportManager.getHeight() / 3)) - 74) &&
+                                   (touchXY.y < (viewportManager.getHeight() - (viewportManager.getHeight() / 3)) + 42)) {
                             if (touchXY.x > (viewportManager.getWidth() - 112)) {
                                 blurUnblurClicked = true;
                             } else if (touchXY.x < 112) {
                                 pausePlayClicked = true;
                             }
-                        }
+                        } else if ((touchXY.y > (viewportManager.getHeight() / 3) - 42) &&
+                                (touchXY.y < (viewportManager.getHeight() / 3) + 74)) {
+                             if (touchXY.x > (viewportManager.getWidth() - 112)) {
+                                 nmiClicked = true;
+                             } else if (touchXY.x < 112) {
+                                 // Free slot.
+                             }
+                         }
                     }
                 }
                 else {
                     // All buttons on same side
                     if (((touchXY.x < 128) && (cameraXOffset < 0)) || 
                         ((touchXY.x > (viewportManager.getWidth() - 128)) && (cameraXOffset > 0))) {
-                        if (touchXY.y > (screenTop - 128)) {
+                        
+                        if (touchXY.y > (viewportManager.getHeight() - 126)) {
                             fullScreenClicked = true;
-                        }
-                        else if ((touchXY.y < (screenTop - 212)) && (touchXY.y > (screenTop - 340))) {
-                            blurUnblurClicked = true;
-                        }
-                        else if ((touchXY.y < (screenTop - 424)) && (touchXY.y > (screenTop - 552))) {
-                            speakerClicked = true;
-                        }
-                        else if ((touchXY.y > 424) && (touchXY.y < 552)) {
-                            pausePlayClicked = true;
-                        }
-                        else if ((touchXY.y > 212) && (touchXY.y < 340)) {
-                            keyboardClicked = true;
-                        }
-                        else if ((touchXY.y > 0) && (touchXY.y < 128)) {
+                        } else if (touchXY.y < 126) {
                             backArrowClicked = true;
+                        } else {
+                            float sixthPos = (viewportManager.getHeight() / 6);
+                            float halfPos = (viewportManager.getHeight() / 2);
+                            float thirdPos = (viewportManager.getHeight() / 3);
+                            float twoThirdPos = (viewportManager.getHeight() - (viewportManager.getHeight() / 3));
+                            float fiveSixths = (viewportManager.getHeight() - (viewportManager.getHeight() / 6));
+                            
+                            if ((touchXY.y > (sixthPos - 26)) && (touchXY.y < (sixthPos + 100))) {
+                                nmiClicked = true;
+                            }
+                            else if ((touchXY.y > (thirdPos - 42)) && (touchXY.y < (thirdPos + 84))) {
+                                keyboardClicked = true;
+                            }
+                            else if ((touchXY.y > (halfPos - 58)) && (touchXY.y < (halfPos + 58))) {
+                                pausePlayClicked = true;
+                            }
+                            else if ((touchXY.y > (twoThirdPos - 84)) && (touchXY.y < (twoThirdPos + 42))) {
+                                speakerClicked = true;
+                            }
+                            else if ((touchXY.y > (fiveSixths - 100)) && (touchXY.y < (fiveSixths + 26))) {
+                                blurUnblurClicked = true;
+                            }
                         }
                     }
                 }
@@ -375,6 +402,10 @@ public class MachineInputProcessor extends InputAdapter {
                         // Nothing to do.
                     }
                 });
+            }
+            
+            if (nmiClicked) {
+                machineScreen.getJoricRunner().sendNmi();
             }
         }
 

@@ -393,6 +393,11 @@ public class GwtJOricRunner extends JOricRunner {
             worker.postObject("SoundOff", JavaScriptObject.createObject());
         }
     }
+    
+    @Override
+    public void sendNmi() {
+        worker.postObject("SendNMI", JavaScriptObject.createObject());
+    }
 
     public Worker getCurrentWorker() {
         return worker;

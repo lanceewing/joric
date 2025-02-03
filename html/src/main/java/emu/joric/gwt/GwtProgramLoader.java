@@ -6,6 +6,8 @@ import java.util.function.Consumer;
 import com.akjava.gwt.jszip.JSFile;
 import com.akjava.gwt.jszip.JSZip;
 import com.akjava.gwt.jszip.Uint8Array;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.user.client.Window;
 
@@ -28,53 +30,63 @@ public class GwtProgramLoader implements ProgramLoader {
         Program program = null;
         byte[] programData = null;
         
-        String binaryStr = getBinaryResource(applyFilePathOverride(appConfigItem.getFilePath()));
-        if (binaryStr != null) {
-            // Use the data to identify the type of program.
-            byte[] data = convertBinaryStringToBytes(binaryStr);
-            
-            if ((data != null) && (data.length >= 4)) {
-                if ((data[0] == 0x16) && (data[1] == 0x16) && (data[2] == 0x16)) {
-                    // At least 3 0x16 bytes followed by a 0x24 is a tape file.
-                    appConfigItem.setFileType("TAPE");
-                    programData = data;
+        if (!appConfigItem.getFilePath().startsWith("http")) {
+            FileHandle fileHandle = Gdx.files.internal(appConfigItem.getFilePath());
+            if (fileHandle != null) {
+                if (fileHandle.exists()) {
+                    programData = fileHandle.readBytes();
                 }
-                else if ((data[0] == 0x4D) && (data[1] == 0x46) && (data[2] == 0x4D)) {
-                    // MFM_DISK - 4D 46 4D 5F 44 49 53 4B
-                    appConfigItem.setFileType("DISK");
-                    programData = data;
-                }
-                else if ((data[0] == 0x50) && (data[1] == 0x4B) && (data[2] == 0x03) && (data[3] == 0x04)) {
-                    // ZIP starts with: 50 4B 03 04
-                    logToJSConsole("Scanning ZIP file...");
-                    
-                    JSZip jsZip = JSZip.loadFromArray(Uint8Array.createUint8(data));
-                    JsArrayString files = jsZip.getFiles();
-    
-                    for (int i=0; i < files.length(); i++) {
-                        String fileName = files.get(i);
-                        JSFile file = jsZip.getFile(fileName);
-                        byte[] fileData = file.asUint8Array().toByteArray();
-                        if (isDiskFile(fileData)) {
-                            programData = fileData;
-                            appConfigItem.setFileType("DISK");
-                            break;
+            }
+        } 
+        else {
+            String binaryStr = getBinaryResource(applyFilePathOverride(appConfigItem.getFilePath()));
+            if (binaryStr != null) {
+                // Use the data to identify the type of program.
+                byte[] data = convertBinaryStringToBytes(binaryStr);
+                
+                if ((data != null) && (data.length >= 4)) {
+                    if ((data[0] == 0x16) && (data[1] == 0x16) && (data[2] == 0x16)) {
+                        // At least 3 0x16 bytes followed by a 0x24 is a tape file.
+                        appConfigItem.setFileType("TAPE");
+                        programData = data;
+                    }
+                    else if ((data[0] == 0x4D) && (data[1] == 0x46) && (data[2] == 0x4D)) {
+                        // MFM_DISK - 4D 46 4D 5F 44 49 53 4B
+                        appConfigItem.setFileType("DISK");
+                        programData = data;
+                    }
+                    else if ((data[0] == 0x50) && (data[1] == 0x4B) && (data[2] == 0x03) && (data[3] == 0x04)) {
+                        // ZIP starts with: 50 4B 03 04
+                        logToJSConsole("Scanning ZIP file...");
+                        
+                        JSZip jsZip = JSZip.loadFromArray(Uint8Array.createUint8(data));
+                        JsArrayString files = jsZip.getFiles();
+        
+                        for (int i=0; i < files.length(); i++) {
+                            String fileName = files.get(i);
+                            JSFile file = jsZip.getFile(fileName);
+                            byte[] fileData = file.asUint8Array().toByteArray();
+                            if (isDiskFile(fileData)) {
+                                programData = fileData;
+                                appConfigItem.setFileType("DISK");
+                                break;
+                            }
+                            if (isTapeFile(fileData)) {
+                                programData = fileData;
+                                appConfigItem.setFileType("TAPE");
+                                break;
+                            }
                         }
-                        if (isTapeFile(fileData)) {
-                            programData = fileData;
-                            appConfigItem.setFileType("TAPE");
-                            break;
-                        }
+                    }
+                    else {
+                        logToJSConsole("Sorry, the URL provided does not appear to be for a recognised Oric program file format.");
+                        appConfigItem.setFileType("UNK");
                     }
                 }
                 else {
                     logToJSConsole("Sorry, the URL provided does not appear to be for a recognised Oric program file format.");
                     appConfigItem.setFileType("UNK");
                 }
-            }
-            else {
-                logToJSConsole("Sorry, the URL provided does not appear to be for a recognised Oric program file format.");
-                appConfigItem.setFileType("UNK");
             }
         }
         
