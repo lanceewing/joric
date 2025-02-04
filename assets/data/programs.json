@@ -940,15 +940,15 @@
     },
     {
       "name": "Zebbie",
-      "filePath": "tapes/zebbie.tap",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/z/zebbie/zebbie.tap",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/Z/Zebbie/Zebbie.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
     {
       "name": "Zebulon",
-      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FZ%2FZebulon%2FZEBULON.DSK",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/z/zebulon/ZEBULON.DSK",
       "fileType": "DISK",
       "iconPath": "screenshots/Z/Zebulon/Zebulon.png",
       "machineType": "PAL",
