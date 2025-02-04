@@ -834,35 +834,18 @@
     {
       "name": "Time of Lore",
       "displayName": "Times\nof Lore",
-      "filePath": "tapes/toldemo.tap",
+      "filePath": "https://cdn.oric.org/games/software/t/times_of_lore/tolgame.tap",
       "fileType": "TAPE",
-      "iconPath": "",
-      "machineType": "PAL",
-      "ram": "RAM_48K"
-    },
-    {
-      "name": "Titan",
-      "filePath": "disks/TITAN.dsk",
-      "fileType": "DISK",
-      "iconPath": "",
-      "machineType": "PAL",
-      "ram": "RAM_48K"
-    },
-    {
-      "name": "Trident de Neptune, La",
-      "displayName": "Trident de\nNeptune, La",
-      "filePath": "tapes/NEPTUNE.TAP",
-      "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/T/Times of Lore/TimesOfLore.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
     {
       "name": "Trouble In Store",
       "displayName": "Trouble\nIn Store",
-      "filePath": "tapes/TROUBLE.TAP",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/t/troubleinstore/TROUBLE.TAP",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/T/Trouble In Store/TroubleInStore.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -871,14 +854,6 @@
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/u/ultra/ultra_a.tap",
       "fileType": "TAPE",
       "iconPath": "screenshots/U/Ultra/Ultra.png",
-      "machineType": "PAL",
-      "ram": "RAM_48K"
-    },
-    {
-      "name": "Wave 200",
-      "filePath": "disks/WAVE200.DSK",
-      "fileType": "DISK",
-      "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
