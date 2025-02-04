@@ -817,9 +817,9 @@
     },
     {
       "name": "Super Jeep",
-      "filePath": "disks/SuperJeep.dsk",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/s/superjeep/SuperJeep.dsk",
       "fileType": "DISK",
-      "iconPath": "",
+      "iconPath": "screenshots/S/Super Jeep/SuperJeep.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -834,7 +834,7 @@
     {
       "name": "Time of Lore",
       "displayName": "Times\nof Lore",
-      "filePath": "https://cdn.oric.org/games/software/t/times_of_lore/tolgame.tap",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/t/times_of_lore/tolgame.tap",
       "fileType": "TAPE",
       "iconPath": "screenshots/T/Times of Lore/TimesOfLore.png",
       "machineType": "PAL",
