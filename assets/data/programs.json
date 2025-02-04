@@ -884,17 +884,17 @@
     },
     {
       "name": "Welcome",
-      "filePath": "tapes/welcome.tap",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/w/welcometo/welcome.tap",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/W/Welcome/Welcome.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
     {
       "name": "Wurlde Demo",
-      "filePath": "disks/wdemo.dsk",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/w/wurlde/WurlMap0.dsk",
       "fileType": "DISK",
-      "iconPath": "",
+      "iconPath": "screenshots/W/Wurlde/Wurlde.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
