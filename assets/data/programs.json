@@ -696,9 +696,9 @@
     {
       "name": "Secret Du Tombeau",
       "displayName": "Secret Du\nTombeau",
-      "filePath": "tapes/tombjeu.tap",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/t/tombeauaxayacatl/tombjeu.tap",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/S/Secret Du Tombeau/SecretDuTombeau.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
