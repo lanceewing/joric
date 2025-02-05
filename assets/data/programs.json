@@ -508,9 +508,9 @@
     },
     {
       "name": "Mr Wimpy",
-      "filePath": "tapes/WIMPY.TAP",
-      "fileType": "TAPE",
-      "iconPath": "",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/w/wimpy/MRWIMPY.DSK",
+      "fileType": "DISK",
+      "iconPath": "screenshots/M/Mr Wimpy/MrWimpy.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
