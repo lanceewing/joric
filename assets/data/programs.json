@@ -91,6 +91,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Bocco's Adventures",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/b/boccos_adventures/bocco.dsk",
+      "fileType": "DISK",
+      "iconPath": "screenshots/B/Boccos Adventures/BoccosAdventures.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Born in 1983",
       "displayName": "Born in\n1983",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/b/born_in_1983/BornIn1983.dsk",
