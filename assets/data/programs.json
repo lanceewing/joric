@@ -483,10 +483,18 @@
       "ram": "RAM_48K"
     },
     {
-      "name": "Manic Miner [B]",
-      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FM%2FManic%20Miner%2FManic%20Miner.dsk",
-      "fileType": "DISK",
-      "iconPath": "",
+      "name": "Lunar Mission",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/l/lunar_mission_rax_iss/lunarmission-1.00.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/L/Lunar Mission/LunarMission.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Manic Miner",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/m/manic_miner/MANICMINER_proper.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/M/Manic Miner/Manic_Miner.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
