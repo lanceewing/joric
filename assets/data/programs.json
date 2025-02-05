@@ -849,6 +849,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Tetriskov",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/t/tetriskov/Tetriskov.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/T/Tetriskov/Tetriskov.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Time of Lore",
       "displayName": "Times\nof Lore",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/t/times_of_lore/tolgame.tap",
