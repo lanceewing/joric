@@ -809,9 +809,9 @@
     },
     {
       "name": "Super Meteors",
-      "filePath": "tapes/super-meteor.tap",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org//games/software//s/supermeteors/super-meteor.tap",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/S/Super Meteors/SuperMeteors.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
