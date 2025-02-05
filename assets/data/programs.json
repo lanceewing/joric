@@ -452,9 +452,9 @@
     },
     {
       "name": "Krillys",
-      "filePath": "tapes/krillys.tap",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/k/krillys/krillys.tap",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/K/Krillys/Krillys.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -476,9 +476,9 @@
     },
     {
       "name": "Lone Raider",
-      "filePath": "tapes/RAIDER.TAP",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/l/lone_raider/RAIDER.TAP",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/L/Lone Raider/LoneRaider.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
