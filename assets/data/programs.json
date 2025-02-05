@@ -801,9 +801,9 @@
     },
     {
       "name": "Styx",
-      "filePath": "tapes/STYX.TAP",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/s/styx/STYX.TAP",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/S/Styx/Styx.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
