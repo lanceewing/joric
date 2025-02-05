@@ -777,15 +777,15 @@
     },
     {
       "name": "Starter 3D",
-      "filePath": "tapes/Starter.tap",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/s/starter3d/starter_cracked.tap",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/S/Starter 3D/Starter3D.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
     {
       "name": "STNICCC 2000",
-      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FS%2FStniccc2000%2Fstniccc2000.tap",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/s/stniccc/stniccc2000.tap",
       "fileType": "TAPE",
       "iconPath": "screenshots/S/Stniccc2000/STNICCC_2000.png",
       "machineType": "PAL",
