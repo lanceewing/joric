@@ -526,9 +526,9 @@
     {
       "name": "N.A.B.D.C",
       "displayName": "Not Another\nBoulder Dash",
-      "filePath": "tapes/NABDC_2016-07-12.tap",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/n/not_another_boulder_dash_clone/NABDC.tap",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/N/N.A.B.D.C/NABDC.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
