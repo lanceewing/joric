@@ -33,7 +33,7 @@ jobs:
           ./gradlew html:dist
           rm -rf html/build/dist/WEB-INF
           mv html/build/dist/functions html/build
-          zip -r joric-web-${{ github.ref }}.zip html/build/dist
+          zip -r joric-web-${{ github.ref_name }}.zip html/build/dist
 
     - name: Publish to Cloudflare Pages
       #uses: cloudflare/wrangler-action@v3
@@ -71,6 +71,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: ./joric-web-${{ github.ref }}.zip
-        asset_name: joric-web-${{ github.ref }}.zip
+        asset_path: ./joric-web-${{ github.ref_name }}.zip
+        asset_name: joric-web-${{ github.ref_name }}.zip
         asset_content_type: application/zip
