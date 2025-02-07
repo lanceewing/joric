@@ -33,7 +33,8 @@ jobs:
           ./gradlew html:dist
           rm -rf html/build/dist/WEB-INF
           mv html/build/dist/functions html/build
-          zip -r joric-web-${{ github.ref_name }}.zip html/build/dist
+          cd html/build/dist
+          zip -r joric-web-${{ github.ref_name }}.zip .
 
     - name: Create Release
       id: create_release
