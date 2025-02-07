@@ -35,34 +35,15 @@ jobs:
           mv html/build/dist/functions html/build
           zip -r joric-web-${{ github.ref_name }}.zip html/build/dist
 
-    - name: Publish to Cloudflare Pages
-      #uses: cloudflare/wrangler-action@v3
-      #with:
-      #    apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      #    accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      #    workingDirectory: html/build
-      #    command: pages deploy dist --project-name='joric' --commit-dirty=true
-      uses: cloudflare/pages-action@1
-      with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: 'joric'
-          workingDirectory: html/build
-          directory: dist
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          branch: master
-          wranglerVersion: '3'
-
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
+    - name: Create release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: false
+        tag: ${{ github.ref_name }}
+      run: |
+        gh release create "$tag" \
+            --repo="$GITHUB_REPOSITORY" \
+            --title="${tag#v}" \
+            --generate-notes
 
     - name: Upload Release Asset
       id: upload-release-asset 
