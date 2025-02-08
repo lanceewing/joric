@@ -182,9 +182,9 @@
     {
       "name": "Damsel in Distress",
       "displayName": "Damsel in\nDistress",
-      "filePath": "tapes/DAMSEL.TAP",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/d/damsel/DAMSEL.TAP",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/D/Damsel In Distress/Damsel_in_Distress.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -206,9 +206,9 @@
     },
     {
       "name": "Delta Four",
-      "filePath": "tapes/delta4.tap",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/d/delta_4/delta4.tap",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/D/Delta Four/Delta_4.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -264,9 +264,9 @@
     },
     {
       "name": "Dracula's Revenge",
-      "filePath": "tapes/DRACULA.TAP",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/d/dracula_revenge/DRACULA.TAP",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/D/Dracula's Revenge/Dracula's_Revenge.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -348,9 +348,9 @@
     },
     {
       "name": "Ghost Gobbler",
-      "filePath": "tapes/GOBBLER.TAP",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/i/ijk_general/GOBBLER.TAP",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/G/Ghost Gobbler/Ghost_Gobbler.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -388,9 +388,9 @@
     },
     {
       "name": "Hellion, The",
-      "filePath": "tapes/hellion.tap",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/h/hellion/hellion.tap",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/H/Hellion, The/The_Hellion.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
