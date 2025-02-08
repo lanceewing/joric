@@ -206,7 +206,7 @@
     },
     {
       "name": "Delta Four",
-      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/d/delta_4/delta4.tap",
+      "filePath": "https://cdn.oric.org/games/software/d/delta_4/delta4.tap",
       "fileType": "TAPE",
       "iconPath": "screenshots/D/Delta Four/Delta_4.png",
       "machineType": "PAL",
