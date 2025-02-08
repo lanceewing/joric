@@ -21,7 +21,7 @@ else {
 }
 
 sourceSets.main.resources.srcDirs += [ rootProject.file('assets').path ]
-mainClassName = 'emu.joric.lwjgl3.Lwjgl3Launcher'
+mainClassName = 'emu.joric.lwjgl3.DesktopLauncher'
 eclipse.project.name = appName + '-lwjgl3'
 java.sourceCompatibility = 11
 java.targetCompatibility = 11
