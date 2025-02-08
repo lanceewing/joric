@@ -121,8 +121,12 @@ public class GwtProgramLoader implements ProgramLoader {
 
     private String applyFilePathOverride(String filePath) {
         if (Window.Location.getHostName() == "localhost") {
+            String localHostBaseUrl = 
+                    Window.Location.getProtocol() + "//" +
+                    Window.Location.getHost() + "/";
+            logToJSConsole("localHostBaseUrl: " + localHostBaseUrl);
             if (filePath.startsWith("https://oric.games/")) {
-                return filePath.replace("https://oric.games/", "http://localhost/");
+                return filePath.replace("https://oric.games/", localHostBaseUrl);
             }
         }
         return filePath;
