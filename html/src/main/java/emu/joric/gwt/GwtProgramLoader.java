@@ -64,17 +64,22 @@ public class GwtProgramLoader implements ProgramLoader {
         
                         for (int i=0; i < files.length(); i++) {
                             String fileName = files.get(i);
-                            JSFile file = jsZip.getFile(fileName);
-                            byte[] fileData = file.asUint8Array().toByteArray();
-                            if (isDiskFile(fileData)) {
-                                programData = fileData;
-                                appConfigItem.setFileType("DISK");
-                                break;
-                            }
-                            if (isTapeFile(fileData)) {
-                                programData = fileData;
-                                appConfigItem.setFileType("TAPE");
-                                break;
+                            if (!fileName.endsWith("/")) {
+                                // File is not a directory, so check file content...
+                                JSFile file = jsZip.getFile(fileName);
+                                if (file != null) {
+                                    byte[] fileData = file.asUint8Array().toByteArray();
+                                    if (isDiskFile(fileData)) {
+                                        programData = fileData;
+                                        appConfigItem.setFileType("DISK");
+                                        break;
+                                    }
+                                    if (isTapeFile(fileData)) {
+                                        programData = fileData;
+                                        appConfigItem.setFileType("TAPE");
+                                        break;
+                                    }
+                                }
                             }
                         }
                     }
