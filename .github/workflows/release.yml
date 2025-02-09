@@ -45,7 +45,7 @@ jobs:
           cd ../..
           mv html/build/joric-web-${{ github.ref_name }}.zip .
           ./gradlew lwjgl3:jar
-          mv lwjgl3/build/lib/joric-${VERSION}.jar .
+          mv lwjgl3/build/lib/joric-${VERSION}.jar joric-desktop-${VERSION}.jar
 
     - name: Create Release
       uses: softprops/action-gh-release@v2
