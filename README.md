@@ -15,7 +15,7 @@ The UI of JOric has been designed primarily with mobile devices in mind, so give
   - e.g. [https://oric.games/#/stormlord](https://oric.games/#/stormlord)
 - Support for loading games via a ?url= request parameter:
   - e.g. [https://oric.games/?url=https://defence-force.org/files/im10.tap](https://oric.games/?url=https://defence-force.org/files/im10.tap)
-  - e.g. [https://oric.games/programs?url=https://cdn.oric.org//games/software//z/zipnzap/ZIPNZAP.DSK](https://oric.games/programs?url=https://cdn.oric.org//games/software//z/zipnzap/ZIPNZAP.DSK)
+  - e.g. [https://oric.games/programs?url=https://cdn.oric.org/games/software/z/zipnzap/ZIPNZAP.DSK](https://oric.games/programs?url=https://cdn.oric.org/games/software/z/zipnzap/ZIPNZAP.DSK)
 - Support for games contained within ZIP files:
   - e.g. [https://oric.games/?url=https://defence-force.org/files/space1999-en.zip](https://oric.games/?url=https://defence-force.org/files/space1999-en.zip)
 - Support for loading games attached to forum posts:
