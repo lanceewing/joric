@@ -372,9 +372,9 @@
     },
     {
       "name": "Gubbie",
-      "filePath": "tapes/gubbie.tap",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/g/gubbie/gubbie.tap",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/G/Gubbie/Gubbie.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
