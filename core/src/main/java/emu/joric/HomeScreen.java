@@ -98,6 +98,11 @@ public class HomeScreen extends InputAdapter implements Screen {
     private AppConfigItem lastProgramLaunched;
 
     /**
+     * The JOric version, read from version.txt
+     */
+    private String version;
+    
+    /**
      * Constructor for HomeScreen.
      * 
      * @param joric         The Joric instance.
@@ -107,6 +112,9 @@ public class HomeScreen extends InputAdapter implements Screen {
         this.joric = joric;
         this.dialogHandler = dialogHandler;
 
+        // Read JOric's current version.
+        version = Gdx.files.internal("data/version.txt").readString();
+        
         // Load the app meta data.
         Json json = new Json();
         String appConfigJson = Gdx.files.internal("data/programs.json").readString();
@@ -800,7 +808,7 @@ public class HomeScreen extends InputAdapter implements Screen {
     
     private void showAboutJOricDialog() {
         dialogHandler.showAboutDialog(
-                "JOric v1.0.0\n\n" + 
+                "JOric " + version + "\n\n" + 
                 "To start, simply swipe or click to the right.\n\n" + 
                 "Or use the ?url= request parameter to point directly to a .dsk or .tap file.\n\n" + 
                 "Most games are available on www.oric.org.\n\n" + 
