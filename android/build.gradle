@@ -23,14 +23,14 @@ android {
     }
   }
   defaultConfig {
-    applicationId 'emu.jorig'
+    applicationId 'emu.joric'
     minSdkVersion 19
     targetSdkVersion 32
     versionCode 1
     versionName "1.0"
     multiDexEnabled true
   }
-  namespace "emu.jorig"
+  namespace "emu.joric"
   compileOptions {
     sourceCompatibility "11"
     targetCompatibility "11"
@@ -112,7 +112,7 @@ tasks.register('run', Exec) {
   }
 
   def adb = path + "/platform-tools/adb"
-  commandLine "$adb", 'shell', 'am', 'start', '-n', 'emu.jorig/emu.jorig.android.AndroidLauncher'
+  commandLine "$adb", 'shell', 'am', 'start', '-n', 'emu.joric/emu.joric.android.AndroidLauncher'
 }
 
 eclipse.project.name = appName + "-android"
