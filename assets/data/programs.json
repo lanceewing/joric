@@ -421,9 +421,9 @@
     },
     {
       "name": "Hopper",
-      "filePath": "tapes/hopper_a.tap",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org//games/software//h/hopper/hopper_a.tap",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/H/Hopper/Hopper.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
