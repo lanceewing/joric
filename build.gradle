@@ -28,7 +28,6 @@ configure(subprojects - project(':android')) {
 }
 
 subprojects {
-  version = '1.0.8'
   ext.appName = 'joric'
   repositories {
     mavenCentral()
