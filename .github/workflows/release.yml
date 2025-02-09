@@ -29,6 +29,7 @@ jobs:
 
     - name: Build with Gradle Wrapper
       run: |
+          echo ${{ github.ref_name }} > assets/data/version.txt
           chmod u+x gradlew
           ./gradlew html:dist
           rm -rf html/build/dist/WEB-INF
