@@ -51,5 +51,4 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         files: |
-          joric-web-${{ github.ref_name }}.zip
-          joric-${VERSION}.jar
+          joric-*.*
