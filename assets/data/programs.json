@@ -631,7 +631,7 @@
     },
     {
       "name": "Pulsoids",
-      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FP%2FPulsoids%2Fpulsoids.dsk",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/p/pulsoids/pulsoids.dsk",
       "fileType": "DISK",
       "iconPath": "screenshots/P/Pulsoids/Pulsoids.png",
       "machineType": "PAL",
