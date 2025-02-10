@@ -173,9 +173,9 @@
     },
     {
       "name": "Chuckford",
-      "filePath": "tapes/CHUCKFRD.TAP",
-      "fileType": "TAPE",
-      "iconPath": "",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/c/chuckford/CHUCKFORD.DSK",
+      "fileType": "DISK",
+      "iconPath": "screenshots/C/Chuckford/Chuckford.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
