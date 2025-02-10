@@ -559,7 +559,7 @@
     },
     {
       "name": "O-Thrust",
-      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FO%2FO-Thrust%2FO-Thrust.tap",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org//games/software//o/othrust/othrust.tap",
       "fileType": "TAPE",
       "iconPath": "screenshots/O/O-Thrust/O-Thrust.png",
       "machineType": "PAL",
