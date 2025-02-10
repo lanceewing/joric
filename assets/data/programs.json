@@ -405,7 +405,7 @@
     },
     {
       "name": "Hobbit, The",
-      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FH%2FHobbit%2C%20The%2FHobbit.tap",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/t/tansoft_editor/hobbit.tap",
       "fileType": "TAPE",
       "iconPath": "screenshots/H/Hobbit, The/The_Hobbit.png",
       "machineType": "PAL",
