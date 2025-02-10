@@ -9,6 +9,30 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "3D Munch",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org//games/software//3/3d_munch/3DMunch.dsk",
+      "fileType": "DISK",
+      "iconPath": "screenshots/0-9/3D Munch/3D_Munch.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "3K Freecell",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org//games/software//3/3k_freecell/3kfreecell.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/0-9/3K Freecell/3K_Freecell.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "4K Kong",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/number/4kkong/4KKong.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/0-9/4K Kong/4KKong.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Adventureland",
       "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FA%2FAdventureland%20%282%29%2FAdventure.dsk",
       "fileType": "DISK",
