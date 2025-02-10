@@ -753,7 +753,7 @@
     },
     {
       "name": "Space 1999",
-      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FS%2FSpace%201999%2Fspace1999.dsk",
+      "filePath": "https://oric.games/programs?url=https://www.defence-force.org/files/space1999-en.zip",
       "fileType": "DISK",
       "iconPath": "screenshots/S/Space 1999/Space_1999.png",
       "machineType": "PAL",
