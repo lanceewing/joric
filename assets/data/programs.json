@@ -133,7 +133,7 @@
     },
     {
       "name": "Cheops",
-      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FC%2FCheops%2FCheops.tap",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/c/cheops/cheops.tap",
       "fileType": "TAPE",
       "iconPath": "screenshots/C/Cheops/Cheops.png",
       "machineType": "PAL",
