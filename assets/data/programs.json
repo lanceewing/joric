@@ -916,6 +916,15 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Weekend In Oslo",
+      "displayName": "Weekend\nIn Oslo",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/w/weekend_in_oslo/oslo.dsk",
+      "fileType": "DISK",
+      "iconPath": "screenshots/W/Weekend In Oslo/Weekend_In_Oslo.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Welcome",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/w/welcometo/welcome.tap",
       "fileType": "TAPE",
