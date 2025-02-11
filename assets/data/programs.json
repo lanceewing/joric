@@ -698,9 +698,9 @@
     },
     {
       "name": "Scuba Dive",
-      "filePath": "tapes/Scuba.tap",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/s/scubadive/Scuba.tap",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/S/Scuba Dive/Scuba_Dive.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
