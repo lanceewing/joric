@@ -364,9 +364,9 @@
     },
     {
       "name": "Giga Demo",
-      "filePath": "disks/vip3.dsk",
+      "filePath": "https://oric.games/programs?url=https://www.defence-force.org/download/oricvip3.zip",
       "fileType": "DISK",
-      "iconPath": "",
+      "iconPath": "screenshots/G/Giga Demo/Giga_Demo.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
