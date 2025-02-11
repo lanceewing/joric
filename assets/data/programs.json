@@ -247,9 +247,9 @@
     {
       "name": "Diamant de Kheops",
       "displayName": "Diamant de\nKheops",
-      "filePath": "tapes/Kheops.tap",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/d/diamant_kheops/Kheops.tap",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/D/Diamant de Kheops/Diamant_de_Kheops.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
