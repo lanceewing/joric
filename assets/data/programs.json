@@ -690,9 +690,9 @@
     },
     {
       "name": "S.A.G.A",
-      "filePath": "tapes/Saga.tap",
-      "fileType": "TAPE",
-      "iconPath": "",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/s/saga/SAGAe.DSK",
+      "fileType": "DISK",
+      "iconPath": "screenshots/S/SAGA/SAGA.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
