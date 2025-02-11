@@ -615,18 +615,11 @@
       "ram": "RAM_48K"
     },
     {
-      "name": "Playground 21",
-      "filePath": "tapes/Playground 21.tap",
-      "fileType": "TAPE",
-      "iconPath": "",
-      "machineType": "PAL",
-      "ram": "RAM_48K"
-    },
-    {
       "name": "Protector, Le",
-      "filePath": "tapes/Protector.tap",
+      "displayName": "Protector, Le",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/p/protector/Protector.tap",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/P/Protector Le/Protector_Le.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
