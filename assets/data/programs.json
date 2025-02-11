@@ -332,9 +332,9 @@
     },
     {
       "name": "Fire Flash",
-      "filePath": "tapes/Fire Flash.tap",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/f/Fire_flash/FIREFL.TAP",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/F/Fire Flash/Fire_Flash.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
