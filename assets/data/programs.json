@@ -870,14 +870,6 @@
       "ram": "RAM_48K"
     },
     {
-      "name": "Wurlde Demo 2",
-      "filePath": "disks/WurldeDemo2.dsk",
-      "fileType": "DISK",
-      "iconPath": "",
-      "machineType": "PAL",
-      "ram": "RAM_48K"
-    },
-    {
       "name": "Xenon 1",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/x/xenon1/Xenon1.tap",
       "fileType": "TAPE",
@@ -895,9 +887,9 @@
     },
     {
       "name": "X-Files",
-      "filePath": "disks/Xfiles.dsk",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/x/xfiles/Xfiles.dsk",
       "fileType": "DISK",
-      "iconPath": "",
+      "iconPath": "screenshots/X/X-Files/X-Files.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
