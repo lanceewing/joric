@@ -181,9 +181,9 @@
     },
     {
       "name": "Cock'In",
-      "filePath": "tapes/COCKIN.TAP",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/c/cockin/COCKIN.TAP",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/C/CockIn/CockIn.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
