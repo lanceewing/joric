@@ -356,9 +356,9 @@
     },
     {
       "name": "Galaxians",
-      "filePath": "tapes/GALAXIAN.TAP",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/g/galaxian/GALAXIAN.TAP",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/G/Galaxians/Galaxians.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
