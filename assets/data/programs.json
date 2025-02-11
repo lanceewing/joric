@@ -380,9 +380,9 @@
     },
     {
       "name": "Gravitor",
-      "filePath": "tapes/GRAVITOR.tap",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/g/gravitor/gravitor.tap",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/G/Gravitor/Gravitor.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
