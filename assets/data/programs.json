@@ -340,9 +340,9 @@
     },
     {
       "name": "Frelon",
-      "filePath": "tapes/Frelon.tap",
-      "fileType": "TAPE",
-      "iconPath": "",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/f/frelon/FRELONe.DSK",
+      "fileType": "DISK",
+      "iconPath": "screenshots/F/Frelon/Frelon.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
