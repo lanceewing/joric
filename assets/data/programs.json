@@ -348,9 +348,9 @@
     },
     {
       "name": "Galactosmash",
-      "filePath": "disks/gal.dsk",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/g/galactosmash/GALACTO.DSK",
       "fileType": "DISK",
-      "iconPath": "",
+      "iconPath": "screenshots/G/Galactosmash/Galactosmash.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
