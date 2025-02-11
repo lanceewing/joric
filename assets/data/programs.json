@@ -437,9 +437,9 @@
     },
     {
       "name": "Honey Kong",
-      "filePath": "tapes/Honey Kong.tap",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/h/honey_kong/honeyk.tap",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/H/Honey Kong/Honey_Kong.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
