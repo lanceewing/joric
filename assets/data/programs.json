@@ -714,14 +714,6 @@
       "ram": "RAM_48K"
     },
     {
-      "name": "Sedoric V3.0",
-      "filePath": "disks/S30tpOK.dsk",
-      "fileType": "DISK",
-      "iconPath": "",
-      "machineType": "PAL",
-      "ram": "RAM_48K"
-    },
-    {
       "name": "Singerie",
       "filePath": "tapes/SINGERIE.tap",
       "fileType": "TAPE",
@@ -739,9 +731,9 @@
     },
     {
       "name": "Snake Venom",
-      "filePath": "tapes/Snake Venom.TAP",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/s/snakevenom/SNAKEV.TAP",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/S/Snake Venom/Snake_Venom.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
