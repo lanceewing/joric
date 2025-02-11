@@ -255,9 +255,9 @@
     },
     {
       "name": "Doggy",
-      "filePath": "tapes/DOGGY.TAP",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/d/doggy/DOGGY.TAP",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/D/Doggy/Doggy.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
