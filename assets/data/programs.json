@@ -263,9 +263,9 @@
     },
     {
       "name": "Don't Panic",
-      "filePath": "disks/DPANIC.DSK",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/d/dpanic/DPANIC.DSK",
       "fileType": "DISK",
-      "iconPath": "",
+      "iconPath": "screenshots/D/Dont Panic/Dont_Panic.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
