@@ -738,51 +738,10 @@
       "ram": "RAM_48K"
     },
     {
-      "name": "Sound Tracker",
-      "filePath": "disks/STRACKER.DSK",
-      "fileType": "DISK",
-      "iconPath": "",
-      "machineType": "PAL",
-      "ram": "RAM_48K"
-    },
-    {
       "name": "Space 1999",
       "filePath": "https://oric.games/programs?url=https://www.defence-force.org/files/space1999-en.zip",
       "fileType": "DISK",
       "iconPath": "screenshots/S/Space 1999/Space_1999.png",
-      "machineType": "PAL",
-      "ram": "RAM_48K"
-    },
-    {
-      "name": "Sprity Dans La Cave",
-      "displayName": "Sprity Dans\nLa Cave",
-      "filePath": "tapes/sprity.tap",
-      "fileType": "TAPE",
-      "iconPath": "",
-      "machineType": "PAL",
-      "ram": "RAM_48K"
-    },
-    {
-      "name": "Squeek",
-      "filePath": "disks/SQUEEK.DSK",
-      "fileType": "DISK",
-      "iconPath": "",
-      "machineType": "PAL",
-      "ram": "RAM_48K"
-    },
-    {
-      "name": "Star",
-      "filePath": "tapes/star.tap",
-      "fileType": "TAPE",
-      "iconPath": "",
-      "machineType": "PAL",
-      "ram": "RAM_48K"
-    },
-    {
-      "name": "Starship",
-      "filePath": "tapes/STARSHIP.TAP",
-      "fileType": "TAPE",
-      "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -845,9 +804,9 @@
     },
     {
       "name": "Tendre Poulet",
-      "filePath": "tapes/Tendre Poulet.TAP",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/t/tendre_poulet/poulet.tap",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/T/Tendre Poulet/Tendre_Poulet.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
