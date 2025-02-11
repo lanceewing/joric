@@ -682,9 +682,9 @@
     },
     {
       "name": "Ripped",
-      "filePath": "disks/ripped.dsk",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/r/ripped/ripped.dsk",
       "fileType": "DISK",
-      "iconPath": "",
+      "iconPath": "screenshots/R/Ripped/Ripped.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
