@@ -591,9 +591,9 @@
     },
     {
       "name": "O-Type Demo",
-      "filePath": "tapes/swiv.tap",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/o/otype/swiv-2010-12-07_2.tap",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/O/O-Type/O-Type.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
