@@ -598,22 +598,6 @@
       "ram": "RAM_48K"
     },
     {
-      "name": "O-Type Demo-2",
-      "filePath": "disks/otype.dsk",
-      "fileType": "DISK",
-      "iconPath": "",
-      "machineType": "PAL",
-      "ram": "RAM_48K"
-    },
-    {
-      "name": "Panic",
-      "filePath": "tapes/panic_f.tap",
-      "fileType": "TAPE",
-      "iconPath": "",
-      "machineType": "PAL",
-      "ram": "RAM_48K"
-    },
-    {
       "name": "Pirate's Adventure",
       "filePath": "disks/Pirate.dsk",
       "fileType": "DISK",
@@ -623,9 +607,10 @@
     },
     {
       "name": "Probe 3",
-      "filePath": "tapes/probe3.tap",
+      "displayName": "Probe 3",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/i/ijk_general/probe3.tap",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/P/Probe 3/Probe_3.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
