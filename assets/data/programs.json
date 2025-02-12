@@ -773,6 +773,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Wizard's Lair",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/w/wizards_lair/roguelike-1v01.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/W/Wizards Lair/Wizards_Lair.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Wurlde Demo",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/w/wurlde/WurlMap0.dsk",
       "fileType": "DISK",
