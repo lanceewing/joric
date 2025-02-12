@@ -255,15 +255,6 @@
       "ram": "RAM_48K"
     },
     {
-      "name": "Dungeon Master Preview",
-      "displayName": "Dungeon Master\nPreview",
-      "filePath": "disks/Dungeon.dsk",
-      "fileType": "DISK",
-      "iconPath": "",
-      "machineType": "PAL",
-      "ram": "RAM_48K"
-    },
-    {
       "name": "Encounter",
       "displayName": "Encounter",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/e/encounter/encount.tap",
@@ -277,15 +268,6 @@
       "displayName": "Encounter HD\nv1.0.1",
       "filePath": "disks/EncounterHD-EN-50HZ-v1.0.1.dsk",
       "fileType": "DISK",
-      "iconPath": "",
-      "machineType": "PAL",
-      "ram": "RAM_48K"
-    },
-    {
-      "name": "Escape from Pulsar 7",
-      "displayName": "Escape from\nPulsar 7",
-      "filePath": "tapes/PULSAR7.tap",
-      "fileType": "TAPE",
       "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
@@ -444,14 +426,6 @@
       "ram": "RAM_48K"
     },
     {
-      "name": "Lode Runner",
-      "filePath": "disks/LODERUN.DSK",
-      "fileType": "DISK",
-      "iconPath": "",
-      "machineType": "PAL",
-      "ram": "RAM_48K"
-    },
-    {
       "name": "Lone Raider",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/l/lone_raider/RAIDER.TAP",
       "fileType": "TAPE",
@@ -480,14 +454,6 @@
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/m/magnetix/MAGNETIX.DSK",
       "fileType": "DISK",
       "iconPath": "screenshots/M/Magnetix/Magnetix.png",
-      "machineType": "PAL",
-      "ram": "RAM_48K"
-    },
-    {
-      "name": "Mission Impossible",
-      "filePath": "disks/Mission.dsk",
-      "fileType": "DISK",
-      "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -558,14 +524,6 @@
       "ram": "RAM_48K"
     },
     {
-      "name": "Pirate's Adventure",
-      "filePath": "disks/Pirate.dsk",
-      "fileType": "DISK",
-      "iconPath": "",
-      "machineType": "PAL",
-      "ram": "RAM_48K"
-    },
-    {
       "name": "Probe 3",
       "displayName": "Probe 3",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/i/ijk_general/probe3.tap",
@@ -580,14 +538,6 @@
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/p/protector/Protector.tap",
       "fileType": "TAPE",
       "iconPath": "screenshots/P/Protector Le/Protector_Le.png",
-      "machineType": "PAL",
-      "ram": "RAM_48K"
-    },
-    {
-      "name": "Psychiatric",
-      "filePath": "tapes/PSY.TAP",
-      "fileType": "TAPE",
-      "iconPath": "",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
@@ -617,14 +567,6 @@
       "ram": "RAM_48K"
     },
     {
-      "name": "Rabbit",
-      "filePath": "tapes/Rabbit.tap",
-      "fileType": "TAPE",
-      "iconPath": "",
-      "machineType": "PAL",
-      "ram": "RAM_48K"
-    },
-    {
       "name": "Rambo",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/r/rambo_music/rambo.dsk",
       "fileType": "DISK",
@@ -634,9 +576,9 @@
     },
     {
       "name": "Rat Splat",
-      "filePath": "tapes/RATSPLAT.tap",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/r/ratsplat/RATSPLAT.tap",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/R/Rat Splat/Rat_Splat.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
