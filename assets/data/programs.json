@@ -617,9 +617,9 @@
     },
     {
       "name": "Singerie",
-      "filePath": "tapes/SINGERIE.tap",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/s/singerie/SINGERIE.tap",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/S/Singerie/Singerie.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
