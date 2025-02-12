@@ -214,6 +214,15 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Diamant de L'Ile Maudite, Le",
+      "displayName": "Diamant de L'Ile\nMaudite, Le",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/d/diamant_ile_maudite/Diamant.dsk",
+      "fileType": "DISK",
+      "iconPath": "screenshots/D/Diamant Ile Maudite/Diamant_Ile_Maudite.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Doggy",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/d/doggy/DOGGY.TAP",
       "fileType": "TAPE",
