@@ -140,6 +140,15 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Chemins de Galdeon, Les",
+      "displayName": "Chemins de\nGaldeon, Les",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/l/les_chemins_de_galdeon/POG_OP1_FR.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/C/Chemins de Galdeon/Chemins_de_Galdeon.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Cheops",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/c/cheops/cheops.tap",
       "fileType": "TAPE",
