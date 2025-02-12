@@ -140,14 +140,6 @@
       "ram": "RAM_48K"
     },
     {
-      "name": "Catacombe Demo",
-      "filePath": "tapes/catacombe_demo.tap",
-      "fileType": "TAPE",
-      "iconPath": "",
-      "machineType": "PAL",
-      "ram": "RAM_48K"
-    },
-    {
       "name": "Cheops",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/c/cheops/cheops.tap",
       "fileType": "TAPE",
@@ -180,22 +172,6 @@
       "ram": "RAM_48K"
     },
     {
-      "name": "Creepy Castle",
-      "filePath": "disks/Creepy Castle.dsk",
-      "fileType": "DISK",
-      "iconPath": "",
-      "machineType": "PAL",
-      "ram": "RAM_48K"
-    },
-    {
-      "name": "Cyclotron",
-      "filePath": "tapes/Cyclotron.tap",
-      "fileType": "TAPE",
-      "iconPath": "",
-      "machineType": "PAL",
-      "ram": "RAM_48K"
-    },
-    {
       "name": "Damsel in Distress",
       "displayName": "Damsel in\nDistress",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/d/damsel/DAMSEL.TAP",
@@ -205,24 +181,16 @@
       "ram": "RAM_48K"
     },
     {
-      "name": "Danger Zone",
-      "filePath": "tapes/danger.tap",
-      "fileType": "TAPE",
-      "iconPath": "",
-      "machineType": "PAL",
-      "ram": "RAM_48K"
-    },
-    {
       "name": "Defence Force",
-      "filePath": "tapes/DEFENDER.TAP",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/d/defenceforce/DEFENDER.TAP",
       "fileType": "TAPE",
-      "iconPath": "",
+      "iconPath": "screenshots/D/Defence Force/Defence_Force.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
     {
       "name": "Delta Four",
-      "filePath": "https://cdn.oric.org/games/software/d/delta_4/delta4.tap",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/d/delta_4/delta4.tap",
       "fileType": "TAPE",
       "iconPath": "screenshots/D/Delta Four/Delta_4.png",
       "machineType": "PAL",
