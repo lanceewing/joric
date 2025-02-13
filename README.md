@@ -6,8 +6,6 @@ https://oric.games
 The UI of JOric has been designed primarily with mobile devices in mind, so give it a try on your Android phone! 
 
 ## Features
-JOric's focus is on ease of access and simplicity of use.
-
 - Intuitive, familiar, mobile-like UI, with game selection screens. Swipe or click to the right:
   
 ![](img/title_page_web_desktop.jpg)           |![](img/games_page_web_desktop.jpg) 
