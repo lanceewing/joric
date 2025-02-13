@@ -469,6 +469,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Magnetix",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/m/magnetix/MAGNETIX.DSK",
+      "fileType": "DISK",
+      "iconPath": "screenshots/M/Magnetix/Magnetix.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Manic Miner",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/m/manic_miner/MANICMINER_proper.tap",
       "fileType": "TAPE",
@@ -477,10 +485,10 @@
       "ram": "RAM_48K"
     },
     {
-      "name": "Magnetix",
-      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/m/magnetix/MAGNETIX.DSK",
-      "fileType": "DISK",
-      "iconPath": "screenshots/M/Magnetix/Magnetix.png",
+      "name": "Minesweeper",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/m/minesweeper/minesw-v1.00.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/M/Minesweeper/Minesweeper.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
