@@ -462,6 +462,15 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Killing In Sark",
+      "displayName": "Killing\nIn Sark",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/k/kis/KIS1.dsk",
+      "fileType": "DISK",
+      "iconPath": "screenshots/K/Killing In Sark/Killing_In_Sark.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Krillys",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/k/krillys/krillys.tap",
       "fileType": "TAPE",
