@@ -308,6 +308,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Flappy Oric",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/f/flappy_oric/flappy_1_00.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/F/Flappy Oric/Flappy_Oric.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Frelon",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/f/frelon/FRELONe.DSK",
       "fileType": "DISK",
