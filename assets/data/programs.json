@@ -692,6 +692,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Speedball",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/s/speedball/speedball-v100.dsk",
+      "fileType": "DISK",
+      "iconPath": "screenshots/S/Speedball/Speedball.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Starter 3D",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/s/starter3d/starter_cracked.tap",
       "fileType": "TAPE",
