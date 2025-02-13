@@ -782,6 +782,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Treasure",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/t/treasure/treasure.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/T/Treasure/Treasure.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Trouble In Store",
       "displayName": "Trouble\nIn Store",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/t/troubleinstore/TROUBLE.TAP",
