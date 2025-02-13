@@ -502,6 +502,15 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Murder on the Atlantic",
+      "displayName": "Murder on\nthe Atlantic",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/m/meurtre_sur_latlantique/MOTA.zip",
+      "fileType": "DISK",
+      "iconPath": "screenshots/M/Murder on the Atlantic/Murder_on_the_Atlantic.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "N.A.B.D.C",
       "displayName": "Not Another\nBoulder Dash",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/n/not_another_boulder_dash_clone/NABDC.tap",
