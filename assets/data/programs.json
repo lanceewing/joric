@@ -576,6 +576,15 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Prisoner, The",
+      "displayName": "Prisoner, The",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/e/el_prisionero/the_prisoner_en.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/P/Prisoner, The/Prisoner_The.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Probe 3",
       "displayName": "Probe 3",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/i/ijk_general/probe3.tap",
