@@ -33,6 +33,15 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "6502 Man CMPI Demo",
+      "displayName": "6502 Man\nCMPI Demo",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/6/6502_man_cmpi_demo/6502oric.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/0-9/6502 Man CMPI Demo/6502_Man_CMPI_Demo.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Adventureland",
       "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FA%2FAdventureland%20%282%29%2FAdventure.dsk",
       "fileType": "DISK",
