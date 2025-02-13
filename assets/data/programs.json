@@ -67,6 +67,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Athanor",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/a/athanor/AthanorGB.DSK",
+      "fileType": "DISK",
+      "iconPath": "screenshots/A/Athanor/Athanor.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Athanor 2",
       "displayName": "Athanor 2",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/a/athanor_2/ATHA2GB.dsk",
