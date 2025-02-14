@@ -350,6 +350,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Flipper",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/f/flipper/VideoFlipper.dsk",
+      "fileType": "DISK",
+      "iconPath": "screenshots/F/Flipper/Flipper.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Frelon",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/f/frelon/FRELONe.DSK",
       "fileType": "DISK",
