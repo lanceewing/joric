@@ -406,6 +406,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Grand Prix",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/g/grand_prix/GRANDPRIX.DSK",
+      "fileType": "DISK",
+      "iconPath": "screenshots/G/Grand Prix/Grand_Prix.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Gravitor",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/g/gravitor/gravitor.tap",
       "fileType": "TAPE",
