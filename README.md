@@ -21,6 +21,7 @@ The UI of JOric has been designed primarily with mobile devices in mind, so give
 - Support for loading games attached to forum posts:
   - e.g. [https://oric.games/?url=https://forum.defence-force.org/download/file.php?id=4084](https://oric.games/?url=https://forum.defence-force.org/download/file.php?id=4084)
 - Being a PWA (Progressive Web App), it can be installed locally to your device!
+- And it also comes as a standalone Java app, for those who prefer Java.
 
 ## How to run games from the Home screen
 JOric's game selection screens contain a list of over 100 games and demos. These games are not packaged with JOric but rather JOric loads the games from well known Oric websites, such as oric.org and defence-force.org.
@@ -40,8 +41,15 @@ Keyboard navigation within the game selection screens is also possible as follow
 ## The Machine screen
 When a game is run, the machine screen is displayed. It shows the Oric screen and various icons, which may be either at the bottom of the screen (for portrait) or to the sides (for landscape).
 
+The following two screen shots show the icons when running in Chrome on a Windows machine:
+
 ![](img/joric_stormlord.png)           |![](img/joric_1337.png) 
 :-------------------------:|:-------------------------:
+
+And the three below show the placement of the icons when running in Portrait mode as an installed PWA (Progressive Web App) on an Android phone:
+
+![](img/joric_android_stormlord.jpg)           |![](img/joric_android_petscii_robots.jpg)      |![](img/joric_android_blakes_7.jpg) 
+:-------------------------:|:-------------------------:|:-------------------------:
 
 The function of these icons is as follows:
 
