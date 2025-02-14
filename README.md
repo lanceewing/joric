@@ -26,7 +26,15 @@ The UI of JOric has been designed primarily with mobile devices in mind, so give
 ## How to run games from the Home screen
 JOric's game selection screens contain a list of over 100 games and demos. These games are not packaged with JOric but rather JOric loads the games from well known Oric websites, such as oric.org and defence-force.org.
 
-Start by going to https://oric.games. This will load the JOric title or home screen. There is a small question mark icon in the top right that pops up a dialog with a brief description and the current version. It mentions that in order to start playing games, simply swipe or click to the right. The screen works in a very similar way to the user interface of a mobile device. If you are accessing the website on a touch screen device, then you can swipe to the right to get to the next page. If you are on desktop, you can use the right arrow key, or drag/fling with your mouse, or click on the small right arrow at the bottom of the screen.
+Start by going to https://oric.games. This will load the JOric title or home screen. There is a small question mark icon in the top right that pops up a dialog with a brief description and the current version. It mentions that in order to start playing games, simply swipe or click to the right.
+
+![](img/joric_android_title_screen.jpg)           |![](img/joric_android_games_list_pg1.jpg)      |![](img/joric_android_games_list_pg2.jpg) 
+:-------------------------:|:-------------------------:|:-------------------------:
+
+The screen works in a very similar way to the user interface of a mobile device. If you are accessing the website on a touch screen device, then you can swipe to the right to get to the next page. If you are on desktop, you can use the right arrow key, or drag/fling with your mouse, or click on the small right arrow at the bottom of the screen. Note that it has pagination indicator dots at the bottom of the screen that show how many pages there are, and which of those pages you are currently on.
+
+![](img/joric_android_games_list_pg3.jpg)           |![](img/joric_android_games_list_pg4.jpg)      |![](img/joric_android_games_list_pg5.jpg)
+:-------------------------:|:-------------------------:|:-------------------------:
 
 Keyboard navigation within the game selection screens is also possible as follows:
 
