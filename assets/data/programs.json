@@ -157,6 +157,7 @@
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
+    
     {
       "name": "Buggy Boy",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org//games/software//l/lcp2004/lcp2004.dsk",
@@ -970,6 +971,14 @@
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/t/troubleinstore/TROUBLE.TAP",
       "fileType": "TAPE",
       "iconPath": "screenshots/T/Trouble In Store/TroubleInStore.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Tyrant",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/t/tyrant/TYRANT.DSK",
+      "fileType": "DISK",
+      "iconPath": "screenshots/T/Tyrant/Tyrant.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
