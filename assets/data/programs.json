@@ -578,6 +578,15 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Land of Illusion",
+      "displayName": "Land of\nIllusion",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/l/landofillusion/loi.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/L/Land of Illusion/Land_of_Illusion.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Lone Raider",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/l/lone_raider/RAIDER.TAP",
       "fileType": "TAPE",
@@ -830,6 +839,14 @@
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/s/speedball/speedball-v100.dsk",
       "fileType": "DISK",
       "iconPath": "screenshots/S/Speedball/Speedball.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Stanley",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/s/stanley/Stanley.dsk",
+      "fileType": "DISK",
+      "iconPath": "screenshots/S/Stanley/Stanley.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
