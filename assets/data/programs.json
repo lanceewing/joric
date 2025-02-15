@@ -480,6 +480,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Hero Zero",
+      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FH%2FHero%20Zero%2FHERO%20ZERO.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/H/Hero Zero/Hero_Zero.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "His Masters Rasters",
       "displayName": "His Masters\nRasters",
       "filePath": "https://oric.games/programs?url=http://www.petergordon.org.uk/files/iris-hmr.zip",
