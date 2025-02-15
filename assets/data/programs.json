@@ -537,6 +537,22 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Invaders, Arcadia",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/i/invadersarcadia/arcadia-invaders-atmos.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/I/Invaders, Arcadia/Invaders_Arcadia.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Invaders, IJK",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/i/invadersijk/INVADERS.TAP",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/I/Invaders, IJK/Invaders_IJK.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "IRQBench 1.7",
       "filePath": "tapes/IrqBench1.7.tap",
       "fileType": "TAPE",
