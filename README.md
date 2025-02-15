@@ -91,6 +91,41 @@ Java runs on many platforms, including Windows, Mac, and Linux, and so this is a
 
 Not everyone is a fan of Java desktop apps, due to the overhead of downloading and installing the Java virtual machine, so if you do not already have Java installed, then I would recommend using the web version, as the web version should work on any modern web browser.
 
+## Running on your own local web server
+As the web version of JOric is a essentially static content, you could, if you like, download the release ZIP, extract it, and run it by serving it from your own web server, rather than the oric.games web site. There are a couple of gotchas with this though: JOric uses some browser APIs that are not enabled by default. For example, it uses SharedArrayBuffer for multiple things (keyboard events, graphics, sound), as it is a very quick way to share data between the web worker that runs the emulation, the audio thread, and the main browser UI thread. In order to enable this API, the web server must set the following two HTTP response headers in every response:
+
+```
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Embedder-Policy: credentialless
+```
+
+(For more details, see here: https://developer.mozilla.org/en-US/docs/Web/API/Window/crossOriginIsolated)
+
+To make this as easy as possible for you, the JOric ZIP file for the web version comes with some .swshtaccess files in three of the folders that are designed to be read by the "Simple Web Server" web server. They are like .htaccess files that you may already be familiar with but for the Simple Web Server instead (SWS). 
+
+1. Download the release ZIP of joric, e.g.: https://github.com/lanceewing/joric/releases/download/v1.0.15/joric-web-v1.0.15.zip
+2. Extract the joric ZIP into a folder.
+3. Download Simple Web Server for your platform from here: https://simplewebserver.org/download.html
+4. Start up Simple Web Server
+5. Click "New Server" button in bottom right corner
+6. For the folder path, choose the folder that contains the index.html file from the extracted joric ZIP
+7. Choose your port number. It works with port 80, so that is what I use, but could be anything, e.g. 8080, 8081, etc.
+8. Expand the "Advanced Rules" section and tick the "Enable .swshtaccess configuration files" checkbox.
+9. Click the "Create Server" button in the bottom right. This will start up the web server..
+10. Now go to the web browser and access localhost on the port you chose. It should load the JOric home screen. Scroll to the right to choose a game.
+
+It is the .swshtaccess files within the joric ZIP that automatically take case of the rest of the Simple Web Server configuration, such as adding those two HTTP response headers mentioned earlier. These are the relative paths if you're interested in seeing what they do:
+
+```
+./.swshtaccess
+./html/.swshtaccess
+./worker/.swshtaccess
+```
+
+They mostly do the same thing, which is to add the "Cross-Origin-Opener-Policy" and "Cross-Origin-Embedder-Policy" HTTP response headers mentioned above. The top level .swshtaccess file also sets up the localhost equivalent of the CORS proxy, which is used to load Oric games from other websites, such as oric.org.
+
+The Simple Web Server is an Electron app, so not really designed to be used as a full web server. The theory can be applied to any web server though. All you need to do is configure those same features. For example, the oric.games web site is hosted by Cloudflare Pages, and so it uses a Cloudflare _headers config file to apply those HTTP response headers. This file is also included in the repo, if you are interested in seeing what it does.
+
 ## Credits and Acknowledgements
 This project would not have been possible without the following projects and their authors:
 
