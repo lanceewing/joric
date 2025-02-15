@@ -611,6 +611,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Macadam Bumper",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/m/macadam_bumper/macadam.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/M/Macadam Bumper/Macadam_Bumper.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Magnetix",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/m/magnetix/MAGNETIX.DSK",
       "fileType": "DISK",
