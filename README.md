@@ -73,7 +73,10 @@ It is important to note that if you have accessed JOric directly via a game URL 
 If instead you have started a game by clicking on the game's thumbnail image from JOric's game list screen, then sound will be unmuted automatically.
 
 ## Installing the web app on your device.
-JOric follows the PWA (Progressive Web App) spec and can therefore be installed on your device. When you go to the https://oric.games web site, and you haven't previously installed JOric, then the browser may promote it to you for installation. In Chrome, one of the ways it does this is to show a little installation icon at the end of the browser location field. Clicking on that icon will install JOric as if it is a standalone app on your device.
+JOric follows the PWA (Progressive Web App) spec and can therefore be installed on your device. When you go to the https://oric.games web site, and you haven't previously installed JOric, then the browser may promote it to you for installation. In Chrome, one of the ways it does this is to show a little installation icon at the end of the browser location field, as indicated by the yellow arrow in the screenshot below. Clicking on that icon will install JOric as if it were a standalone app on your device.
+
+![](img/joric_install_icon.jpg)           |![](img/joric_install_app_popup.jpg) 
+:-------------------------:|:-------------------------:
 
 On Windows, this means that you'll see JOric in your Windows menu, and it can be pinned to your task bar, if you choose to do that. On a mobile device, such as an Android phone, it will install it alongside all the other apps on your phone and can then be launched like any other standalone app on your phone. Internally, it still runs the web version though from the website, so is automatically kept up to date with new releases.
 
