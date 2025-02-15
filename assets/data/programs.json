@@ -423,14 +423,6 @@
       "ram": "RAM_48K"
     },
     {
-      "name": "Goldoric",
-      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/g/goldoric/goldoric.tap",
-      "fileType": "TAPE",
-      "iconPath": "screenshots/G/Goldoric/Goldoric.png",
-      "machineType": "PAL",
-      "ram": "RAM_48K"
-    },
-    {
       "name": "Go Snow",
       "displayName": "Go Snow",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/g/go_snow/GOSNOW.DSK",
@@ -533,6 +525,14 @@
       "filePath": "https://oric.games/programs?url=https://defence-force.org/files/im10.tap",
       "fileType": "TAPE",
       "iconPath": "screenshots/I/Impossible Mission/Impossible_Mission.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Invaders",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/i/invaderspf/INVADEPF.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/I/Invaders/Invaders.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
