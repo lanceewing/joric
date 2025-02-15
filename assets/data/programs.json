@@ -208,6 +208,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Cobra Pinball",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/c/cobra_pinball/PINBALL.DSK",
+      "fileType": "DISK",
+      "iconPath": "screenshots/C/Cobra Pinball/Cobra_Pinball.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Cock'In",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/c/cockin/COCKIN.TAP",
       "fileType": "TAPE",
@@ -995,6 +1003,14 @@
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/w/welcometo/welcome.tap",
       "fileType": "TAPE",
       "iconPath": "screenshots/W/Welcome/Welcome.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Willy",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/w/willy/CeoSoft1.dsk",
+      "fileType": "DISK",
+      "iconPath": "screenshots/W/Willy/Willy.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
