@@ -974,6 +974,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Water Panic",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/w/water_panic/water-panic.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/W/Water Panic/Water_Panic.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Weekend In Oslo",
       "displayName": "Weekend\nIn Oslo",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/w/weekend_in_oslo/oslo.dsk",
