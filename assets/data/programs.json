@@ -281,6 +281,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Crypt Show",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/c/crypt_show/cryptjeu-crk.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/C/Crypt Show/Crypt_Show.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Cyclotron",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/c/cyclotron_4k/Cyclotron.tap",
       "fileType": "TAPE",
