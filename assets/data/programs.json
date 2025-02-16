@@ -190,7 +190,14 @@
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
-    
+    {
+      "name": "Bricky",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/b/bricky/BRICKY.TAP",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/B/Bricky/Bricky.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
     {
       "name": "Buggy Boy",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org//games/software//l/lcp2004/lcp2004.dsk",
