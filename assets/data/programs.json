@@ -225,6 +225,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Columns",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/c/columns/Columns.dsk",
+      "fileType": "DISK",
+      "iconPath": "screenshots/C/Columns/Columns.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Damsel in Distress",
       "displayName": "Damsel in\nDistress",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/d/damsel/DAMSEL.TAP",
@@ -518,6 +526,14 @@
       "filePath": "https://oric.games/programs?url=http://www.petergordon.org.uk/files/iris-hmr.zip",
       "fileType": "TAPE",
       "iconPath": "screenshots/H/His Masters Rasters/His_Masters_Rasters.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "Hnefatafl",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/h/hnefatafl/HNEFATAFL.DSK",
+      "fileType": "DISK",
+      "iconPath": "screenshots/H/Hnefatafl/Hnefatafl.png",
       "machineType": "PAL",
       "ram": "RAM_48K"
     },
