@@ -965,6 +965,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Skramble",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/s/skramble/SKRAMBLE.TAP",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/S/Skramble/Skramble.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Scuba Dive",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/s/scubadive/Scuba.tap",
       "fileType": "TAPE",
