@@ -158,6 +158,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Blue War",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/b/blue_war/blue.dsk",
+      "fileType": "DISK",
+      "iconPath": "screenshots/B/Blue War/Blue_War.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Bocco's Adventures",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/b/boccos_adventures/bocco.dsk",
       "fileType": "DISK",
