@@ -1,3 +1,4 @@
+![](assets/png/joric_title.png)
 # JORIC
 **JOric** is an Oric emulator written in Java, using the libGDX cross-platform development framework, targeting primarily HTML5 and the web:
 
