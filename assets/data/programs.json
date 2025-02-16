@@ -669,6 +669,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Maze Rally",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/m/maze_rally/MAZERALLY.DSK",
+      "fileType": "DISK",
+      "iconPath": "screenshots/M/Maze Rally/Maze_Rally.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Minesweeper",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/m/minesweeper/minesw-v1.00.tap",
       "fileType": "TAPE",
