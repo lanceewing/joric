@@ -75,6 +75,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Alchimie Garden",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/a/alchimie_garden/ALCHIMIE.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/A/Alchimie Garden/Alchimie_Garden.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Assembly 2002",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/a/asm2k2/asm2k2.dsk",
       "fileType": "DISK",
