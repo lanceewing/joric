@@ -389,6 +389,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Draughts",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/d/draughts_ijk/draughtsijk.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/D/Draughts/Draughts.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Dungeon Master",
       "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FD%2FDungeon%20Master%20Preview%2FDungeon.dsk",
       "fileType": "DISK",
