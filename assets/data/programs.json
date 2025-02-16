@@ -1071,6 +1071,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Titan",
+      "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FT%2FTitan%2FTITAN.dsk",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/T/Titan/Titan.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Treasure",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/t/treasure/treasure.tap",
       "fileType": "TAPE",
