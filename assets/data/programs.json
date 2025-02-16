@@ -537,6 +537,15 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Green Cross Toad",
+      "displayName": "Green Cross\nToad",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/i/ijk_general/GrnXToad.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/G/Green Cross Toad/Green_Cross_Toad.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Grendel",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/g/grendel/grendel.tap",
       "fileType": "TAPE",
