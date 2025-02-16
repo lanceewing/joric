@@ -620,6 +620,15 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Last Warrior, The",
+      "displayName": "Last Warrior,\nThe",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/l/last_warrior,_the/lastwar.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/L/Last Warrior, The/The_Last_Warrior.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Lone Raider",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/l/lone_raider/RAIDER.TAP",
       "fileType": "TAPE",
