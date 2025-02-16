@@ -998,6 +998,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Sinister Epic",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/s/sinistre_epopee/SINISTER.DSK",
+      "fileType": "DISK",
+      "iconPath": "screenshots/S/Sinister Epic/Sinister_Epic.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Skool Daze",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/s/skool_daze/SkoolDaze10.tap",
       "fileType": "TAPE",
