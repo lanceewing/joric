@@ -134,6 +134,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Big Baston",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/b/big_baston/big-bast.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/B/Big Baston/Big_Baston.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Blake's 7",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/b/blakes_7/B7en-1_3.dsk",
       "fileType": "DISK",
