@@ -1014,6 +1014,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Starship",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/s/starship/STARSHIP.TAP",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/S/Starship/Starship.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Starter 3D",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/s/starter3d/starter_cracked.tap",
       "fileType": "TAPE",
