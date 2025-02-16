@@ -50,6 +50,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Acheron's Rage",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/a/acheron/ACHERON.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/A/Acheron's Rage/Acherons_Rage.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Adventureland",
       "filePath": "https://archive.org/download/Gamebase_Oric_V1.0/Games.rar/Games%2FA%2FAdventureland%20%282%29%2FAdventure.dsk",
       "fileType": "DISK",
