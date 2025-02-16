@@ -9,6 +9,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "3D Fongus",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/number/3dfongus/3DFONGUS.TAP",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/0-9/3D Fongus/3D_Fongus.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "3D Munch",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org//games/software//3/3d_munch/3DMunch.dsk",
       "fileType": "DISK",
