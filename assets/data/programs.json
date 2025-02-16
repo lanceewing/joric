@@ -857,6 +857,24 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "NY2019 Competition Disk 1",
+      "displayName": "NY2019 Comp\nDisk 1",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/n/ny2019_competition/NY2019_1.DSK",
+      "fileType": "DISK",
+      "iconPath": "screenshots/N/NY2019 Competition Disk 1/NY2019_Competition_Disk_1.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
+      "name": "NY2019 Competition Disk 2",
+      "displayName": "NY2019 Comp\nDisk 2",
+      "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/n/ny2019_competition/NY2019_2.DSK",
+      "fileType": "DISK",
+      "iconPath": "screenshots/N/NY2019 Competition Disk 2/NY2019_Competition_Disk_2.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Oricium",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/o/oricium/Oricium12.tap",
       "fileType": "TAPE",
