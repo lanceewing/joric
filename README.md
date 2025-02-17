@@ -20,6 +20,7 @@ The UI of JOric has been designed primarily with mobile devices in mind, so give
 
 - Support for direct URL path access to individual games:
   - e.g. [https://oric.games/#/stormlord](https://oric.games/#/stormlord)
+  - Or into BASIC: [https://oric.games/#/basic](https://oric.games/#/basic)
 - Support for loading games via a ?url= request parameter:
   - e.g. [https://oric.games/?url=https://defence-force.org/files/im10.tap](https://oric.games/?url=https://defence-force.org/files/im10.tap)
   - e.g. [https://oric.games/?url=https://cdn.oric.org/games/software/z/zipnzap/ZIPNZAP.DSK](https://oric.games/?url=https://cdn.oric.org/games/software/z/zipnzap/ZIPNZAP.DSK)
