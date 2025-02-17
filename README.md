@@ -1,6 +1,6 @@
 ![](assets/png/joric_title.png)
 # JORIC
-**JOric** is an Oric emulator written in Java, using the libGDX cross-platform development framework, targeting primarily HTML5 and the web. Being such, it runs directly in your web browser:
+**JOric** is an Oric emulator written in Java, using the libGDX cross-platform development framework, targeting primarily HTML5 and the web. Being such, it can run directly in your web browser:
 
 https://oric.games
 
