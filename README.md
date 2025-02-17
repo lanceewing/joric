@@ -1,6 +1,6 @@
 ![](assets/png/joric_title.png)
 # JORIC
-**JOric** is an Oric emulator written in Java, using the libGDX cross-platform development framework, targeting primarily HTML5 and the web:
+**JOric** is an Oric emulator written in Java, using the libGDX cross-platform development framework, targeting primarily HTML5 and the web. Being such, it runs directly in your web browser:
 
 https://oric.games
 
@@ -25,7 +25,7 @@ The UI of JOric has been designed primarily with mobile devices in mind, so give
 - And it also comes as a standalone Java app, for those who prefer Java.
 
 ## How to run games from the Home screen
-JOric's game selection screens contain a list of over 100 games and demos. These games are not packaged with JOric but rather JOric loads the games from well known Oric websites, such as oric.org and defence-force.org.
+JOric's game selection screens contain a list of over 150 games and demos. These games are not packaged with JOric but rather JOric loads the games from well known Oric websites, such as oric.org and defence-force.org.
 
 Start by going to https://oric.games. This will load the JOric title or home screen. There is a small question mark icon in the top right that pops up a dialog with a brief description and the current version. It mentions that in order to start playing games, simply swipe or click to the right.
 
