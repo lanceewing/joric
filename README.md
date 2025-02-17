@@ -1,4 +1,10 @@
 ![](assets/png/joric_title.png)
+
+![](https://github.com/lanceewing/joric/actions/workflows/gradle.yml/badge.svg)
+![](https://img.shields.io/github/v/release/lanceewing/joric?label=Version)
+![](https://img.shields.io/github/release-date/lanceewing/joric?label=Released)
+
+
 # JORIC
 **JOric** is an Oric emulator written in Java, using the libGDX cross-platform development framework, targeting primarily HTML5 and the web. Being such, it can run directly in your web browser:
 
