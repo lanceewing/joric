@@ -1007,6 +1007,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "Sea Battle",
+      "filePath": "https://oric.games/programs?url=https://raxiss.com/download?file=seabattle-v2.tap",
+      "fileType": "TAPE",
+      "iconPath": "screenshots/S/Sea Battle/Sea_Battle.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Secret Du Tombeau",
       "displayName": "Secret Du\nTombeau",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/t/tombeauaxayacatl/tombjeu.tap",
