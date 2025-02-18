@@ -1,4 +1,10 @@
 ![](assets/png/joric_title.png)
+
+![](https://github.com/lanceewing/joric/actions/workflows/gradle.yml/badge.svg)
+![](https://img.shields.io/github/v/release/lanceewing/joric?label=Version)
+![](https://img.shields.io/github/release-date/lanceewing/joric?label=Released)
+
+
 # JORIC
 **JOric** is an Oric emulator written in Java, using the libGDX cross-platform development framework, targeting primarily HTML5 and the web. Being such, it can run directly in your web browser:
 
@@ -14,6 +20,7 @@ The UI of JOric has been designed primarily with mobile devices in mind, so give
 
 - Support for direct URL path access to individual games:
   - e.g. [https://oric.games/#/stormlord](https://oric.games/#/stormlord)
+  - Or into BASIC: [https://oric.games/#/basic](https://oric.games/#/basic)
 - Support for loading games via a ?url= request parameter:
   - e.g. [https://oric.games/?url=https://defence-force.org/files/im10.tap](https://oric.games/?url=https://defence-force.org/files/im10.tap)
   - e.g. [https://oric.games/?url=https://cdn.oric.org/games/software/z/zipnzap/ZIPNZAP.DSK](https://oric.games/?url=https://cdn.oric.org/games/software/z/zipnzap/ZIPNZAP.DSK)
