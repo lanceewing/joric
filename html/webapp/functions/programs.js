@@ -24,6 +24,7 @@ export async function onRequest(context) {
              targetUrl.startsWith("https://defence-force.org/") || 
              targetUrl.startsWith("https://forum.defence-force.org/") || 
              targetUrl.startsWith("https://archive.org/") ||
+             targetUrl.startsWith("https://raxiss.com/") ||
              targetUrl.startsWith("http://www.petergordon.org.uk/") || 
              targetUrl.startsWith("https://cdn.oric.org/"))) {
 
