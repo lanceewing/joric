@@ -202,6 +202,15 @@ public class AY38912PSG implements AYPSG {
     }
   }
 
+  @Override
+  public boolean isSoundOn() {
+    if (audioLine != null) {
+      return (audioLine.getPlayState() == AudioTrack.PLAYSTATE_PLAYING);
+    } else {
+      return false;
+    }
+  }
+
   /**
    * Stops and closes the audio line.
    */
