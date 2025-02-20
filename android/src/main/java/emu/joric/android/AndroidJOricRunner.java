@@ -35,6 +35,8 @@ public class AndroidJOricRunner extends JOricRunner {
 
     @Override
     public void start(AppConfigItem appConfigItem) {
+        // Default speaker state is ON for Android when starting.
+        getMachineInputProcessor().setSpeakerOn(true);
         machineThread = new Thread(new Runnable() {
             @Override
             public void run() {
