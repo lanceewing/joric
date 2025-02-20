@@ -29,6 +29,8 @@ public class DesktopJOricRunner extends JOricRunner {
 
     @Override
     public void start(AppConfigItem appConfigItem) {
+        // Default speak state is ON for Desktop when starting.
+        getMachineInputProcessor().setSpeakerOn(true);
         machineThread = new Thread(new Runnable() {
             @Override
             public void run() {
