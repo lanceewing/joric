@@ -86,6 +86,7 @@ public class MachineScreen implements Screen {
     private Map<MachineType, Texture[]> machineTypeTextures;
 
     // UI components.
+    private Texture screenIcon;
     private Texture blurIcon;
     private Texture unblurIcon;
     private Texture playIcon;
@@ -149,6 +150,7 @@ public class MachineScreen implements Screen {
 
         createScreenResourcesForMachineType(MachineType.PAL);
 
+        screenIcon = new Texture("png/screen_icon.png");
         playIcon = new Texture("png/play.png");
         pauseIcon = new Texture("png/pause.png");
         blurIcon = new Texture("png/blur.png");
@@ -602,6 +604,7 @@ public class MachineScreen implements Screen {
         blurIcon.dispose();
         unblurIcon.dispose();
         nmiIcon.dispose();
+        screenIcon.dispose();
         batch.dispose();
         joricRunner.stop();
         disposeScreens();
