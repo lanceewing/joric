@@ -58,3 +58,6 @@
 # These two lines are used with mapping files; see https://developer.android.com/build/shrink-code#retracing
 -keepattributes LineNumberTable,SourceFile
 -renamesourcefileattribute SourceFile
+
+-keep public class emu.joric.config.AppConfig
+-keep public class emu.joric.config.AppConfigItem
