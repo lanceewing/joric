@@ -32,14 +32,22 @@ android {
   }
   namespace "emu.joric"
   compileOptions {
-    sourceCompatibility "11"
-    targetCompatibility "11"
+    sourceCompatibility "8"
+    targetCompatibility "8"
     coreLibraryDesugaringEnabled true
   }
   buildTypes {
     release {
       minifyEnabled true
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+  }
+  signingConfigs {
+    release {
+      storeFile file("keystore.jks")
+      storePassword System.getenv("SIGNING_STORE_PASSWORD")
+      keyAlias System.getenv("SIGNING_KEY_ALIAS")
+      keyPassword System.getenv("SIGNING_KEY_PASSWORD")
     }
   }
 }

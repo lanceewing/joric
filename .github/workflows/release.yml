@@ -27,12 +27,25 @@ jobs:
           TAG=${{ github.ref_name }}
           echo "VERSION=${TAG#v}" >> $GITHUB_ENV
 
+    - name: Decode Keystore
+      env:
+        ENCODED_STRING: ${{ secrets.SIGNING_KEY_STORE_BASE64 }}
+        SIGNING_KEY_STORE_PATH: ${{ secrets.SIGNING_KEY_STORE_PATH }}
+      run: |
+          echo $ENCODED_STRING > keystore-b64.txt
+          base64 -d keystore-b64.txt > $SIGNING_KEY_STORE_PATH
+
     # Configure Gradle for optimal use in GiHub Actions, including caching of downloaded dependencies.
     # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
 
     - name: Build with Gradle Wrapper
+      env:
+        SIGNING_KEY_STORE_PATH: ${{ secrets.SIGNING_KEY_STORE_PATH }}
+        SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+        SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
       run: |
           echo ${{ github.ref_name }} > assets/data/version.txt
           chmod u+x gradlew
@@ -46,6 +59,8 @@ jobs:
           mv html/build/joric-web-${{ github.ref_name }}.zip .
           ./gradlew lwjgl3:jar
           mv lwjgl3/build/lib/joric-${VERSION}.jar joric-desktop-${VERSION}.jar
+          ./gradlew android:assembleRelease
+          mv android/build/outputs/apk/release/*.apk joric-android-${VERSION}.apk
 
     - name: Create Release
       uses: softprops/action-gh-release@v2
