@@ -89,11 +89,24 @@ public class AndroidLauncher extends AndroidApplication implements DialogHandler
 
     @Override
     public void showAboutDialog(String aboutMessage, TextInputResponseHandler textInputResponseHandler) {
-        // TODO: Implement.
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                new AlertDialog.Builder(AndroidLauncher.this).setTitle("About JOric").setMessage(aboutMessage)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                textInputResponseHandler.inputTextResult(true, "OK");
+                                dialog.cancel();
+                            }
+                        }).create().show();
+            }
+        });
     }
 
     @Override
     public boolean isDialogOpen() {
+        // Not required for Android, so simply return false regardless of state.
         return false;
     }
 }
