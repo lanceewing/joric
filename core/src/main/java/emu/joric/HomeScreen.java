@@ -810,9 +810,10 @@ public class HomeScreen extends InputAdapter implements Screen {
         dialogHandler.showAboutDialog(
                 "JOric " + version + "\n\n" + 
                 "To start, simply swipe or click to the right.\n\n" + 
+                (Gdx.app.getType().equals(ApplicationType.WebGL)?
                 "Or use the ?url= request parameter to point directly to a .dsk or .tap file.\n\n" + 
-                "Most games are available on www.oric.org.\n\n" + 
-                "Source code: https://github.com/lanceewing/joric\n\n",
+                "Most games are available on www.oric.org.\n\n" : "") + 
+                "Source code:\nhttps://github.com/lanceewing/joric\n\n",
                 new TextInputResponseHandler() {
                     @Override
                     public void inputTextResult(boolean success, String button) {
