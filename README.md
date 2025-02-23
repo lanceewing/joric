@@ -100,7 +100,7 @@ Java runs on many platforms, including Windows, Mac, and Linux, and so this is a
 Not everyone is a fan of Java desktop apps, due to the overhead of downloading and installing the Java virtual machine, so if you do not already have Java installed, then I would recommend using the web version, as the web version should work on any modern web browser.
 
 ## Installing the Android APK
-JOric's build process also creates a native Android APK file. This can be found as an a separate asset available under the Releases page:
+JOric's build process also creates a native Android APK file. This can be found as a separate asset available under the Releases page:
 
 https://github.com/lanceewing/joric/releases/latest
 
