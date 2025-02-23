@@ -145,6 +145,8 @@ This project would not have been possible without the following projects and the
 - [GWT](https://www.gwtproject.org): Google Web Toolkit, used by libgdx to transpile the JORIC Java code to JavaScript.
 - [ringbuf.js](https://github.com/padenot/ringbuf.js/blob/main/js/ringbuf.js): Written by Paul Adenot. Used for the keyboard matrix, audio queue and pixel array in JORIC.
 - [dialog.js](https://css-tricks.com/replace-javascript-dialogs-html-dialog-element/): Written by Mads Stoumann. Used for most of the dialogs.
+- [JEMU](http://jemu.winape.net/): Written by Richard Wilson. JORIC's AY-3-8912 code is based on JEMU's AY-3-8912 implementation.
+- [Oricutron](https://github.com/pete-gordon/oricutron): Written by Peter Gordon. JORIC's WD1793 code is based on Oricutron's implementation.
 
 In addition to the above, I would also like to acknowledge the community of [https://forum.defence-force.org/](https://forum.defence-force.org/) for their testing efforts, encouragement and helpful suggestions for improvement.
 
