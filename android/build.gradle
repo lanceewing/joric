@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 
+def version = rootProject.file('assets/data/version.txt').text.trim().substring(1);
 
 android {
   compileSdk 29
@@ -27,7 +28,7 @@ android {
     minSdkVersion 29
     targetSdkVersion 29
     versionCode 1
-    versionName "1.0"
+    versionName "${version}"
     multiDexEnabled true
   }
   namespace "emu.joric"
