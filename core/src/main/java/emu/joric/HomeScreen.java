@@ -14,6 +14,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -41,6 +42,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import emu.joric.config.AppConfig;
 import emu.joric.config.AppConfigItem;
 import emu.joric.ui.DialogHandler;
+import emu.joric.ui.OpenFileResponseHandler;
 import emu.joric.ui.ConfirmResponseHandler;
 import emu.joric.ui.PagedScrollPane;
 import emu.joric.ui.PaginationWidget;
@@ -229,6 +231,11 @@ public class HomeScreen extends InputAdapter implements Screen {
             float titlePadding = ((1080 - titleWidth) / 2);
             currentPage.add(title).width(titleWidth).height(197).pad(-7, titlePadding, 112 - 19, titlePadding).expand();
         }
+        
+        Button addButton = buildButton("ADD", null, "png/plus.png", 96, 96, null, null);
+        currentPage.row();
+        currentPage.add().expandX();
+        currentPage.add(addButton).pad(0, 0, 30, 20).align(Align.right).expandX();
         
         PagedScrollPane pagedScrollPane = new PagedScrollPane();
         pagedScrollPane.setHomeScreen(this);
@@ -791,10 +798,9 @@ public class HomeScreen extends InputAdapter implements Screen {
                     processProgramSelection(appConfigItem);
                 } else if (appName.equals("INFO")) {
                     showAboutJOricDialog();
+                } else if (appName.equals("ADD")) {
+                    importProgram();
                 }
-            } else {
-                // Add miscellaneous program option (i.e. the plus icon).
-                // TODO: importProgram(null);
             }
         }
     };
@@ -855,6 +861,45 @@ public class HomeScreen extends InputAdapter implements Screen {
     
     private void resetState() {
         
+    }
+    
+    private void importProgram() {
+        Gdx.app.postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                importProgramUsingOpenFileDialog();
+            }
+        });
+    }
+    
+    private void importProgramUsingOpenFileDialog() {
+        String startPath = joric.getPreferences().getString("open_app_start_path", null);
+        dialogHandler.openFileDialog("", startPath, new OpenFileResponseHandler() {
+            @Override
+            public void openFileResult(boolean success, String filePath) {
+                if (success && (filePath != null) && (!filePath.isEmpty())) {
+                    if (!Gdx.app.getType().equals(ApplicationType.WebGL)) {
+                        // GWT/HTML5/WEBGL doesn't support FileHandle and doesn't need it anyway.
+                        FileHandle fileHandle = new FileHandle(filePath);
+                        joric.getPreferences().putString("open_app_start_path", fileHandle.parent().path());
+                        joric.getPreferences().flush();
+                    }
+                    
+                    // TODO: Will only work for desktop and android.
+                    AppConfigItem appConfigItem = new AppConfigItem();
+                    appConfigItem.setName("Adhoc Oric Program");
+                    appConfigItem.setFilePath(filePath);
+                    appConfigItem.setFileType("ABSOLUTE");
+                    appConfigItem.setMachineType("PAL");
+                    appConfigItem.setRam("RAM_48K");
+                    
+                    processProgramSelection(appConfigItem);
+                    
+                } else {
+                    joric.getJOricRunner().cancelImport();
+                }
+            }
+        });
     }
     
     private int getIndexOfFirstProgramStartingWithChar(char letter) {
