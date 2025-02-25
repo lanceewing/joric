@@ -26,6 +26,9 @@ export async function onRequest(context) {
              targetUrl.startsWith("https://archive.org/") ||
              targetUrl.startsWith("https://raxiss.com/") ||
              targetUrl.startsWith("http://www.petergordon.org.uk/") || 
+             targetUrl.startsWith("https://github.com/raspberrypioneer/") ||
+             targetUrl.startsWith("https://raw.githubusercontent.com/raspberrypioneer/") ||
+             targetUrl.startsWith("https://raw.github.com/raspberrypioneer/") ||
              targetUrl.startsWith("https://cdn.oric.org/"))) {
 
             // Rewrite request to point to target URL. This also makes the request 
