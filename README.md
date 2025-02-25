@@ -99,6 +99,15 @@ Java runs on many platforms, including Windows, Mac, and Linux, and so this is a
 
 Not everyone is a fan of Java desktop apps, due to the overhead of downloading and installing the Java virtual machine, so if you do not already have Java installed, then I would recommend using the web version, as the web version should work on any modern web browser.
 
+## Installing the Android APK
+JOric's build process also creates a native Android APK file. This can be found as a separate asset available under the Releases page:
+
+https://github.com/lanceewing/joric/releases/latest
+
+The .apk file has been signed, but there are no plans to make this available in the Google Play Store. It is provided for those who might like a native Android build as an alternative to installing the web PWA. Simply download the .apk file from the Releases page and your phone should prompt you asking if you'd like to install it. Not being from the Google Play Store though, you'll get some warnings about it coming from an unknown source.
+
+Personally, I prefer to install the web version to my Android phone, as a PWA app (see section above), as its more convenient and updates automatically. You may find that the sound performs better in the native APK version though.
+
 ## Running on your own local web server
 As the web version of JOric is a essentially static content, you could, if you like, download the release ZIP, extract it, and run it by serving it from your own web server, rather than the oric.games web site. There are a couple of gotchas with this though: JOric uses some browser APIs that are not enabled by default. For example, it uses SharedArrayBuffer for multiple things (keyboard events, graphics, sound), as it is a very quick way to share data between the web worker that runs the emulation, the audio thread, and the main browser UI thread. In order to enable this API, the web server must set the following two HTTP response headers in every response:
 
@@ -145,6 +154,8 @@ This project would not have been possible without the following projects and the
 - [GWT](https://www.gwtproject.org): Google Web Toolkit, used by libgdx to transpile the JORIC Java code to JavaScript.
 - [ringbuf.js](https://github.com/padenot/ringbuf.js/blob/main/js/ringbuf.js): Written by Paul Adenot. Used for the keyboard matrix, audio queue and pixel array in JORIC.
 - [dialog.js](https://css-tricks.com/replace-javascript-dialogs-html-dialog-element/): Written by Mads Stoumann. Used for most of the dialogs.
+- [JEMU](http://jemu.winape.net/): Written by Richard Wilson. JORIC's AY-3-8912 code is based on JEMU's AY-3-8912 implementation.
+- [Oricutron](https://github.com/pete-gordon/oricutron): Written by Peter Gordon. JORIC's WD1793 code is based on Oricutron's implementation.
 
 In addition to the above, I would also like to acknowledge the community of [https://forum.defence-force.org/](https://forum.defence-force.org/) for their testing efforts, encouragement and helpful suggestions for improvement.
 
