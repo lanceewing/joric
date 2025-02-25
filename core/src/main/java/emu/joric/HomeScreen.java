@@ -232,10 +232,12 @@ public class HomeScreen extends InputAdapter implements Screen {
             currentPage.add(title).width(titleWidth).height(197).pad(-7, titlePadding, 112 - 19, titlePadding).expand();
         }
         
-        Button addButton = buildButton("ADD", null, "png/plus.png", 96, 96, null, null);
-        currentPage.row();
-        currentPage.add().expandX();
-        currentPage.add(addButton).pad(0, 0, 30, 20).align(Align.right).expandX();
+        if (!Gdx.app.getType().equals(ApplicationType.WebGL)) {
+            Button addButton = buildButton("ADD", null, "png/plus.png", 96, 96, null, null);
+            currentPage.row();
+            currentPage.add().expandX();
+            currentPage.add(addButton).pad(0, 0, 30, 20).align(Align.right).expandX();
+        }
         
         PagedScrollPane pagedScrollPane = new PagedScrollPane();
         pagedScrollPane.setHomeScreen(this);
