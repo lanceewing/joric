@@ -299,6 +299,9 @@ public class MachineScreen implements Screen {
             draw(delta);
         }
 
+        // Process any delayed key releases that are pending.
+        joricRunner.getKeyboardMatrix().checkDelayedReleaseKeys();
+        
         renderCount++;
     }
     

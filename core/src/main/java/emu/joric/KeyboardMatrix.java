@@ -1,8 +1,12 @@
 package emu.joric;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.TreeMap;
 
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.Input.Keys;
 
 /**
@@ -135,6 +139,21 @@ public abstract class KeyboardMatrix extends InputAdapter {
     private HashMap<Integer, int[]> keyConvHashMap;
     
     /**
+     * Holds the last time that the key was pressed down, or 0 if it has since been released.
+     */
+    private long minKeyReleaseTimes[] = new long[512];
+    
+    /**
+     * Holds a queue of keycodes whose key release processing has been delayed. This is
+     * supported primarily for use with the Android virtual keyboard on some devices, 
+     * where the key pressed and release both get fired on release of the key, so have
+     * virtually no time between them.
+     */
+    private TreeMap<Long, Integer> delayedReleaseKeys = new TreeMap<Long, Integer>();
+    
+    private int lastKeyDownKeycode;
+    
+    /**
      * Constructor for UserInput.
      */
     public KeyboardMatrix() {
@@ -149,43 +168,73 @@ public abstract class KeyboardMatrix extends InputAdapter {
     }
 
     public boolean keyDown(int keycode) {
-        // Update the key matrix to indicate to the Oric that this key is down.
-        int keyDetails[] = (int[]) keyConvHashMap.get(new Integer(keycode));
-        if (keyDetails != null) {
-            int currentRowValue = getKeyMatrixRow(keyDetails[1]);
-            setKeyMatrixRow(keyDetails[1], currentRowValue | keyDetails[2]);
-        } else {
-            // Special keycodes without direct mappings.
+        if (keycode == 0) {
+            // The framework wasn't able to identify the key, so we'll have to 
+            // deduce it from the key typed character.
         }
-
+        else {
+            // Store the minimum expected release time for this key, i.e. current time + 50ms.
+            minKeyReleaseTimes[keycode] = TimeUtils.nanoTime() + 50000000;
+            
+            // Update the key matrix to indicate to the Oric that this key is down.
+            int keyDetails[] = (int[]) keyConvHashMap.get(new Integer(keycode));
+            if (keyDetails != null) {
+                int currentRowValue = getKeyMatrixRow(keyDetails[1]);
+                setKeyMatrixRow(keyDetails[1], currentRowValue | keyDetails[2]);
+            } else {
+                // Special keycodes without direct mappings.
+            }
+        }
+        lastKeyDownKeycode = keycode;
         return true;
     }
 
     public boolean keyUp(int keycode) {
-        // Otherwise we process the release by updating the key matrix that the Oric polls.
-        int keyDetails[] = (int[]) keyConvHashMap.get(new Integer(keycode));
-        if (keyDetails != null) {
-            int currentRowValue = getKeyMatrixRow(keyDetails[1]);
-            setKeyMatrixRow(keyDetails[1], currentRowValue & ~keyDetails[2]);
-        } else {
-            // Special keycodes.
-
+        if (keycode != 0) {
+            long currentTime = TimeUtils.nanoTime();
+            long minKeyReleaseTime = minKeyReleaseTimes[keycode];
+            minKeyReleaseTimes[keycode] = 0;
+            
+            if (currentTime < minKeyReleaseTime) {
+                // Key hasn't been down long enough (possibly due to it being an Android virtual 
+                // keyboard or something similar that doesn't reflect the actual time the key 
+                // is down), so let's add this keycode to the delayed release list.
+                synchronized(delayedReleaseKeys) {
+                    delayedReleaseKeys.put(minKeyReleaseTime, keycode);
+                }
+                
+            } else {
+                // Otherwise we process the release by updating the key matrix that the Oric polls.
+                int keyDetails[] = (int[]) keyConvHashMap.get(new Integer(keycode));
+                if (keyDetails != null) {
+                    int currentRowValue = getKeyMatrixRow(keyDetails[1]);
+                    setKeyMatrixRow(keyDetails[1], currentRowValue & ~keyDetails[2]);
+                } else {
+                    // Special keycodes.
+        
+                }
+            }
         }
 
         return true;
     }
 
     public boolean keyTyped(char ch) {
+        // The keyTyped method is invoked within a millisecond of the keyDown
+        // method, so it is very likely that the last keyDown was for the same key.
         int keycode = 0;
 
-        if ((ch == '\\') || (ch == '|')) {
-            // On Linux the backslash doesn't call keyPressed or keyReleased.
-            keycode = Keys.BACKSLASH;
-        } else if (ch == '_') {
-            // Underscore doesn't appear to get registered either.
-            keycode = Keys.MINUS;
-        } else if (ch == '^') {
-            keycode = Keys.NUM_6;
+        if (lastKeyDownKeycode == 0) {
+            // Last keyDown call had an unrecognised keycode.
+            if ((ch == '\\') || (ch == '|')) {
+                keycode = Keys.BACKSLASH;
+            } else if (ch == '_') {
+                keycode = Keys.MINUS;
+            } else if (ch == '^') {
+                keycode = Keys.NUM_6;
+            } else if ((ch == '\'') || (ch == '@')) {
+                keycode = Keys.APOSTROPHE;
+            }
         }
 
         if (keycode != 0) {
@@ -195,6 +244,24 @@ public abstract class KeyboardMatrix extends InputAdapter {
 
         } else {
             return false;
+        }
+    }
+    
+    /**
+     * Checks if there are any keys whose release processed has been delayed that
+     * are now able to be processed due to the minimum release time having been
+     * passed.
+     */
+    public void checkDelayedReleaseKeys() {
+        if (!delayedReleaseKeys.isEmpty()) {
+            synchronized (delayedReleaseKeys) {
+                List<Long> processedReleases = new ArrayList<Long>();
+                processedReleases.addAll(delayedReleaseKeys.headMap(TimeUtils.nanoTime()).keySet());
+                for (Long keyReleaseTime : processedReleases) {
+                    int delayedReleaseKeyCode = delayedReleaseKeys.remove(keyReleaseTime);
+                    keyUp(delayedReleaseKeyCode);
+                }
+            }
         }
     }
     
