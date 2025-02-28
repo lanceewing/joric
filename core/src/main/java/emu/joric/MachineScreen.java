@@ -583,7 +583,6 @@ public class MachineScreen implements Screen {
         
         if (appConfigItem != null) {
             joricRunner.start(appConfigItem);
-            // TODO: machineInputProcessor.setSpeakerOn(joricRunner.isSoundOn());
         }
     }
 

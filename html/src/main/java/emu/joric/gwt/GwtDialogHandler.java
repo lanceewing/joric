@@ -1,6 +1,8 @@
 package emu.joric.gwt;
 
 import com.badlogic.gdx.Gdx;
+import com.google.gwt.typedarrays.shared.Int8Array;
+import com.google.gwt.typedarrays.shared.TypedArrays;
 
 import emu.joric.ui.ConfirmResponseHandler;
 import emu.joric.ui.DialogHandler;
@@ -50,9 +52,77 @@ public class GwtDialogHandler implements DialogHandler {
     
     @Override
     public void openFileDialog(String title, String startPath, OpenFileResponseHandler openFileResponseHandler) {
-        // TODO: Not implemented.
-        openFileResponseHandler.openFileResult(false, null);
+        dialogOpen = true;
+        showHtmlOpenFileDialog(new GwtOpenFileResultsHandler() {
+            @Override
+            public void onFileResultsReady(GwtOpenFileResult[] openFileResultArray) {
+                // There should be only one file.
+                if (openFileResultArray.length == 1) {
+                    GwtOpenFileResult result = openFileResultArray[0];
+                    Int8Array fileDataInt8Array = TypedArrays.createInt8Array(result.getFileData());
+                    byte[] fileByteArray = new byte[fileDataInt8Array.byteLength()];
+                    for (int index=0; index<fileDataInt8Array.byteLength(); index++) {
+                        fileByteArray[index] = fileDataInt8Array.get(index);
+                    }
+                    openFileResponseHandler.openFileResult(true, result.getFileName(), fileByteArray);
+                } else {
+                     // No files selected.
+                    openFileResponseHandler.openFileResult(false, null, null);
+                }
+                
+                dialogOpen = false;
+            }
+        });
     }
+    
+    private final native void showHtmlOpenFileDialog(GwtOpenFileResultsHandler resultsHandler)/*-{
+        var fileInputElem = document.createElement('input');
+        fileInputElem.type = 'file';
+        fileInputElem.accept = '.tap,.dsk,.zip,.rom';
+        
+        document.body.appendChild(fileInputElem);
+        
+        // The change event occurs after a file is chosen.
+        fileInputElem.addEventListener("change", function(event) {
+            document.body.removeChild(fileInputElem);
+        
+            if (this.files.length === 0) {
+                // No file was selected, so nothing more to do.
+                resultsHandler.@emu.joric.gwt.GwtOpenFileResultsHandler::onFileResultsReady([Lemu/joric/gwt/GwtOpenFileResult;)([]);
+            }
+            else {
+                // We do not allow multiple files to be selected.
+                Promise.all([].map.call(this.files, function (file) {
+                    return new Promise(function (resolve, reject) {
+                        var reader = new FileReader();
+                        // NOTE 1: loadend called regards of whether it was successful or not.
+                        // NOTE 2: file has .name, .size and .lastModified fields.
+                        reader.addEventListener("loadend", function (event) {
+                            resolve({
+                                fileName: file.name,
+                                filePath: file.webkitRelativePath? file.webkitRelativePath : '',
+                                fileData: reader.result
+                            });
+                        });
+                        reader.readAsArrayBuffer(file);
+                    });
+                })).then(function (results) {
+                    // The results param is an array of result objects
+                    resultsHandler.@emu.joric.gwt.GwtOpenFileResultsHandler::onFileResultsReady([Lemu/joric/gwt/GwtOpenFileResult;)(results);
+                });
+            }
+        });
+        
+        fileInputElem.addEventListener("cancel", function(event) {
+            document.body.removeChild(fileInputElem);
+            
+            // No file was selected, so nothing more to do.
+            resultsHandler.@emu.joric.gwt.GwtOpenFileResultsHandler::onFileResultsReady([Lemu/joric/gwt/GwtOpenFileResult;)([]);
+        });
+        
+        // Trigger the display of the open file dialog.
+        fileInputElem.click();
+    }-*/;
     
     @Override
     public void promptForTextInput(String message, String initialValue,

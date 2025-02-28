@@ -21,20 +21,23 @@ public class GwtProgramLoader implements ProgramLoader {
     public void fetchProgram(AppConfigItem appConfigItem, Consumer<Program> programConsumer) {
         logToJSConsole("Fetching program '" + appConfigItem.getName() + "'");
         
+        Program program = null;
+        byte[] data = null;
+        
+        if (appConfigItem.getFileData() != null) {
+            data = appConfigItem.getFileData();
+            appConfigItem.setFileData(null);
+        }
         // For configs such as BASIC, there is no file path, so return without program.
-        if ("".equals(appConfigItem.getFilePath())) {
+        else if ("".equals(appConfigItem.getFilePath())) {
             programConsumer.accept(null);
             return;
         }
-        
-        Program program = null;
-        byte[] programData = null;
-        
-        if (!appConfigItem.getFilePath().startsWith("http")) {
+        else if (!appConfigItem.getFilePath().startsWith("http")) {
             FileHandle fileHandle = Gdx.files.internal(appConfigItem.getFilePath());
             if (fileHandle != null) {
                 if (fileHandle.exists()) {
-                    programData = fileHandle.readBytes();
+                    data = fileHandle.readBytes();
                 }
             }
         } 
@@ -42,57 +45,60 @@ public class GwtProgramLoader implements ProgramLoader {
             String binaryStr = getBinaryResource(applyFilePathOverride(appConfigItem.getFilePath()));
             if (binaryStr != null) {
                 // Use the data to identify the type of program.
-                byte[] data = convertBinaryStringToBytes(binaryStr);
-                
-                if ((data != null) && (data.length >= 4)) {
-                    if ((data[0] == 0x16) && (data[1] == 0x16) && (data[2] == 0x16)) {
-                        // At least 3 0x16 bytes followed by a 0x24 is a tape file.
-                        appConfigItem.setFileType("TAPE");
-                        programData = data;
-                    }
-                    else if ((data[0] == 0x4D) && (data[1] == 0x46) && (data[2] == 0x4D)) {
-                        // MFM_DISK - 4D 46 4D 5F 44 49 53 4B
-                        appConfigItem.setFileType("DISK");
-                        programData = data;
-                    }
-                    else if ((data[0] == 0x50) && (data[1] == 0x4B) && (data[2] == 0x03) && (data[3] == 0x04)) {
-                        // ZIP starts with: 50 4B 03 04
-                        logToJSConsole("Scanning ZIP file...");
-                        
-                        JSZip jsZip = JSZip.loadFromArray(Uint8Array.createUint8(data));
-                        JsArrayString files = jsZip.getFiles();
+                data = convertBinaryStringToBytes(binaryStr);
+            }
+        }
         
-                        for (int i=0; i < files.length(); i++) {
-                            String fileName = files.get(i);
-                            if (!fileName.endsWith("/")) {
-                                // File is not a directory, so check file content...
-                                JSFile file = jsZip.getFile(fileName);
-                                if (file != null) {
-                                    byte[] fileData = file.asUint8Array().toByteArray();
-                                    if (isDiskFile(fileData)) {
-                                        programData = fileData;
-                                        appConfigItem.setFileType("DISK");
-                                        break;
-                                    }
-                                    if (isTapeFile(fileData)) {
-                                        programData = fileData;
-                                        appConfigItem.setFileType("TAPE");
-                                        break;
-                                    }
-                                }
+        byte[] programData = null;
+        
+        if ((data != null) && (data.length >= 4)) {
+            if ((data[0] == 0x16) && (data[1] == 0x16) && (data[2] == 0x16)) {
+                // At least 3 0x16 bytes followed by a 0x24 is a tape file.
+                appConfigItem.setFileType("TAPE");
+                programData = data;
+            }
+            else if ((data[0] == 0x4D) && (data[1] == 0x46) && (data[2] == 0x4D)) {
+                // MFM_DISK - 4D 46 4D 5F 44 49 53 4B
+                appConfigItem.setFileType("DISK");
+                programData = data;
+            }
+            else if ((data[0] == 0x50) && (data[1] == 0x4B) && (data[2] == 0x03) && (data[3] == 0x04)) {
+                // ZIP starts with: 50 4B 03 04
+                logToJSConsole("Scanning ZIP file...");
+                
+                JSZip jsZip = JSZip.loadFromArray(Uint8Array.createUint8(data));
+                JsArrayString files = jsZip.getFiles();
+
+                for (int i=0; i < files.length(); i++) {
+                    String fileName = files.get(i);
+                    if (!fileName.endsWith("/")) {
+                        // File is not a directory, so check file content...
+                        JSFile file = jsZip.getFile(fileName);
+                        if (file != null) {
+                            byte[] fileData = file.asUint8Array().toByteArray();
+                            if (isDiskFile(fileData)) {
+                                programData = fileData;
+                                appConfigItem.setFileType("DISK");
+                                break;
+                            }
+                            if (isTapeFile(fileData)) {
+                                programData = fileData;
+                                appConfigItem.setFileType("TAPE");
+                                break;
                             }
                         }
                     }
-                    else {
-                        logToJSConsole("Sorry, the URL provided does not appear to be for a recognised Oric program file format.");
-                        appConfigItem.setFileType("UNK");
-                    }
-                }
-                else {
-                    logToJSConsole("Sorry, the URL provided does not appear to be for a recognised Oric program file format.");
-                    appConfigItem.setFileType("UNK");
                 }
             }
+            else {
+                // Assume it is ROM if not TAPE or DISK.
+                programData = data;
+                appConfigItem.setFileType("ROM");
+            }
+        }
+        else {
+            logToJSConsole("Sorry, the format of the specified program file could not be recognised.");
+            appConfigItem.setFileType("UNK");
         }
         
         if (programData != null) {

@@ -8,6 +8,6 @@ package emu.joric.ui;
  */
 public interface OpenFileResponseHandler {
 
-  void openFileResult(boolean success, String filePath);
+  void openFileResult(boolean success, String filePath, byte[] fileData);
   
 }

@@ -22,6 +22,10 @@ public class AppConfigItem {
 
     private String status = "WORKING";
 
+    // Required for the web open file feature, as the same event that selects
+    // the file needs to read the data.
+    private byte[] fileData;
+    
     public enum FileLocation {
         INTERNAL, EXTERNAL, ABSOLUTE, CLASSPATH, LOCAL
     };
@@ -171,5 +175,13 @@ public class AppConfigItem {
      */
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public byte[] getFileData() {
+        return fileData;
+    }
+
+    public void setFileData(byte[] fileData) {
+        this.fileData = fileData;
     }
 }

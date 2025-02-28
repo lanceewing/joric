@@ -232,12 +232,10 @@ public class HomeScreen extends InputAdapter implements Screen {
             currentPage.add(title).width(titleWidth).height(197).pad(-7, titlePadding, 112 - 19, titlePadding).expand();
         }
         
-        if (!Gdx.app.getType().equals(ApplicationType.WebGL)) {
-            Button addButton = buildButton("ADD", null, "png/plus.png", 96, 96, null, null);
-            currentPage.row();
-            currentPage.add().expandX();
-            currentPage.add(addButton).pad(0, 0, 30, 20).align(Align.right).expandX();
-        }
+        Button addButton = buildButton("ADD", null, "png/plus.png", 96, 96, null, null);
+        currentPage.row();
+        currentPage.add().expandX();
+        currentPage.add(addButton).pad(0, 0, 30, 20).align(Align.right).expandX();
         
         PagedScrollPane pagedScrollPane = new PagedScrollPane();
         pagedScrollPane.setHomeScreen(this);
@@ -878,7 +876,7 @@ public class HomeScreen extends InputAdapter implements Screen {
         String startPath = joric.getPreferences().getString("open_app_start_path", null);
         dialogHandler.openFileDialog("", startPath, new OpenFileResponseHandler() {
             @Override
-            public void openFileResult(boolean success, String filePath) {
+            public void openFileResult(boolean success, String filePath, byte[] fileData) {
                 if (success && (filePath != null) && (!filePath.isEmpty())) {
                     if (!Gdx.app.getType().equals(ApplicationType.WebGL)) {
                         // GWT/HTML5/WEBGL doesn't support FileHandle and doesn't need it anyway.
@@ -894,6 +892,7 @@ public class HomeScreen extends InputAdapter implements Screen {
                     appConfigItem.setFileType("ABSOLUTE");
                     appConfigItem.setMachineType("PAL");
                     appConfigItem.setRam("RAM_48K");
+                    appConfigItem.setFileData(fileData);
                     
                     processProgramSelection(appConfigItem);
                     
