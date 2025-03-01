@@ -80,7 +80,8 @@ public class GwtJOricRunner extends JOricRunner {
     @Override
     public void start(AppConfigItem appConfigItem) {
         // Do not change the URL if joric was invoked with "url" request param.
-        if (Window.Location.getParameter("url") == null) {
+        if ((Window.Location.getParameter("url") == null) && 
+            (!"Adhoc Oric Program".equals(appConfigItem.getName()))) {
             // The URL Builder doesn't add a / before the #, so we do this ourselves.
             String newURL = Window.Location.createUrlBuilder().setPath("/").setHash(null).buildString();
             if (newURL.endsWith("/")) {
