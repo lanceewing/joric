@@ -116,11 +116,11 @@ public class AndroidLauncher extends AndroidApplication implements DialogHandler
                         pickiT.getPath(data.getData(), Build.VERSION.SDK_INT);
                     } catch (Exception e) {
                         Log.e("FileSelectorTestActivity", "File select error", e);
-                        activeOpenFileResponseHandler.openFileResult(false, null);
+                        activeOpenFileResponseHandler.openFileResult(false, null, null);
                     }
                 }
             } else {
-                activeOpenFileResponseHandler.openFileResult(false, null);
+                activeOpenFileResponseHandler.openFileResult(false, null, null);
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -133,7 +133,7 @@ public class AndroidLauncher extends AndroidApplication implements DialogHandler
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     chooseFile();
                 } else {
-                    activeOpenFileResponseHandler.openFileResult(false, null);
+                    activeOpenFileResponseHandler.openFileResult(false, null, null);
                 }
                 break;
             default:
@@ -156,9 +156,9 @@ public class AndroidLauncher extends AndroidApplication implements DialogHandler
     @Override
     public void PickiTonCompleteListener(String path, boolean wasDriveFile, boolean wasUnknownProvider, boolean wasSuccessful, String Reason) {
         if (wasSuccessful) {
-            activeOpenFileResponseHandler.openFileResult(true, path);
+            activeOpenFileResponseHandler.openFileResult(true, path, null);
         } else {
-            activeOpenFileResponseHandler.openFileResult(false, null);
+            activeOpenFileResponseHandler.openFileResult(false, null, null);
         }
     }
 
