@@ -5,6 +5,8 @@ import java.util.Map;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3WindowAdapter;
+
 import emu.joric.JOric;
 
 /** Launches the desktop (LWJGL3) application. */
@@ -35,12 +37,11 @@ public class DesktopLauncher {
         DesktopJOricRunner desktopJOricRunner = new DesktopJOricRunner(
                 new DesktopKeyboardMatrix(), new DesktopPixelData(), 
                 new AY38912PSG());
-        return new Lwjgl3Application(
-                new JOric(desktopJOricRunner, desktopDialogHandler, argsMap), 
-                getDefaultConfiguration());
+        JOric joric = new JOric(desktopJOricRunner, desktopDialogHandler, argsMap);
+        return new Lwjgl3Application(joric, getDefaultConfiguration(joric));
     }
 
-    private static Lwjgl3ApplicationConfiguration getDefaultConfiguration() {
+    private static Lwjgl3ApplicationConfiguration getDefaultConfiguration(JOric joric) {
         Lwjgl3ApplicationConfiguration configuration = new Lwjgl3ApplicationConfiguration();
         configuration.setTitle("JOric");
         configuration.useVsync(true);
@@ -51,6 +52,15 @@ public class DesktopLauncher {
         //// You may also need to configure GPU drivers to fully disable Vsync; this can cause screen tearing.
         configuration.setWindowedMode(540, 960);
         configuration.setWindowIcon("libgdx128.png", "libgdx64.png", "libgdx32.png", "libgdx16.png");
+        configuration.setWindowListener(new Lwjgl3WindowAdapter() {
+            @Override
+            public void filesDropped (String[] files) {
+                // We support only a single file.
+                if (files.length == 1) {
+                    joric.fileDropped(files[0], null);
+                }
+            }
+        });
         return configuration;
     }
 }

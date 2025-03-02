@@ -885,7 +885,6 @@ public class HomeScreen extends InputAdapter implements Screen {
                         joric.getPreferences().flush();
                     }
                     
-                    // TODO: Will only work for desktop and android.
                     AppConfigItem appConfigItem = new AppConfigItem();
                     appConfigItem.setName("Adhoc Oric Program");
                     appConfigItem.setFilePath(filePath);

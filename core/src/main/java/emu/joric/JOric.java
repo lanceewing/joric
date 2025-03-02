@@ -168,4 +168,24 @@ public class JOric extends Game {
         // Save the preferences when the emulator is closed.
         preferences.flush();
     }
+
+    /**
+     * Invoked when a program file (DSK, TAP or ZIP) is dropped onto the home screen.
+     * 
+     * @param filePath
+     * @param fileData
+     */
+    public void fileDropped(String filePath, byte[] fileData) {
+        // File drop is only 
+        if (getScreen() == homeScreen) {
+            AppConfigItem appConfigItem = new AppConfigItem();
+            appConfigItem.setName("Adhoc Oric Program");
+            appConfigItem.setFilePath(filePath);
+            appConfigItem.setFileType("ABSOLUTE");
+            appConfigItem.setMachineType("PAL");
+            appConfigItem.setRam("RAM_48K");
+            appConfigItem.setFileData(fileData);
+            homeScreen.processProgramSelection(appConfigItem);
+        }
+    }
 }
