@@ -6,6 +6,8 @@ import java.util.Map;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
+import com.google.gwt.typedarrays.shared.Int8Array;
+import com.google.gwt.typedarrays.shared.TypedArrays;
 import com.google.gwt.user.client.Window;
 
 import emu.joric.JOric;
@@ -13,6 +15,8 @@ import emu.joric.JOricRunner;
 
 /** Launches the GWT application. */
 public class GwtLauncher extends GwtApplication {
+    
+    private JOric joric;
     
     @Override
     public GwtApplicationConfiguration getConfig () {
@@ -62,7 +66,56 @@ public class GwtLauncher extends GwtApplication {
         JOricRunner joricRunner = new GwtJOricRunner(
                 new GwtKeyboardMatrix(), 
                 new GwtPixelData());
-        return new JOric(joricRunner, gwtDialogHandler, argsMap);
+        joric = new JOric(joricRunner, gwtDialogHandler, argsMap);
+        registerFileDropEventHandler();
+        return joric;
+    }
+    
+    private native void registerFileDropEventHandler() /*-{
+        var that = this;
+        $wnd.document.getElementById('embed-html').ondrop = $entry(function(e) {
+            e.preventDefault();
+            
+            if ((e.dataTransfer.items) && 
+                (e.dataTransfer.items.length == 1) && 
+                (e.dataTransfer.items[0].kind == 'file')) {
+                
+                var item = e.dataTransfer.items[0];
+                
+                Promise.all([].map.call([item.getAsFile()], function (file) {
+                    return new Promise(function (resolve, reject) {
+                        var reader = new FileReader();
+                        // NOTE 1: loadend called regards of whether it was successful or not.
+                        // NOTE 2: file has .name, .size and .lastModified fields.
+                        reader.addEventListener("loadend", function (event) {
+                            resolve({
+                                fileName: file.name,
+                                filePath: file.webkitRelativePath? file.webkitRelativePath : '',
+                                fileData: reader.result
+                            });
+                        });
+                        reader.readAsArrayBuffer(file);
+                    });
+                })).then(function (results) {
+                    // The results param is an array of result objects
+                    that.@emu.joric.gwt.GwtLauncher::onFileDrop([Lemu/joric/gwt/GwtOpenFileResult;)(results);
+                });
+            }
+        });
+    }-*/;
+
+    private void onFileDrop(GwtOpenFileResult[] dropFileResultArray) {
+        if (dropFileResultArray.length == 1) {
+            GwtOpenFileResult dropFileResult = dropFileResultArray[0];
+            
+            Int8Array fileDataInt8Array = TypedArrays.createInt8Array(dropFileResult.getFileData());
+            byte[] fileByteArray = new byte[fileDataInt8Array.byteLength()];
+            for (int index=0; index<fileDataInt8Array.byteLength(); index++) {
+                fileByteArray[index] = fileDataInt8Array.get(index);
+            }
+            
+            joric.fileDropped(dropFileResult.getFileName(), fileByteArray);
+        }
     }
     
     private boolean isProgramURLValid(String url) {
