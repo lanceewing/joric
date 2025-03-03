@@ -37,14 +37,8 @@ function handleMouseUp(evt) {
   evt.stopPropagation();
 }
 
-function handleDragOver(evt) {
-  evt.preventDefault();
-  return false;
-}
-
 document.addEventListener('contextmenu', event => event.preventDefault());
 document.getElementById('embed-html').addEventListener('mousedown', handleMouseDown, false);
 document.getElementById('embed-html').addEventListener('mouseup', handleMouseUp, false);
-document.getElementById('embed-html').addEventListener('dragover', handleDragOver, false);
 </script>
 </html>

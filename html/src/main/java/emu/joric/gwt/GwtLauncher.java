@@ -73,6 +73,10 @@ public class GwtLauncher extends GwtApplication {
     
     private native void registerFileDropEventHandler() /*-{
         var that = this;
+        $wnd.document.getElementById('embed-html').ondragover = $entry(function(e) {
+            e.preventDefault();
+            return false;
+        });
         $wnd.document.getElementById('embed-html').ondrop = $entry(function(e) {
             e.preventDefault();
             
