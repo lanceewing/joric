@@ -710,7 +710,7 @@ public class HomeScreen extends InputAdapter implements Screen {
             } else {
                 label = new Label(labelText, skin);
             }
-            label.setFontScale(2f);
+            label.setFontScale(0.5f);
             label.setAlignment(Align.top);
             label.setWrap(false);
             button.add(label).width(150).height(90).padTop(10);
