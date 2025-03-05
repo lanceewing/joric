@@ -197,7 +197,7 @@ public class HomeScreen extends InputAdapter implements Screen {
         float viewportWidth = viewportManager.getWidth();
         float viewportHeight = viewportManager.getHeight();
         
-        int sidePadding = (viewportHeight > (viewportWidth / 1.32f))? 15 : 85;
+        int sidePadding = (viewportHeight > (viewportWidth / 1.25f))? 15 : 30;
         
         int availableHeight = (int)(viewportHeight - PAGINATION_HEIGHT);
         int columns = (int)((viewportWidth - sidePadding) / ICON_IMAGE_WIDTH);
