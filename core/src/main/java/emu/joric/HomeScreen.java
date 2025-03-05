@@ -1,10 +1,8 @@
 package emu.joric;
 
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.TreeMap;
 
 import com.badlogic.gdx.Gdx;
@@ -502,73 +500,6 @@ public class HomeScreen extends InputAdapter implements Screen {
             }
         }
         return false;
-    }
-
-    /**
-     * Generates an identicon for the given text, of the given size. An identicon is
-     * an icon image that will always look the same for the same text but is highly
-     * likely to look different from the icons generates for all other text strings.
-     * Its therefore an
-     * 
-     * @param text
-     * @param iconWidth
-     * @param iconHeight
-     * 
-     * @return The generated icon image for the given text.
-     */
-    public Texture generateIdenticon(String text, int iconWidth, int iconHeight) {
-        // Generate a message hash from the text string, then use it as a seed for a
-        // random sequence.
-        int[] hashRand = new int[20];
-        try {
-            byte[] textHash = MessageDigest.getInstance("SHA1").digest(text.getBytes("UTF-8"));
-            long seed = ((((int) textHash[0] & 0xFF) << 0) | (((int) textHash[1] & 0xFF) << 8)
-                    | (((int) textHash[2] & 0xFF) << 16) | (((int) textHash[3] & 0xFF) << 24)
-                    | (((int) textHash[4] & 0xFF) << 32) | (((int) textHash[5] & 0xFF) << 40)
-                    | (((int) textHash[6] & 0xFF) << 48) | (((int) textHash[7] & 0xFF) << 56));
-            Random random = new Random(seed);
-            for (int i = 0; i < hashRand.length; i++) {
-                hashRand[i] = random.nextInt();
-            }
-        } catch (Exception e) {
-            /* Ignore. We know it will never happen. */}
-
-        // Create Pixmap and Texture of required size, and define
-        Pixmap pixmap = new Pixmap(iconWidth, iconHeight, Pixmap.Format.RGBA8888);
-        Texture texture = new Texture(pixmap, Pixmap.Format.RGBA8888, false);
-        Color background = new Color(0, 0, 0, 0);
-        Color foreground = null;
-        if ((text == null) || (text.equals(""))) {
-            foreground = new Color(1f, 1f, 1f, 0.3f);
-        } else {
-            foreground = new Color(((int) hashRand[0] & 0xFF) / 255f, ((int) hashRand[1] & 0xFF) / 255f,
-                    ((int) hashRand[2] & 0xFF) / 255f, 0.9f);
-        }
-
-        int blockDensityX = 17; // 39 x 37 is pretty good. 17 x 17 is okay as well.
-        int blockDensityY = 17;
-        int blockWidth = iconWidth / blockDensityX;
-        int blockHeight = iconHeight / blockDensityY;
-        int blockMidX = ((blockDensityX + 1) / 2);
-        int blockMidY = ((blockDensityY + 1) / 2);
-
-        for (int x = 0; x < blockDensityX; x++) {
-            int i = x < blockMidX ? x : (blockDensityX - 1) - x;
-            for (int y = 0; y < blockDensityY; y++) {
-                Color pixelColor;
-                int j = y < blockMidY ? y : (blockDensityY - 1) - y;
-                if ((hashRand[i] >> j & 1) == 1) {
-                    pixelColor = foreground;
-                } else {
-                    pixelColor = background;
-                }
-                pixmap.setColor(pixelColor);
-                pixmap.fillRectangle(x * blockWidth, y * blockHeight, blockWidth, blockHeight);
-            }
-        }
-
-        texture.draw(pixmap, 0, 0);
-        return texture;
     }
 
     /**
