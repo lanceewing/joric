@@ -219,7 +219,7 @@ public class HomeScreen extends InputAdapter implements Screen {
             horizPaddingUnit = totalHorizPadding / (columns * 2);
             int titleWidth = 428;
             float titlePadding = ((1920 - titleWidth) / 2);
-            currentPage.add(title).width(titleWidth).height(197).pad(-7, titlePadding, 112 - 19, titlePadding).expand();
+            currentPage.add(title).width(titleWidth).height(197).pad(0, titlePadding, 0, titlePadding).expand();
         } else {
             // Portrait.
             container.setBackground(new Image(backgroundPortrait).getDrawable());
@@ -227,7 +227,7 @@ public class HomeScreen extends InputAdapter implements Screen {
             horizPaddingUnit = totalHorizPadding / (columns * 2);
             int titleWidth = 428;
             float titlePadding = ((1080 - titleWidth) / 2);
-            currentPage.add(title).width(titleWidth).height(197).pad(-7, titlePadding, 112 - 19, titlePadding).expand();
+            currentPage.add(title).width(titleWidth).height(197).pad(0, titlePadding, 0, titlePadding).expand();
         }
         
         Button addButton = buildButton("ADD", null, "png/open_file.png", 96, 96, null, null);
