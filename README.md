@@ -54,6 +54,12 @@ Keyboard navigation within the game selection screens is also possible as follow
 * Enter/Space: Runs the selected game, as indicated by the white selection box.
 * A-Z: Jumps to the page of games that start with the letter.
 
+### Open File Icon
+The JOric title screen also has an Open File icon in the bottom right corner. If you click on this icon, an open file dialog will be shown. You can then select a .tap file, .dsk file, or a .zip file containing either a .tap or .dsk file, for the emulator to run. This can be used for programs that are not available in the game selection pages, such as games that are still being developed, or that are currently for purchase through services such as itch.io and Steam. 
+
+### Drag and Drop
+As an alternative to using the Open File icon, you can instead simply drag and drop an Oric program onto the JOric home screen. This will work for any Oric .tap, .dsk or .zip file containing a .dsk. or .tap. The dropped program will be immediately run by the emulator.
+  
 ## The Machine screen
 When a game is run, the machine screen is displayed. It shows the Oric screen and various icons, which may be either at the bottom of the screen (for portrait) or to the sides (for landscape).
 
