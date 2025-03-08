@@ -20,7 +20,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 
 import emu.joric.config.AppConfigItem;
 import emu.joric.ui.DialogHandler;
@@ -72,7 +71,7 @@ public class MachineScreen implements Screen {
     // Currently in use components to support rendering of the Oric screen. The
     // objects that these references point to will change depending on the MachineType.
     private Pixmap screenPixmap;
-    private Viewport viewport;
+    private ExtendViewport viewport;
     private Camera camera;
     private Texture[] screens;
     private int drawScreen = 1;
@@ -82,7 +81,7 @@ public class MachineScreen implements Screen {
     // Screen resources for each MachineType.
     private Map<MachineType, Pixmap> machineTypePixmaps;
     private Map<MachineType, Camera> machineTypeCameras;
-    private Map<MachineType, Viewport> machineTypeViewports;
+    private Map<MachineType, ExtendViewport> machineTypeViewports;
     private Map<MachineType, Texture[]> machineTypeTextures;
 
     // UI components.
@@ -145,7 +144,7 @@ public class MachineScreen implements Screen {
 
         machineTypePixmaps = new HashMap<MachineType, Pixmap>();
         machineTypeTextures = new HashMap<MachineType, Texture[]>();
-        machineTypeViewports = new HashMap<MachineType, Viewport>();
+        machineTypeViewports = new HashMap<MachineType, ExtendViewport>();
         machineTypeCameras = new HashMap<MachineType, Camera>();
 
         createScreenResourcesForMachineType(MachineType.PAL);
@@ -256,8 +255,11 @@ public class MachineScreen implements Screen {
         screens[5].setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         
         Camera camera = new OrthographicCamera();
-        Viewport viewport = new ExtendViewport(((machineType.getVisibleScreenHeight() / 4) * 5),
-                machineType.getVisibleScreenHeight(), camera);
+        ExtendViewport viewport = new ExtendViewport(
+                ((machineType.getVisibleScreenHeight() / 4) * 5),
+                machineType.getVisibleScreenHeight(), 
+                camera);
+        
         machineTypePixmaps.put(machineType, screenPixmap);
         machineTypeTextures.put(machineType, screens);
         machineTypeCameras.put(machineType, camera);
@@ -308,7 +310,6 @@ public class MachineScreen implements Screen {
     public boolean copyPixels() {
         joricRunner.updatePixmap(screenPixmap);
         screens[updateScreen + textureOffset].draw(screenPixmap, 0, 0);
-        // TODO:
         updateScreen = (updateScreen + 1) % 3;
         drawScreen = (drawScreen + 1) % 3;
         return true;
@@ -348,8 +349,19 @@ public class MachineScreen implements Screen {
             cameraYOffset = (topPadding / oricHeightRatio);
         }
         machineInputProcessor.setCameraXOffset(cameraXOffset);
+        // TODO: Adjust this to account for different sizes.
+        if (viewportManager.isPortrait()) {
+            viewport.setMinWorldWidth((machineType.getVisibleScreenHeight() / 4) * 5);
+            viewport.setMinWorldHeight(machineType.getVisibleScreenHeight());
+        } else {
+            // TODO: Adjust based on zoom factor
+            viewport.setMinWorldWidth(1920/2);
+            viewport.setMinWorldHeight(1080/2);
+            
+            //viewport.setMinWorldWidth(((machineType.getVisibleScreenHeight() / 4) * 5) * 2);
+            //viewport.setMinWorldHeight(machineType.getVisibleScreenHeight() * 2);
+        }
         camera.position.set((ADJUSTED_WIDTH / 2) + cameraXOffset, (ADJUSTED_HEIGHT / 2) - cameraYOffset, 0.0f);
-        camera.update();
         camera.update();
         batch.setProjectionMatrix(camera.combined);
         batch.disableBlending();
