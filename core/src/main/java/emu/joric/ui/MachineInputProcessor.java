@@ -35,14 +35,14 @@ public class MachineInputProcessor extends InputAdapter {
     private JoystickAlignment joystickAlignment = JoystickAlignment.OFF;
     
     /**
+     * The current screen size.
+     */
+    private ScreenSize screenSize = ScreenSize.FIT;
+    
+    /**
      * Whether or not the speaker is currently active, i.e. sound is on.
      */
     private boolean speakerOn;
-    
-    /**
-     * Whether or not the screen is slightly blurred (linear vs nearest).
-     */
-    private boolean blurOn;
     
     /**
      * The current offset from centre of the camera in the X direction.
@@ -187,7 +187,7 @@ public class MachineInputProcessor extends InputAdapter {
             boolean backArrowClicked = false;
             boolean fullScreenClicked = false;
             boolean speakerClicked = false;
-            boolean blurUnblurClicked = false;
+            boolean screenSizeClicked = false;
             boolean pausePlayClicked = false;
             boolean nmiClicked = false;
 
@@ -206,7 +206,7 @@ public class MachineInputProcessor extends InputAdapter {
                         float fiveSixths = (viewportManager.getWidth() - (viewportManager.getWidth() / 6));
                         
                         if ((touchXY.x > (sixthPos - 26)) && (touchXY.x < (sixthPos + 100))) {
-                            blurUnblurClicked = true;
+                            screenSizeClicked = true;
                         }
                         else if ((touchXY.x > (thirdPos - 42)) && (touchXY.x < (thirdPos + 84))) {
                             speakerClicked = true;
@@ -236,7 +236,7 @@ public class MachineInputProcessor extends InputAdapter {
                             else
                             if ((touchXY.x >= ((viewportManager.getWidth() - ((viewportManager.getWidth() * 5 ) / 12)) - 96) - leftAdjustment) && 
                                 (touchXY.x <= ((viewportManager.getWidth() - ((viewportManager.getWidth() * 5 ) / 12)) - 0) - leftAdjustment)) {
-                                blurUnblurClicked = true;
+                                screenSizeClicked = true;
                             } 
                             else 
                             if ((touchXY.x >= ((viewportManager.getWidth() - ((viewportManager.getWidth() * 4 ) / 12)) - 96) - leftAdjustment) && 
@@ -281,7 +281,7 @@ public class MachineInputProcessor extends InputAdapter {
                         } else if ((touchXY.y > (viewportManager.getHeight() - (viewportManager.getHeight() / 3)) - 74) &&
                                    (touchXY.y < (viewportManager.getHeight() - (viewportManager.getHeight() / 3)) + 42)) {
                             if (touchXY.x > (viewportManager.getWidth() - 112)) {
-                                blurUnblurClicked = true;
+                                screenSizeClicked = true;
                             } else if (touchXY.x < 112) {
                                 pausePlayClicked = true;
                             }
@@ -324,7 +324,7 @@ public class MachineInputProcessor extends InputAdapter {
                                 speakerClicked = true;
                             }
                             else if ((touchXY.y > (fiveSixths - 100)) && (touchXY.y < (fiveSixths + 26))) {
-                                blurUnblurClicked = true;
+                                screenSizeClicked = true;
                             }
                         }
                     }
@@ -361,9 +361,14 @@ public class MachineInputProcessor extends InputAdapter {
                 machineScreen.getJoricRunner().changeSound(speakerOn);
             }
             
-            if (blurUnblurClicked) {
-                blurOn = !blurOn;
-                machineScreen.changeBlur(blurOn);
+            if (screenSizeClicked) {
+                screenSize = screenSize.rotateValue();
+                // Dummy resize, so that the new Oric screen size is updated.
+                Gdx.app.postRunnable(new Runnable() {
+                    public void run() {
+                        machineScreen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+                    }
+                });
             }
             
             if (pausePlayClicked) {
@@ -574,24 +579,52 @@ public class MachineInputProcessor extends InputAdapter {
         this.speakerOn = speakerOn;
     }
 
+    public static enum ScreenSize {
+        
+        X1(1920, 1080), 
+        X2(960, 540), 
+        X3(480, 270), 
+        FIT(280, 224);
+        
+        int minWorldWidth;
+        int minWorldHeight;
+        
+        ScreenSize(int minWorldWidth, int minWorldHeight) {
+            this.minWorldWidth = minWorldWidth;
+            this.minWorldHeight = minWorldHeight;
+        }
+        
+        ScreenSize rotateValue() {
+            return values()[(ordinal() + 1) % 4];
+        }
+        
+        public int getMinWorldWidth() {
+            return minWorldWidth;
+        }
+        
+        public int getMinWorldHeight() {
+            return minWorldHeight;
+        }
+    }
+    
     /**
-     * Returns whether the blur screen mode is on or not.
+     * Gets the current screen size.
      * 
      * @return
      */
-    public boolean isBlurOn() {
-        return blurOn;
+    public ScreenSize getScreenSize() {
+        return screenSize;
     }
-    
+
     /**
-     * Sets whether the blur screen mode is on or not.
+     * Sets the screen size.
      * 
-     * @param blurOn
+     * @param screenSize
      */
-    public void setBlurOn(boolean blurOn) {
-        this.blurOn = blurOn;
+    public void setScreenSize(ScreenSize screenSize) {
+        this.screenSize = screenSize;
     }
-    
+
     /**
      * Sets the current offset from centre of the camera in the X direction.
      * 
