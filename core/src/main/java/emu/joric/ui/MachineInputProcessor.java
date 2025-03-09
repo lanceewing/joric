@@ -362,13 +362,11 @@ public class MachineInputProcessor extends InputAdapter {
             }
             
             if (screenSizeClicked) {
-                screenSize = screenSize.rotateValue();
-                // Dummy resize, so that the new Oric screen size is updated.
-                Gdx.app.postRunnable(new Runnable() {
-                    public void run() {
-                        machineScreen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-                    }
-                });
+                if (!viewportManager.isPortrait()) {
+                    screenSize = screenSize.rotateValue();
+                    machineScreen.getViewport().setMinWorldWidth(screenSize.getMinWorldWidth());
+                    machineScreen.getViewport().setMinWorldWidth(screenSize.getMinWorldWidth());
+                }
             }
             
             if (pausePlayClicked) {

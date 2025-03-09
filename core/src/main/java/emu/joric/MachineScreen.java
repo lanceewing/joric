@@ -124,6 +124,11 @@ public class MachineScreen implements Screen {
     private MachineType machineType;
 
     /**
+     * The screen size setting during the last draw.
+     */
+    private ScreenSize lastScreenSize;
+    
+    /**
      * Constructor for MachineScreen.
      * 
      * @param joric
@@ -346,16 +351,11 @@ public class MachineScreen implements Screen {
             cameraYOffset = (topPadding / oricHeightRatio);
         }
         machineInputProcessor.setCameraXOffset(cameraXOffset);
-        // TODO: Adjust this to account for different sizes.
-        if (viewportManager.isPortrait()) {
-            // Portrait will always fit screen, as it is assumed to be mobile.
-            viewport.setMinWorldWidth((machineType.getVisibleScreenHeight() / 4) * 5);
-            viewport.setMinWorldHeight(machineType.getVisibleScreenHeight());
-        } else {
-            // Landscape depends on current screen size.
-            viewport.setMinWorldWidth(machineInputProcessor.getScreenSize().getMinWorldWidth());
-            viewport.setMinWorldHeight(machineInputProcessor.getScreenSize().getMinWorldHeight());
+        ScreenSize currentScreenSize = machineInputProcessor.getScreenSize();
+        if (currentScreenSize != lastScreenSize) {
+            resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         }
+        lastScreenSize = currentScreenSize;
         camera.position.set((ADJUSTED_WIDTH / 2) + cameraXOffset, (ADJUSTED_HEIGHT / 2) - cameraYOffset, 0.0f);
         camera.update();
         batch.setProjectionMatrix(camera.combined);
@@ -560,6 +560,8 @@ public class MachineScreen implements Screen {
             Gdx.input.setInputProcessor(portraitInputProcessor);
             // Screen size reverts back to FIT whenever in portrait mode.
             machineInputProcessor.setScreenSize(ScreenSize.FIT);
+            viewport.setMinWorldWidth((machineType.getVisibleScreenHeight() / 4) * 5);
+            viewport.setMinWorldHeight(machineType.getVisibleScreenHeight());
         } else {
             Gdx.input.setInputProcessor(landscapeInputProcessor);
         }
