@@ -25,6 +25,7 @@ import emu.joric.config.AppConfigItem;
 import emu.joric.ui.DialogHandler;
 import emu.joric.ui.MachineInputProcessor;
 import emu.joric.ui.MachineInputProcessor.JoystickAlignment;
+import emu.joric.ui.MachineInputProcessor.ScreenSize;
 import emu.joric.ui.ViewportManager;
 
 /**
@@ -557,6 +558,8 @@ public class MachineScreen implements Screen {
 
         if (viewportManager.isPortrait()) {
             Gdx.input.setInputProcessor(portraitInputProcessor);
+            // Screen size reverts back to FIT whenever in portrait mode.
+            machineInputProcessor.setScreenSize(ScreenSize.FIT);
         } else {
             Gdx.input.setInputProcessor(landscapeInputProcessor);
         }
