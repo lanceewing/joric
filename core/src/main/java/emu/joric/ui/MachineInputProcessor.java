@@ -365,7 +365,7 @@ public class MachineInputProcessor extends InputAdapter {
                 if (!viewportManager.isPortrait()) {
                     screenSize = screenSize.rotateValue();
                     machineScreen.getViewport().setMinWorldWidth(screenSize.getMinWorldWidth());
-                    machineScreen.getViewport().setMinWorldWidth(screenSize.getMinWorldWidth());
+                    machineScreen.getViewport().setMinWorldHeight(screenSize.getMinWorldHeight());
                 }
             }
             
