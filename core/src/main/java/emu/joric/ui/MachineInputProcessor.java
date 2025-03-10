@@ -579,10 +579,11 @@ public class MachineInputProcessor extends InputAdapter {
 
     public static enum ScreenSize {
         
-        X1(1920, 1080), 
-        X2(960, 540), 
-        X3(480, 270), 
-        FIT(280, 224);
+        FIT(280, 224),
+        X3(480, 270),
+        X2(960, 540),
+        X1(1920, 1080)
+        ;
         
         int minWorldWidth;
         int minWorldHeight;
