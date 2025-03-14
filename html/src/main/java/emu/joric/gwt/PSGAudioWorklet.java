@@ -51,51 +51,71 @@ public class PSGAudioWorklet {
         // Store for later use by resume handler.
         this.audioBufferSAB = audioBufferSAB;
         
-        // If this is not executing within a user gesture, then it will be suspended.
-        this.audioContext = new AudioContext({sampleRate: 22050});
+        try {
+            // If this is not executing within a user gesture, then it will be suspended.
+            this.audioContext = new AudioContext({sampleRate: 22050});
+        }
+        catch (e) {
+            console.log("Failed to create AudioContext. Error was: " + e);
+        }
         
-        // Set up the initial resume handler.
-        var that = this;
-        this.audioContext.resume().then(function() {
-            if (that.audioContext.state === "running") {
-                // If the AudioWorkletNode has not yet been set up, then do so.
-                if (!that.audioWorkletNode) {
-                    console.log("Adding AudioWorkletProcessor module...");
-                
-                    that.audioContext.audioWorklet.addModule('/sound-renderer.js').then(function() {
-                        that.audioWorkletNode = new AudioWorkletNode(
-                            that.audioContext, 
-                            "sound-renderer",
-                            {
-                                numberOfInputs: 0,
-                                numberOfOutputs: 1, 
-                                outputChannelCount: [1]
-                            }
-                        );
-                        
-                        that.audioWorkletNode.port.onmessage = function() {
-                            // There is only one message we can receive, which is ready.
-                            console.log("Received ready message from AudioWorkletProcessor.");
-                            that.@emu.joric.gwt.PSGAudioWorklet::notifyAudioReady()();
-                            that.ready = true;
-                        };
-                        
-                        console.log("Sending audio buffer SAB to AudioWorkletProcessor...");
-                        
-                        // Send SharedArrayBuffer for SharedQueue to audio worklet processor.
-                        that.audioWorkletNode.port.postMessage({audioBufferSAB: that.audioBufferSAB});
-                        
-                        console.log("Connecting AudioWorklet to audio output destination...");
-                        
-                        // The AudioWorkletNode has only the output connection. The 'input' is
-                        // read directly from the SharedArrayBuffer by the AudioWorkletProcessor.
-                        that.audioWorkletNode.connect(that.audioContext.destination);
-                    });
-                } else {
-                    console.log("AudioWorkletProcessor is already registered.");
-                }
+        if (this.audioContext) {
+            if (this.audioContext.state == "running") {
+                // For Chrome, it may be that the state is already running at startup. We
+                // want all browsers and platforms to be consistent, so we suspend manually.
+                console.log("AudioContext is already running at startup. Suspend until program loads.");
+                this.audioContext.suspend();
             }
-        });
+            else {
+                // If not running, we only try to resume if we're in a user interaction.
+                console.log("AudioContext not running at startup.");
+            }
+        }
+    }-*/;
+    
+    private final native void registerAudioWorklet(JavaScriptObject psgAudioWorklet)/*-{
+        var that = psgAudioWorklet;
+        if (that.audioContext.state === "running") {
+            // If the AudioWorkletNode has not yet been set up, then do so.
+            if (!that.registering) {
+                // Ensure that this is done only once.
+                that.registering = true;
+            
+                console.log("Adding AudioWorkletProcessor module...");
+            
+                that.audioContext.audioWorklet.addModule('/sound-renderer.js').then(function() {
+                    that.audioWorkletNode = new AudioWorkletNode(
+                        that.audioContext, 
+                        "sound-renderer",
+                        {
+                            numberOfInputs: 0,
+                            numberOfOutputs: 1, 
+                            outputChannelCount: [1]
+                        }
+                    );
+                    
+                    that.audioWorkletNode.port.onmessage = function() {
+                        // There is only one message we can receive, which is ready.
+                        console.log("Received ready message from AudioWorkletProcessor.");
+                        that.@emu.joric.gwt.PSGAudioWorklet::notifyAudioReady()();
+                        that.ready = true;
+                    };
+                    
+                    console.log("Sending audio buffer SAB to AudioWorkletProcessor...");
+                    
+                    // Send SharedArrayBuffer for SharedQueue to audio worklet processor.
+                    that.audioWorkletNode.port.postMessage({audioBufferSAB: that.audioBufferSAB});
+                    
+                    console.log("Connecting AudioWorklet to audio output destination...");
+                    
+                    // The AudioWorkletNode has only the output connection. The 'input' is
+                    // read directly from the SharedArrayBuffer by the AudioWorkletProcessor.
+                    that.audioWorkletNode.connect(that.audioContext.destination);
+                });
+            } else {
+                console.log("AudioWorkletProcessor is already registered.");
+            }
+        }
     }-*/;
     
     /**
@@ -128,8 +148,25 @@ public class PSGAudioWorklet {
      * This is invoked whenever the sound output should be resumed.
      */
     public native void resume()/*-{
+        var isUserInteraction = (navigator.userActivation && navigator.userActivation.isActive);
+        var that = this;
+        
         if (this.audioContext && (this.audioContext.state === "suspended")) {
-            this.audioContext.resume();
+            if (isUserInteraction) {
+                console.log("Inside a user interaction, so try to resume AudioContext.");
+                this.audioContext.resume().then(function() {
+                    console.log("AudioContext has successfully resumed.");
+                    that.@emu.joric.gwt.PSGAudioWorklet::registerAudioWorklet(Lcom/google/gwt/core/client/JavaScriptObject;)(that);
+                })['catch'](function(e) {
+                    // NOTE: The ['catch'] is required due to old Rhino issue.
+                    console.log("AudioContext was not able to resume. Exception was: " + e);
+                    console.log("AudioContext state is: " + that.audioContext.state);
+                });
+            } else {
+                console.log("Not inside a user interaction, so skip AudioContext resume.");
+            }
+        } else {
+            console.log("AudioContext is already " + this.audioContext.state);
         }
     }-*/;
     
