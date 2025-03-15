@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import emu.joric.KeyboardMatrix;
 import emu.joric.KeyboardType;
 import emu.joric.MachineScreen;
+import emu.joric.ui.MachineInputProcessor.ScreenSize;
 
 /**
  * InputProcessor for the MachineScreen.
@@ -413,26 +414,15 @@ public class MachineInputProcessor extends InputAdapter {
         return true;
     }
     
-    public void rotateScreenSize() {
+    public void adjustWorldMinMax(int width, int height) {
         ExtendViewport viewport = machineScreen.getViewport();
         
-        if (viewportManager.isPortrait()) {
-            // Portrait always uses FIT.
-            screenSize = ScreenSize.FIT;
+        // Keep rotating until the screen size will fit the current dimensions.
+        while (((screenSize.getRenderHeight() > Gdx.graphics.getHeight()) || 
+                (screenSize.getRenderWidth() > Gdx.graphics.getWidth())) && 
+                (screenSize != ScreenSize.FIT)) {
+            screenSize = screenSize.rotateValue();
         }
-        else {
-            // Keep rotating until the screen size will fit the current dimensions.
-            boolean screenSizeFits = false;
-            do {
-                screenSize = screenSize.rotateValue();
-                screenSizeFits =
-                        ((screenSize == ScreenSize.FIT) ||
-                        ((screenSize.getRenderHeight() <= Gdx.graphics.getHeight()) && 
-                         (screenSize.getRenderWidth() <= Gdx.graphics.getWidth())));
-            } while (!screenSizeFits);
-        }
-        
-        System.out.println("Screen size changing to " + screenSize.name());
         
         if (screenSize == ScreenSize.FIT) {
             viewport.setMinWorldWidth(280);
@@ -441,12 +431,26 @@ public class MachineInputProcessor extends InputAdapter {
             viewport.setMaxWorldHeight(0);
             viewport.setScaling(Scaling.fit);
         } else {
-            viewport.setMinWorldWidth(viewport.getScreenWidth());
-            viewport.setMaxWorldWidth(viewport.getScreenWidth());
-            viewport.setMinWorldHeight(viewport.getScreenHeight());
-            viewport.setMaxWorldHeight(viewport.getScreenHeight());
+            viewport.setMinWorldWidth(width);
+            viewport.setMaxWorldWidth(width);
+            viewport.setMinWorldHeight(height);
+            viewport.setMaxWorldHeight(height);
             viewport.setScaling(Scaling.none);
         }
+    }
+    
+    public void rotateScreenSize() {
+        ExtendViewport viewport = machineScreen.getViewport();
+        
+        if (viewportManager.isPortrait()) {
+            // Portrait always uses FIT.
+            screenSize = ScreenSize.FIT;
+        }
+        else {
+            screenSize = screenSize.rotateValue();
+        }
+        
+        adjustWorldMinMax(viewport.getScreenWidth(), viewport.getScreenHeight());
     }
 
     /**

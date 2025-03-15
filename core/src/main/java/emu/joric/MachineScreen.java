@@ -19,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 import emu.joric.config.AppConfigItem;
@@ -321,6 +322,7 @@ public class MachineScreen implements Screen {
         // Get the KeyboardType currently being used by the MachineScreenProcessor.
         KeyboardType keyboardType = machineInputProcessor.getKeyboardType();
         JoystickAlignment joystickAlignment = machineInputProcessor.getJoystickAlignment();
+        ScreenSize currentScreenSize = machineInputProcessor.getScreenSize();
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -351,21 +353,22 @@ public class MachineScreen implements Screen {
             cameraYOffset = (topPadding / oricHeightRatio);
         }
         machineInputProcessor.setCameraXOffset(cameraXOffset);
-        ScreenSize currentScreenSize = machineInputProcessor.getScreenSize();
         if (currentScreenSize != lastScreenSize) {
             resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         }
         lastScreenSize = currentScreenSize;
-        camera.position.set((ADJUSTED_WIDTH / 2) + cameraXOffset, (ADJUSTED_HEIGHT / 2) - cameraYOffset, 0.0f);
+        camera.position.set((currentScreenSize.getRenderWidth() / 2) + cameraXOffset, (currentScreenSize.getRenderHeight() / 2) - cameraYOffset, 0.0f);
         camera.update();
         batch.setProjectionMatrix(camera.combined);
         batch.disableBlending();
         batch.begin();
         Color c = batch.getColor();
         batch.setColor(c.r, c.g, c.b, 1f);
+        
+        // Texture isn't always drawn to match physical pixels.
         batch.draw(
                 screens[drawScreen + textureOffset], 
-                0, 0, ADJUSTED_WIDTH, ADJUSTED_HEIGHT,
+                0, 0, currentScreenSize.getRenderWidth(), currentScreenSize.getRenderHeight(),
                 0, 0, ORIC_SCREEN_WIDTH, ORIC_SCREEN_HEIGHT, 
                 false, false);
         batch.end();
@@ -543,6 +546,17 @@ public class MachineScreen implements Screen {
     
     @Override
     public void resize(int width, int height) {
+        if (viewportManager.isPortrait()) {
+            Gdx.input.setInputProcessor(portraitInputProcessor);
+            
+            // Screen size reverts back to FIT whenever in portrait mode.
+            machineInputProcessor.setScreenSize(ScreenSize.FIT);
+        } else {
+            Gdx.input.setInputProcessor(landscapeInputProcessor);
+        }
+        
+        machineInputProcessor.adjustWorldMinMax(width, height);
+        
         viewport.update(width, height, false);
 
         // Align Oric screen's top edge to top of the viewport.
@@ -555,16 +569,6 @@ public class MachineScreen implements Screen {
 
         machineInputProcessor.resize(width, height);
         viewportManager.update(width, height);
-
-        if (viewportManager.isPortrait()) {
-            Gdx.input.setInputProcessor(portraitInputProcessor);
-            // Screen size reverts back to FIT whenever in portrait mode.
-            machineInputProcessor.setScreenSize(ScreenSize.FIT);
-            viewport.setMinWorldWidth((machineType.getVisibleScreenHeight() / 4) * 5);
-            viewport.setMinWorldHeight(machineType.getVisibleScreenHeight());
-        } else {
-            Gdx.input.setInputProcessor(landscapeInputProcessor);
-        }
     }
 
     @Override
