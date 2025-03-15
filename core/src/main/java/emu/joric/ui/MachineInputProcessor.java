@@ -6,6 +6,8 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Scaling;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 import emu.joric.KeyboardMatrix;
 import emu.joric.KeyboardType;
@@ -362,11 +364,7 @@ public class MachineInputProcessor extends InputAdapter {
             }
             
             if (screenSizeClicked) {
-                if (!viewportManager.isPortrait()) {
-                    screenSize = screenSize.rotateValue();
-                    machineScreen.getViewport().setMinWorldWidth(screenSize.getMinWorldWidth());
-                    machineScreen.getViewport().setMinWorldHeight(screenSize.getMinWorldHeight());
-                }
+                rotateScreenSize();
             }
             
             if (pausePlayClicked) {
@@ -413,6 +411,42 @@ public class MachineInputProcessor extends InputAdapter {
         }
 
         return true;
+    }
+    
+    public void rotateScreenSize() {
+        ExtendViewport viewport = machineScreen.getViewport();
+        
+        if (viewportManager.isPortrait()) {
+            // Portrait always uses FIT.
+            screenSize = ScreenSize.FIT;
+        }
+        else {
+            // Keep rotating until the screen size will fit the current dimensions.
+            boolean screenSizeFits = false;
+            do {
+                screenSize = screenSize.rotateValue();
+                screenSizeFits =
+                        ((screenSize == ScreenSize.FIT) ||
+                        ((screenSize.getRenderHeight() <= Gdx.graphics.getHeight()) && 
+                         (screenSize.getRenderWidth() <= Gdx.graphics.getWidth())));
+            } while (!screenSizeFits);
+        }
+        
+        System.out.println("Screen size changing to " + screenSize.name());
+        
+        if (screenSize == ScreenSize.FIT) {
+            viewport.setMinWorldWidth(280);
+            viewport.setMaxWorldWidth(0);
+            viewport.setMinWorldHeight(224);
+            viewport.setMaxWorldHeight(0);
+            viewport.setScaling(Scaling.fit);
+        } else {
+            viewport.setMinWorldWidth(viewport.getScreenWidth());
+            viewport.setMaxWorldWidth(viewport.getScreenWidth());
+            viewport.setMinWorldHeight(viewport.getScreenHeight());
+            viewport.setMaxWorldHeight(viewport.getScreenHeight());
+            viewport.setScaling(Scaling.none);
+        }
     }
 
     /**
@@ -580,29 +614,34 @@ public class MachineInputProcessor extends InputAdapter {
     public static enum ScreenSize {
         
         FIT(280, 224),
-        X3(480, 270),
-        X2(960, 540),
-        X1(1920, 1080)
+        X9(2160, 2016),    // Fits 4K screen
+        X8(1920, 1792),    // Fits Surface 7 Pro
+        X7(1680, 1568),
+        X6(1440, 1344),
+        X5(1200, 1120),
+        X4(960, 896),
+        X3(720, 672),
+        X2(480, 448)
         ;
         
-        int minWorldWidth;
-        int minWorldHeight;
+        int renderWidth;
+        int renderHeight;
         
-        ScreenSize(int minWorldWidth, int minWorldHeight) {
-            this.minWorldWidth = minWorldWidth;
-            this.minWorldHeight = minWorldHeight;
+        ScreenSize(int renderWidth, int renderHeight) {
+            this.renderWidth = renderWidth;
+            this.renderHeight = renderHeight;
         }
         
         ScreenSize rotateValue() {
-            return values()[(ordinal() + 1) % 4];
+            return values()[(ordinal() + 1) % 9];
         }
         
-        public int getMinWorldWidth() {
-            return minWorldWidth;
+        public int getRenderWidth() {
+            return renderWidth;
         }
         
-        public int getMinWorldHeight() {
-            return minWorldHeight;
+        public int getRenderHeight() {
+            return renderHeight;
         }
     }
     
