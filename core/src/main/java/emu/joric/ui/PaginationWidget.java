@@ -57,17 +57,55 @@ public class PaginationWidget extends Widget {
         addListener(new ClickListener(-1) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                //System.out.println("clicked: " + x + ", y: " + y);
                 if (y < PAGINATION_BAR_HEIGHT) {
                     if (x < ICON_SIZE) {
                         homeScreen.keyUp(Keys.PAGE_UP);
                     }
-                    if (x > (width - ICON_SIZE)) {
+                    else if (x > (width - ICON_SIZE)) {
                         homeScreen.keyUp(Keys.PAGE_DOWN);
+                    }
+                    else {
+                        PagedScrollPane pagedScrollPane = homeScreen.getPagedScrollPane();
+                        int clickedPageNum = getPageNumberForClick(x, y);
+                        if (clickedPageNum > -1) {
+                            if (clickedPageNum != pagedScrollPane.getCurrentPageNumber()) {
+                                if (clickedPageNum == 0) {
+                                    homeScreen.keyUp(Keys.HOME);
+                                } else {
+                                    int programsPerPage = pagedScrollPane.getProgramsPerPage();
+                                    int programIndex = (programsPerPage * (clickedPageNum - 1));
+                                    homeScreen.showProgramPage(programIndex, false);
+                                }
+                            }
+                        }
                     }
                 }
             }
         });
+    }
+    
+    public int getPageNumberForClick(float x, float y) {
+        int clickedPageNum = -1;
+        PagedScrollPane pagedScrollPane = homeScreen.getPagedScrollPane();
+        if (pagedScrollPane != null) {
+            int numOfPages = pagedScrollPane.getNumOfPages();
+            if (numOfPages > 0) {
+                int gapBetweenCircles = Math.min((width - (PAGINATION_BAR_HEIGHT * 10)) / numOfPages, 20);
+                int totalCirclesWidth = (numOfPages * (CIRCLE_DIAMETER + gapBetweenCircles)) - gapBetweenCircles;
+                for (int pageNum=0; pageNum < numOfPages; pageNum++) {
+                    float circleX = 
+                            ((width / 2) - (totalCirclesWidth / 2)) + CIRCLE_RADIUS + 
+                            (pageNum * (CIRCLE_DIAMETER + gapBetweenCircles));
+                    float circleY = PAGINATION_BAR_HEIGHT / 2;
+                    float dx = x - circleX;
+                    float dy = y - circleY;
+                    if (Math.sqrt((dx * dx) + (dy * dy)) <= (CIRCLE_RADIUS + (gapBetweenCircles / 2))) {
+                        clickedPageNum = pageNum;
+                    }
+                }
+            }
+        }
+        return clickedPageNum;
     }
     
     public void draw(Batch batch, float parentAlpha) {

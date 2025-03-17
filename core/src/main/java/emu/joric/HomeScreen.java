@@ -865,7 +865,7 @@ public class HomeScreen extends InputAdapter implements Screen {
         showProgramPage(getProgramIndex(appConfigItem), skipScroll);
     }
     
-    private void showProgramPage(int programIndex, boolean skipScroll) {
+    public void showProgramPage(int programIndex, boolean skipScroll) {
         // Apply scroll X without animating, i.e. move immediately to the page.
         Stage currentStage = viewportManager.isPortrait()? portraitStage : landscapeStage;
         PagedScrollPane pagedScrollPane = (PagedScrollPane)
