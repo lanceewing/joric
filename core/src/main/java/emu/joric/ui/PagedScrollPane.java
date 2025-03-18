@@ -16,6 +16,8 @@ import emu.joric.HomeScreen;
 
 public class PagedScrollPane extends ScrollPane {
 
+    private static final int CONTENT_SPACING = 50;
+    
     private boolean wasPanDragFling = false;
 
     private float lastScrollX = 0;
@@ -58,7 +60,7 @@ public class PagedScrollPane extends ScrollPane {
     
     private void setup() {
         content = new Table();
-        content.defaults().space(50);
+        content.defaults().space(CONTENT_SPACING);
         super.setWidget(content);
         Button.debugCellColor = new Color(1, 1, 1, 1.0f);
     }
@@ -209,7 +211,7 @@ public class PagedScrollPane extends ScrollPane {
     public int getCurrentPageNumber() {
         int pageNumber = 0;
         if (content.getChildren().notEmpty()) {
-            int pageWidth = (int)(content.getChild(0).getWidth() + 50);
+            int pageWidth = (int)(content.getChild(0).getWidth() + CONTENT_SPACING);
             pageNumber = Math.round(getScrollX() / pageWidth);
         }
         return pageNumber;
@@ -387,6 +389,15 @@ public class PagedScrollPane extends ScrollPane {
     }
     
     /**
+     * Gets the number of pixels gap between pages.
+     * 
+     * @return The number of pixels gap between pages.
+     */
+    public int getContentSpacing() {
+        return CONTENT_SPACING;
+    }
+    
+    /**
      * This method is used by the key navigation, i.e. when it has calculated a specific
      * program index to move to. The navigation keys are used to navigation +/- one
      * item at a time, or page up/down at a time, then after the new index has been
@@ -397,7 +408,8 @@ public class PagedScrollPane extends ScrollPane {
     private void showProgramPage(int programIndex) {
         // Work out how far to move from far left to get to program's page.
         int programsPerPage = getProgramsPerPage();
-        float pageWidth = ViewportManager.getInstance().isPortrait()? 1130.0f : 1970.0f;
+        float pageWidth = ViewportManager.getInstance().isPortrait()? 
+                1080.0f + CONTENT_SPACING : 1920.0f + CONTENT_SPACING;
         float newScrollX = pageWidth * (programIndex / programsPerPage) + pageWidth;
         
         setScrollX(newScrollX);

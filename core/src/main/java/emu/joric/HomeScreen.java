@@ -197,13 +197,17 @@ public class HomeScreen extends InputAdapter implements Screen {
         float viewportWidth = viewportManager.getWidth();
         float viewportHeight = viewportManager.getHeight();
         
-        int sidePadding = (viewportHeight > (viewportWidth / 1.25f))? 15 : 30;
+        // This is the padding on the left and right sides of the screen, not app buttons.
+        int sidePadding = (viewportHeight > (viewportWidth / 1.25f))? 12 : 15;
         
         int availableHeight = (int)(viewportHeight - PAGINATION_HEIGHT);
-        int columns = (int)((viewportWidth - sidePadding) / ICON_IMAGE_WIDTH);
+        int columns = (int)((viewportWidth - (sidePadding * 2)) / ICON_IMAGE_WIDTH);
         int rows = (int)(availableHeight / (ICON_IMAGE_HEIGHT + ICON_LABEL_HEIGHT + 10));
         
+        // This is the total amount of padding after removal of side padding.
         int totalHorizPadding = 0;
+        
+        // This is the amount of padding either side of each app button.
         int horizPaddingUnit = 0;
 
         Button infoButton = buildButton("INFO", null, "png/info.png", 96, 96, null, null);
@@ -874,7 +878,9 @@ public class HomeScreen extends InputAdapter implements Screen {
         
         // Work out how far to move from far left to get to program's page.
         int programsPerPage = pagedScrollPane.getProgramsPerPage();
-        float pageWidth = viewportManager.isPortrait()? 1130.0f : 1970.0f;
+        float pageWidth = viewportManager.isPortrait()? 
+                1080 + pagedScrollPane.getContentSpacing() : 
+                1920 + pagedScrollPane.getContentSpacing();
         float newScrollX = pageWidth * (programIndex / programsPerPage) + pageWidth;
         
         // Set program highlight to the program with the specified index.
