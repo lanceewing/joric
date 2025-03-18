@@ -35,6 +35,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import emu.joric.config.AppConfig;
@@ -101,6 +102,16 @@ public class HomeScreen extends InputAdapter implements Screen {
      * The JOric version, read from version.txt
      */
     private String version;
+    
+    /**
+     * The timestamp of the last key press. Supports searching for games.
+     */
+    private long lastKeyPress;
+    
+    /**
+     * The current search string for page navigation.
+     */
+    private String searchString = "";;
     
     /**
      * Constructor for HomeScreen.
@@ -494,13 +505,20 @@ public class HomeScreen extends InputAdapter implements Screen {
                 }
             }
             else if ((keycode >= Keys.A) && (keycode <= Keys.Z)) {
+                if ((TimeUtils.millis() - lastKeyPress) > 1000) {
+                    searchString = "";
+                }
+                
+                searchString += ((char)(keycode + 36));
+                
                 // Shortcut keys for accessing games that start with each letter.
                 // Keys.A is 29, Keys.Z is 54. ASCII is A=65, Z=90. So we add 36.
-                int gameIndex = getIndexOfFirstProgramStartingWithChar((char)(keycode + 36));
+                int gameIndex = getIndexOfFirstProgramStartingWithPrefix(searchString);
                 if (gameIndex > -1) {
                     // Add one to allow for the "BASIC" icon in the first slot.
                     showProgramPage(gameIndex + 1, false);
                 }
+                lastKeyPress = TimeUtils.millis();
             }
         }
         return false;
@@ -837,12 +855,12 @@ public class HomeScreen extends InputAdapter implements Screen {
         });
     }
     
-    private int getIndexOfFirstProgramStartingWithChar(char letter) {
+    private int getIndexOfFirstProgramStartingWithPrefix(String searchString) {
         int programIndex = 0;
         
         for (AppConfigItem appConfigItem : appConfigMap.values()) {
             String programName = appConfigItem.getName();
-            if (programName.toUpperCase().startsWith("" + letter)) {
+            if (programName.toUpperCase().startsWith(searchString)) {
                 return programIndex;
             }
             programIndex++;
