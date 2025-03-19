@@ -505,12 +505,23 @@ public class HomeScreen extends InputAdapter implements Screen {
                     }
                 }
             }
-            else if ((keycode >= Keys.A) && (keycode <= Keys.Z)) {
+            else if (((keycode >= Keys.A) && (keycode <= Keys.Z)) || 
+                     ((keycode >= Keys.NUM_0) && (keycode <= Keys.NUM_9)) ||
+                     (keycode == Keys.SPACE)) {
+                
                 if ((TimeUtils.millis() - lastKeyPress) > 1000) {
                     searchString = "";
                 }
                 
-                searchString += ((char)(keycode + 36));
+                if ((keycode >= Keys.A) && (keycode <= Keys.Z)) {
+                    searchString += ((char)(keycode + 36));
+                }
+                else if ((keycode >= Keys.NUM_0) && (keycode <= Keys.NUM_9)) {
+                    searchString += ((char)(keycode + 41));
+                }
+                else if (keycode == Keys.SPACE) {
+                    searchString += " ";
+                }
                 
                 // Shortcut keys for accessing games that start with each letter.
                 // Keys.A is 29, Keys.Z is 54. ASCII is A=65, Z=90. So we add 36.
