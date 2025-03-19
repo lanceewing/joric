@@ -491,7 +491,8 @@ public class HomeScreen extends InputAdapter implements Screen {
                     pagedScrollPane.nextProgramRow();
                 }
             }
-            else if ((keycode == Keys.SPACE) || (keycode == Keys.ENTER)) {
+            else if ((keycode == Keys.ENTER) || 
+                    ((keycode == Keys.SPACE) && ((TimeUtils.millis() - lastKeyPress) > 1000))) {
                 Button button = pagedScrollPane.getCurrentlySelectedProgramButton();
                 if (button != null) {
                     String appName = button.getName();
