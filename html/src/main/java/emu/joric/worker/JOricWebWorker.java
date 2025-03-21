@@ -51,7 +51,7 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
     /**
      * Whether or not the machine is running in warp speed mode.
      */
-    private boolean warpSpeed;
+    private boolean warpSpeed = false;
     
     // Used by the old implementations.
     private double lastTime = -1;
@@ -111,6 +111,16 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
                 paused = false;
                 break;
                 
+            case "WarpSpeedOn":
+                logToJSConsole("Warp speed ON");
+                warpSpeed = true;
+                break;
+                
+            case "WarpSpeedOff":
+                logToJSConsole("Warp speed OFF");
+                warpSpeed = false;
+                break;
+                
             case "SendNMI":
                 if (machine != null) {
                     machine.getCpu().setInterrupt(Cpu6502.S_NMI);
@@ -142,24 +152,6 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
                     programOffset, programLength);
             program = new Program();
             program.setProgramData(programData);
-            
-            // TODO: Remove. Debug code. Outputs program data in hex to JS console.
-            //String hexStr = "";
-            //int offset = 0;
-            //int byteCount = 0;
-            //for (int i=0; i<programData.length; i++) {
-            //    hexStr += (StringUtils.padLeftZeros(
-            //            Integer.toHexString((int)programData[i] & 0xFF),
-            //            2) + " ");
-            //    byteCount++;
-            //    offset++;
-            //    if (byteCount >= 16) {
-            //        hexStr += ("\n" + Integer.toHexString(offset) + " ");
-            //        byteCount = 0;
-            //    }
-            //}
-            //logToJSConsole(hexStr);
-            
         }
         return program;
     }
@@ -222,11 +214,16 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
                 // off for the next frame.
                 startTime = timestamp;
                 
-            } else {
+            } else if (!warpSpeed) {
                 // If we are not writing samples, i.e. sound is turned off, then rate
                 // of emulating cycles is controlled by the animation frame timestamp.
                 double elapsedTime = (timestamp - startTime);
                 expectedCycleCount = Math.round(elapsedTime * 1000);
+            } else {
+                // Warp speed, so we run it for a lot longer.
+                expectedCycleCount = 1000000;
+                cycleCount = 0;
+                startTime = timestamp;
             }
             
             // Emulate the required number of cycles.

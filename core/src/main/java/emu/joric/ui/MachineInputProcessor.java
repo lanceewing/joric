@@ -5,6 +5,7 @@ import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Input.Buttons;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
@@ -117,6 +118,39 @@ public class MachineInputProcessor extends InputAdapter {
         for (int i = 0; i < MAX_SIMULTANEOUS_TOUCH_EVENTS; i++) {
             touches[i] = new TouchInfo();
         }
+    }
+    
+    /**
+     * Handle keys that are not mapped to the Oric keyboard, such as the
+     * function keys.
+     * 
+     * @param keycode 
+     */
+    public boolean keyUp(int keycode) {
+        if (keycode == Keys.F6) {
+            if (!machineScreen.getJoricRunner().isWarpSpeed()) {
+                speakerOn = false;
+                machineScreen.getJoricRunner().changeSound(false);
+            }
+            machineScreen.getJoricRunner().toggleWarpSpeed();
+            return true;
+        }
+        else if (keycode == Keys.F3) {
+            machineScreen.getJoricRunner().sendNmi();
+            return true;
+        }
+        else if (keycode == Keys.F11) {
+            if (!Gdx.app.getType().equals(ApplicationType.WebGL)) {
+                Boolean fullScreen = Gdx.graphics.isFullscreen();
+                if (fullScreen == true) {
+                    switchOutOfFullScreen();
+                }
+                else {
+                    switchIntoFullScreen();
+                }
+            }
+        }
+        return false;
     }
 
     /**

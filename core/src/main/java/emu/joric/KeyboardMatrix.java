@@ -168,6 +168,8 @@ public abstract class KeyboardMatrix extends InputAdapter {
     }
 
     public boolean keyDown(int keycode) {
+        if (!keyConvHashMap.containsKey(keycode)) return false;
+        
         if (keycode == 0) {
             // The framework wasn't able to identify the key, so we'll have to 
             // deduce it from the key typed character.
@@ -190,6 +192,8 @@ public abstract class KeyboardMatrix extends InputAdapter {
     }
 
     public boolean keyUp(int keycode) {
+        if (!keyConvHashMap.containsKey(keycode)) return false;
+        
         if (keycode != 0) {
             long currentTime = TimeUtils.nanoTime();
             long minKeyReleaseTime = minKeyReleaseTimes[keycode];

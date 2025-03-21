@@ -399,6 +399,17 @@ public class GwtJOricRunner extends JOricRunner {
     public void sendNmi() {
         worker.postObject("SendNMI", JavaScriptObject.createObject());
     }
+    
+    @Override
+    public void toggleWarpSpeed() {
+        super.toggleWarpSpeed();
+        
+        if (warpSpeed) {
+            worker.postObject("WarpSpeedOn", JavaScriptObject.createObject());
+        } else {
+            worker.postObject("WarpSpeedOff", JavaScriptObject.createObject());
+        }
+    }
 
     public Worker getCurrentWorker() {
         return worker;

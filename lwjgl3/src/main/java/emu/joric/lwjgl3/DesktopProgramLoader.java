@@ -109,9 +109,6 @@ public class DesktopProgramLoader implements ProgramLoader {
             }
             
             if (programData != null) {
-                if (!"UNK".equals(appConfigItem.getFileType())) {
-                    System.out.println("Identified " + appConfigItem.getFileType() + " image in program data.");
-                }
                 program = new Program(appConfigItem, programData);
             }
                             

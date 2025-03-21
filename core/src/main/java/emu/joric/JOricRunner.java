@@ -138,6 +138,15 @@ public abstract class JOricRunner {
     }
 
     /**
+     * Returns whether or not warp speed is active.
+     * 
+     * @return
+     */
+    public boolean isWarpSpeed() {
+        return warpSpeed;
+    }
+    
+    /**
      * Pauses the MachineRunnable.
      */
     public void pause() {
