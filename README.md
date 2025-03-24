@@ -119,7 +119,7 @@ As the web version of JOric is a essentially static content, you could, if you l
 
 ```
 Cross-Origin-Opener-Policy: same-origin
-Cross-Origin-Embedder-Policy: credentialless
+Cross-Origin-Embedder-Policy: require-corp
 ```
 
 (For more details, see here: https://developer.mozilla.org/en-US/docs/Web/API/Window/crossOriginIsolated)
