@@ -46,6 +46,19 @@ public class PSGAudioWorklet {
      * @param audioBufferSAB The SharedArrayBuffer to get the sound sample data from.
      */
     private native void initialise(JavaScriptObject audioBufferSAB)/*-{
+        var ua = navigator.userAgent.toLowerCase();
+        var isIOS = (
+            (ua.indexOf("iphone") >= 0 && ua.indexOf("like iphone") < 0) ||
+            (ua.indexOf("ipad") >= 0 && ua.indexOf("like ipad") < 0) ||
+            (ua.indexOf("ipod") >= 0 && ua.indexOf("like ipod") < 0) ||
+            (ua.indexOf("mac os x") >= 0 && navigator.maxTouchPoints > 0) // New ipads show up as macs in user agent, but they have a touch screen
+        );
+        if (isIOS && navigator.audioSession) {
+            // See: https://bugs.webkit.org/show_bug.cgi?id=237322
+            console.log("Setting AudioSession type to 'playback' for iOS.");
+            navigator.audioSession.type = "playback";
+        }
+        
         this.ready = false;
     
         // Store for later use by resume handler.
