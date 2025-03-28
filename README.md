@@ -81,6 +81,7 @@ Icons                                 | Description                          |Ic
 ![](assets/png/unmute_icon.png)       |Turns on sound.                       |![](assets/png/mute_icon.png)         |Turns off sound.
 ![](assets/png/pause.png)             |Pauses the emulator.                  |![](assets/png/play.png)              |Resumes emulation.
 ![](assets/png/nmi.png)               |Triggers an NMI interrupt.            |![](assets/png/back_arrow.png)        |Goes back to the JOric home screen.
+![](assets/png/screen_icon.png)       |Changes screen size.                  |                                      |
 
 It is important to note that if you have accessed JOric directly via a game URL (either one of the /#/ paths, or by using the ?url= request parameter), then the speaker icon will initially be muted. This is because web browsers do not allow sound to be played automatically without a user interaction. In this scenario, you will need to click the speaker icon to turn sound on.
 
