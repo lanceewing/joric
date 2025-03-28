@@ -39,7 +39,7 @@ Start by going to https://oric.games. This will load the JOric title or home scr
 ![](img/joric_android_title_screen.jpg)           |![](img/joric_android_games_list_pg1.jpg)      |![](img/joric_android_games_list_pg2.jpg) 
 :-------------------------:|:-------------------------:|:-------------------------:
 
-The screen works in a very similar way to the user interface of a mobile device. If you are accessing the website on a touch screen device, then you can swipe to the right to get to the next page. If you are on desktop, you can use the right arrow key, or drag/fling with your mouse, or click on the small right arrow at the bottom of the screen. Note that it has pagination indicator dots at the bottom of the screen that show how many pages there are, and which of those pages you are currently on.
+The screen works in a very similar way to the user interface of a mobile device. If you are accessing the website on a touch screen device, then you can swipe to the right to get to the next page. If you are on desktop, you can use the right arrow key, or drag/fling with your mouse, or click on the small right arrow at the bottom of the screen. Note that it has pagination indicator dots at the bottom of the screen that show how many pages there are, and which of those pages you are currently on. You can also click on those dots to jump directly to that page.
 
 ![](img/joric_android_games_list_pg3.jpg)           |![](img/joric_android_games_list_pg4.jpg)      |![](img/joric_android_games_list_pg5.jpg)
 :-------------------------:|:-------------------------:|:-------------------------:
@@ -52,7 +52,7 @@ Keyboard navigation within the game selection screens is also possible as follow
 * PgUp: Goes one page of games to the left.
 * End: Goes to the last page of games.
 * Enter/Space: Runs the selected game, as indicated by the white selection box.
-* A-Z: Jumps to the page of games that start with the letter.
+* A-Z: Type the name of a game to scroll straight to the page containing the closest matching game.
 
 ### Open File Icon
 The JOric title screen also has an Open File icon in the bottom right corner. If you click on this icon, an open file dialog will be shown. You can then select a .tap file, .dsk file, or a .zip file containing either a .tap or .dsk file, for the emulator to run. This can be used for programs that are not available in the game selection pages, such as games that are still being developed, or that are currently for purchase through services such as itch.io and Steam. 
