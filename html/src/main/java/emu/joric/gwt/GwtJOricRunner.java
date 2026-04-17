@@ -14,6 +14,7 @@ import emu.joric.JOricRunner;
 import emu.joric.KeyboardMatrix;
 import emu.joric.PixelData;
 import emu.joric.Program;
+import emu.joric.RomConfig;
 import emu.joric.config.AppConfigItem;
 import emu.joric.worker.MessageEvent;
 import emu.joric.worker.MessageHandler;
@@ -98,12 +99,14 @@ public class GwtJOricRunner extends JOricRunner {
         programLoader.fetchProgram(appConfigItem, p -> createWorker(appConfigItem, p));
     }
 
-    private ArrayBuffer convertProgramToArrayBuffer(Program program) {
+    private ArrayBuffer convertProgramToArrayBuffer(AppConfigItem appConfigItem, Program program) {
         int programDataLength = (program != null? program.getProgramData().length : 0);
         ArrayBuffer programArrayBuffer = TypedArrays.createArrayBuffer(programDataLength + 16384 + 8192);
         Uint8Array programUint8Array = TypedArrays.createUint8Array(programArrayBuffer);
         int index = 0;
-        byte[] basicRom = Gdx.files.internal("roms/basic11b.rom").readBytes();
+        RomConfig.Option romOpt = RomConfig.resolveRom(
+                appConfigItem, Gdx.app.getPreferences("joric.preferences"));
+        byte[] basicRom = Gdx.files.internal("roms/" + romOpt.filename).readBytes();
         for (int i=0; i < basicRom.length; index++, i++) {
             programUint8Array.set(index, (basicRom[i] & 0xFF));
         }
@@ -126,7 +129,7 @@ public class GwtJOricRunner extends JOricRunner {
      */
     public void createWorker(AppConfigItem appConfigItem, Program program) {
         // Convert program bytes to ArrayBuffer.
-        ArrayBuffer programArrayBuffer = convertProgramToArrayBuffer(program);
+        ArrayBuffer programArrayBuffer = convertProgramToArrayBuffer(appConfigItem, program);
         
         worker = Worker.create("/worker/worker.nocache.js");
         

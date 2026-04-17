@@ -175,12 +175,40 @@ a {
 
 :where([data-component*="dialog"] [data-ref="message"]) {
 	font-size: var(--dlg-message-fz, 1.25em);
+	font-weight: bold;
 	margin-block-end: var(--dlg-gap);
+	/* <legend> has browser-default padding-inline that shifts it inward
+	   relative to the fieldset's content; zero it out so the message aligns
+	   with the rest of the dialog body. */
+	padding-inline: 0;
 }
 
 :where([data-component*="dialog"] [data-ref="template"]:not(:empty)) {
 	margin-block-end: var(--dlg-gap);
 	width: 100%;
+}
+
+/* Form controls inside dialog templates (e.g. the ROM picker). */
+:where([data-component*="dialog"] [data-ref="template"] label) {
+	display: block;
+	font-weight: bold;
+	margin-block-end: 0.5em;
+}
+
+:where([data-component*="dialog"] [data-ref="template"] select) {
+	width: 100%;
+	padding: 0.5em;
+	font-family: inherit;
+	font-size: 1em;
+	border: 1px solid #ccc;
+	border-radius: 0.25em;
+	background-color: #fff;
+}
+
+/* Give dialogs a sensible minimum width so short-content dialogs
+   (e.g. the Settings ROM picker) don't collapse into a narrow box. */
+:where([data-component*="dialog"]) {
+	--dlg-mis: min(28em, calc(100vw - 2em));
 }
 
 /* hack for Firefox */

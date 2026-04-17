@@ -36,11 +36,25 @@ public interface DialogHandler {
   
   /**
    * Shows the About AGILE message dialog.
-   * 
+   *
    * @param aboutMessage The About message to display.
    * @param textInputResponseHandler Optional state management button response.
    */
   public void showAboutDialog(String aboutMessage, TextInputResponseHandler textInputResponseHandler);
+
+  /**
+   * Invoked when JOric wants the user to choose one option from a list.
+   *
+   * @param title The dialog title (may be "" if not needed).
+   * @param message A label / instruction shown above the list of options.
+   * @param options The available option strings.
+   * @param currentSelection The currently-selected option string (may be null).
+   * @param textInputResponseHandler The handler to be invoked with the user's
+   *        response. On success, text is the chosen option (one of the strings
+   *        in options). On cancel, success is false and text is null.
+   */
+  public void promptForOption(String title, String message, String[] options,
+          String currentSelection, TextInputResponseHandler textInputResponseHandler);
   
   /**
    * Returns true if a dialog is currently open.

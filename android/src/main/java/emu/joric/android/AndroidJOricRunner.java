@@ -11,6 +11,7 @@ import emu.joric.Machine;
 import emu.joric.MachineType;
 import emu.joric.PixelData;
 import emu.joric.Program;
+import emu.joric.RomConfig;
 import emu.joric.config.AppConfigItem;
 import emu.joric.cpu.Cpu6502;
 import emu.joric.memory.RamType;
@@ -61,7 +62,9 @@ public class AndroidJOricRunner extends JOricRunner {
         machine = new Machine(psg, keyboardMatrix, pixelData);
 
         // Load the ROM files.
-        byte[] basicRom = Gdx.files.internal("roms/basic11b.rom").readBytes();
+        RomConfig.Option romOpt = RomConfig.resolveRom(
+                appConfigItem, Gdx.app.getPreferences("joric.preferences"));
+        byte[] basicRom = Gdx.files.internal("roms/" + romOpt.filename).readBytes();
         byte[] microdiscRom = Gdx.files.internal("roms/microdis.rom").readBytes();
 
         machine.init(basicRom, microdiscRom, program,

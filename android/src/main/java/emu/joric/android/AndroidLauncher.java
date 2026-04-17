@@ -211,6 +211,59 @@ public class AndroidLauncher extends AndroidApplication implements DialogHandler
     }
 
     @Override
+    public void promptForOption(final String title, final String message, final String[] options,
+            final String currentSelection, final TextInputResponseHandler textInputResponseHandler) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                int initialIndex = -1;
+                if (currentSelection != null) {
+                    for (int i = 0; i < options.length; i++) {
+                        if (currentSelection.equals(options[i])) {
+                            initialIndex = i;
+                            break;
+                        }
+                    }
+                }
+                final int[] chosen = { initialIndex };
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(AndroidLauncher.this);
+                if (title != null && !title.isEmpty()) {
+                    builder.setTitle(title);
+                }
+                if (message != null && !message.isEmpty()) {
+                    builder.setMessage(message);
+                }
+                builder.setSingleChoiceItems(options, initialIndex, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        chosen[0] = which;
+                    }
+                });
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (chosen[0] >= 0 && chosen[0] < options.length) {
+                            textInputResponseHandler.inputTextResult(true, options[chosen[0]]);
+                        } else {
+                            textInputResponseHandler.inputTextResult(false, null);
+                        }
+                        dialog.cancel();
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        textInputResponseHandler.inputTextResult(false, null);
+                        dialog.cancel();
+                    }
+                });
+                builder.create().show();
+            }
+        });
+    }
+
+    @Override
     public boolean isDialogOpen() {
         // Not required for Android, so simply return false regardless of state.
         return false;

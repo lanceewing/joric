@@ -31,6 +31,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
@@ -223,10 +224,15 @@ public class HomeScreen extends InputAdapter implements Screen {
 
         Button infoButton = buildButton("INFO", null, "png/info.png", 96, 96, null, null);
         currentPage.add().expandX();
-        currentPage.add(infoButton).pad(30, 0, 0, 20).align(Align.right).expandX();
+        // Right pad is 40 (not 20) so the info button's right edge lines up
+        // horizontally with the ADD button's right edge. The ADD button sits
+        // inside a 116-wide WidgetGroup (with the mini settings cog occupying
+        // the group's bottom-right corner), which pushes ADD's right edge
+        // 20 px further in from the window edge than the cog.
+        currentPage.add(infoButton).pad(30, 0, 0, 40).align(Align.right).expandX();
         currentPage.row();
         currentPage.add().expandX();
-        
+
         if (viewportManager.isLandscape()) {
             // Landscape.
             container.setBackground(new Image(backgroundLandscape).getDrawable());
@@ -244,11 +250,46 @@ public class HomeScreen extends InputAdapter implements Screen {
             float titlePadding = ((1080 - titleWidth) / 2);
             currentPage.add(title).width(titleWidth).height(197).pad(0, titlePadding, 0, titlePadding).expand();
         }
-        
+
         Button addButton = buildButton("ADD", null, "png/open_file.png", 96, 96, null, null);
+
+        // Mini settings cog tucked into the bottom-right corner of the ADD
+        // button. The icon is loaded fresh (bypassing buildButton's texture
+        // cache) so the 16x16 native PNG upscales cleanly at 2x to 32x32 with
+        // nearest-neighbour filtering.
+        //
+        // Both icons are visually circular inside their square bounds (with
+        // transparent padding around the visible art), so the squares can
+        // overlap a little at the corner without the visible circles touching.
+        // The group is sized so a small visual gap remains between the two
+        // icons when rendered. Tune by adjusting GROUP_SIZE: larger = bigger
+        // gap, smaller = icons closer (and eventually overlapping).
+        Texture miniSettingsTexture = new Texture(Gdx.files.internal("png/settings.png"));
+        miniSettingsTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+        Image miniSettingsIcon = new Image(miniSettingsTexture);
+        miniSettingsIcon.setName("SETTINGS");
+        miniSettingsIcon.addListener(appClickListener);
+
+        final int GROUP_SIZE = 116;
+        final int ADD_SIZE = 96;
+        final int COG_SIZE = 32;
+        WidgetGroup addGroup = new WidgetGroup() {
+            @Override
+            public float getPrefWidth() { return GROUP_SIZE; }
+            @Override
+            public float getPrefHeight() { return GROUP_SIZE; }
+        };
+        addGroup.setSize(GROUP_SIZE, GROUP_SIZE);
+        addButton.setSize(ADD_SIZE, ADD_SIZE);
+        addButton.setPosition(0, GROUP_SIZE - ADD_SIZE);   // top-left (libGDX y grows upward)
+        addGroup.addActor(addButton);
+        miniSettingsIcon.setSize(COG_SIZE, COG_SIZE);
+        miniSettingsIcon.setPosition(GROUP_SIZE - COG_SIZE, 0);   // bottom-right
+        addGroup.addActor(miniSettingsIcon);
+
         currentPage.row();
         currentPage.add().expandX();
-        currentPage.add(addButton).pad(0, 0, 30, 20).align(Align.right).expandX();
+        currentPage.add(addGroup).pad(0, 0, 30, 20).align(Align.right).expandX();
         
         PagedScrollPane pagedScrollPane = new PagedScrollPane();
         pagedScrollPane.setHomeScreen(this);
@@ -765,6 +806,8 @@ public class HomeScreen extends InputAdapter implements Screen {
                     showAboutJOricDialog();
                 } else if (appName.equals("ADD")) {
                     importProgram();
+                } else if (appName.equals("SETTINGS")) {
+                    showSettingsDialog();
                 }
             }
         }
@@ -812,6 +855,30 @@ public class HomeScreen extends InputAdapter implements Screen {
                 });
     }
     
+    private void showSettingsDialog() {
+        final RomConfig.Option current = RomConfig.getSelected(joric.getPreferences());
+        final String[] displayNames = new String[RomConfig.OPTIONS.length];
+        for (int i = 0; i < RomConfig.OPTIONS.length; i++) {
+            displayNames[i] = RomConfig.OPTIONS[i].displayName;
+        }
+        dialogHandler.promptForOption("Settings", "ROM for local files:", displayNames, current.displayName,
+                new TextInputResponseHandler() {
+                    @Override
+                    public void inputTextResult(boolean success, String text) {
+                        if (!success || text == null) {
+                            return;
+                        }
+                        // Look up the Option whose displayName matches the chosen string.
+                        for (RomConfig.Option option : RomConfig.OPTIONS) {
+                            if (option.displayName.equals(text)) {
+                                RomConfig.setSelected(joric.getPreferences(), option.id);
+                                return;
+                            }
+                        }
+                    }
+                });
+    }
+
     private void exportState() {
         
     }

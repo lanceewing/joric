@@ -188,11 +188,12 @@ class Dialog {
 		return this.waitForUser();
 	}
 	
-	promptForOption(title, message, options) {
+	promptForOption(title, message, options, selectedOption) {
 		let template = `<label for="options-select">${message}</label>`;
 		template += '<select name="option" id="options-select">';
 		options.forEach((option) => {
-			template += `<option value="${option}">${option}</option>`;
+			const selected = option === selectedOption ? ' selected' : '';
+			template += `<option value="${option}"${selected}>${option}</option>`;
 		});
 		template += '</select>';
 		const settings = Object.assign({}, { message: title, template: template});
