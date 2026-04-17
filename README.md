@@ -28,6 +28,10 @@ The UI of JOric has been designed primarily with mobile devices in mind, so give
   - e.g. [https://oric.games/?url=https://defence-force.org/files/space1999-en.zip](https://oric.games/?url=https://defence-force.org/files/space1999-en.zip)
 - Support for loading games attached to forum posts:
   - e.g. [https://oric.games/?url=https://forum.defence-force.org/download/file.php?id=4084](https://oric.games/?url=https://forum.defence-force.org/download/file.php?id=4084)
+- Support for specifying the ROM to use for individual game loads via a `?rom=` request parameter:
+  - e.g. [https://oric.games/?rom=oric1#/basic](https://oric.games/?rom=oric1#/basic)
+  - e.g. `https://oric.games/?rom=oric1&url=https://example.com/my-oric1-game.tap`
+  - Valid values are `atmos` (BASIC 1.1, the default) and `oric1` (BASIC 1.0).
 - Being a PWA (Progressive Web App), it can be installed locally to your device!
 - And it also comes as a standalone Java app, for those who prefer Java.
 
