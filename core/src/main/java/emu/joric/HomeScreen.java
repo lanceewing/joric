@@ -829,12 +829,20 @@ public class HomeScreen extends InputAdapter implements Screen {
     }
     
     private void importProgram() {
-        Gdx.app.postRunnable(new Runnable() {
-            @Override
-            public void run() {
-                importProgramUsingOpenFileDialog();
-            }
-        });
+        // Invoked synchronously from the click handler so that Safari's
+        // "user activation" token is still valid when
+        // GwtDialogHandler.openFileDialog eventually calls .click() on the
+        // <input type="file">. Safari only allows the native file picker to
+        // open if .click() runs in the same synchronous event stack as the
+        // original user-gesture event; any intervening async step (e.g.
+        // Gdx.app.postRunnable, which defers to the next frame) causes
+        // Safari to revoke the token and silently refuse the picker.
+        //
+        // Each platform's DialogHandler openFileDialog implementation
+        // handles its own thread affinity internally (Desktop wraps in
+        // Gdx.app.postRunnable for Swing, Android uses runOnUiThread), so
+        // calling synchronously should be safe on all platforms.
+        importProgramUsingOpenFileDialog();
     }
     
     private void importProgramUsingOpenFileDialog() {
