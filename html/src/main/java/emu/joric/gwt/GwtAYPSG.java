@@ -83,6 +83,15 @@ public class GwtAYPSG implements AYPSG {
     private int sampleBufferOffset = 0;
     private double cyclesToNextSample;
     private SharedQueue sampleSharedQueue;
+
+    // One-pole DC-blocker state and coefficient used to model the AC coupling capacitor
+    // on Oric audio output to remove the DC offset that the audio chip's emulated unipolar
+    // signal would otherwise carry into the AudioWorklet output.
+    // R = 0.995 gives a -3 dB corner at ~17.5 Hz @ 22050 Hz sample rate, which should be
+    // below any expected normally audible Oric content.
+    private static final float DC_BLOCKER_R = 0.995f;
+    private float dcBlockerX1;
+    private float dcBlockerY1;
     
     // TODO: Remove these after debugging timing issue.
     private long cycleCount;
@@ -156,6 +165,9 @@ public class GwtAYPSG implements AYPSG {
         addressLatch = 0;
 
         cyclesToNextSample = CYCLES_PER_SAMPLE;
+
+        dcBlockerX1 = 0f;
+        dcBlockerY1 = 0f;
     }
 
     /**
@@ -538,12 +550,25 @@ public class GwtAYPSG implements AYPSG {
             }
         }
 
-        int sample = (((((VOLUME_LEVELS[volumeA] * cnt[A]) >> 13) + 
-                        ((VOLUME_LEVELS[volumeB] * cnt[B]) >> 13) + 
-                        ((VOLUME_LEVELS[volumeC] * cnt[C]) >> 13)) & 0x7FFF));
+        int sample = Math.min(((VOLUME_LEVELS[volumeA] * cnt[A]) >> 13) +
+                      ((VOLUME_LEVELS[volumeB] * cnt[B]) >> 13) +
+                      ((VOLUME_LEVELS[volumeC] * cnt[C]) >> 13), 0x7FFF);
 
-        // Conversion to -1.0 to 1.0, which is what the AudioWorkletProcessor needs.
-        sampleBuffer.set(sampleBufferOffset, ((sample - 16384.0f) / 16384.0f));
+        // Use a simple DC blocker to convert to -1.0 to 1.0, which is what the
+        // AudioWorkletProcessor needs. The output clamp is folded into the same
+        // expression as the filter, so on the rare transient that hits the rail
+        // (e.g. a register write flipping the chip from full silence to full output
+        // in one sample), the clamped value is what gets fed back into the filter
+        // state. (Clamping the filter state is arguably less mathematically accurate,
+        // because the clamping behaviour is non-linear. But this approach brings us
+        // out of the clipping state and into more normal behaviour faster, and is
+        // likely a closer approximation of the original hardware circuit bahaviour.)
+        float x = sample / 16384.0f;
+        float y = Math.max(-1f, Math.min(1f,
+                        x - dcBlockerX1 + DC_BLOCKER_R * dcBlockerY1));
+        dcBlockerX1 = x;
+        dcBlockerY1 = y;
+        sampleBuffer.set(sampleBufferOffset, y);
 
         // Increment total sample count, so that we can keep in sync with cycle count.
         sampleCount++;
