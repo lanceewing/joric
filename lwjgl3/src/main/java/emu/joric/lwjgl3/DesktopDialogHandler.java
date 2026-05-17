@@ -236,6 +236,27 @@ public class DesktopDialogHandler implements DialogHandler {
     }
     
     @Override
+    public void promptForOption(final String title, final String message, final String[] options,
+            final String currentSelection, final TextInputResponseHandler textInputResponseHandler) {
+        Gdx.app.postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                dialogOpen = true;
+                String dialogTitle = (title != null && !title.isEmpty()) ? title : "JOric";
+                Object result = JOptionPane.showInputDialog(null, message, dialogTitle,
+                        JOptionPane.QUESTION_MESSAGE, null, options, currentSelection);
+                dialogOpen = false;
+
+                if (result != null) {
+                    textInputResponseHandler.inputTextResult(true, result.toString());
+                } else {
+                    textInputResponseHandler.inputTextResult(false, null);
+                }
+            }
+        });
+    }
+
+    @Override
     public boolean isDialogOpen() {
         return dialogOpen;
     }

@@ -14,6 +14,7 @@ import emu.joric.JOricRunner;
 import emu.joric.KeyboardMatrix;
 import emu.joric.PixelData;
 import emu.joric.Program;
+import emu.joric.RomConfig;
 import emu.joric.config.AppConfigItem;
 import emu.joric.worker.MessageEvent;
 import emu.joric.worker.MessageHandler;
@@ -44,10 +45,33 @@ public class GwtJOricRunner extends JOricRunner {
      */
     public GwtJOricRunner(KeyboardMatrix keyboardMatrix, PixelData pixelData) {
         super(keyboardMatrix, pixelData, null);
-        
+
         psg = new GwtAYPSG(this);
-        
+
         registerPopStateEventHandler();
+        captureRomParamFromUrl();
+    }
+
+    /**
+     * If the page was loaded with a ?rom= URL parameter AND the URL is also
+     * directly loading a specific program (via ?url= or a hash route like
+     * #/basic), store the requested ROM id for the program about to
+     * be launched. The parameter is ignored when the URL has no direct-load
+     * indicator (e.g. the plain home screen).
+     */
+    private void captureRomParamFromUrl() {
+        String romParam = Window.Location.getParameter("rom");
+        if (romParam == null || romParam.isEmpty()) {
+            return;
+        }
+        String urlParam = Window.Location.getParameter("url");
+        String hash = Window.Location.getHash();
+        boolean directLoad =
+                (urlParam != null && !urlParam.isEmpty()) ||
+                (hash != null && !hash.trim().isEmpty());
+        if (directLoad) {
+            RomConfig.setUrlRomParam(romParam);
+        }
     }
 
     private native void registerPopStateEventHandler() /*-{
@@ -80,30 +104,30 @@ public class GwtJOricRunner extends JOricRunner {
     @Override
     public void start(AppConfigItem appConfigItem) {
         // Do not change the URL if joric was invoked with "url" request param.
-        if ((Window.Location.getParameter("url") == null) && 
+        if ((Window.Location.getParameter("url") == null) &&
             (!"Adhoc Oric Program".equals(appConfigItem.getName()))) {
-            // The URL Builder doesn't add a / before the #, so we do this ourselves.
+            // setPath normalises the URL to end with a '/' in cases that need them
+            // such as a bare "http://host". The '#' fragment can be appended
+            // directly without any extra '/'s to give a well formed URL
+            // (including for example in the case where a query string is present).
             String newURL = Window.Location.createUrlBuilder().setPath("/").setHash(null).buildString();
-            if (newURL.endsWith("/")) {
-                newURL += "#/";
-            } else {
-                newURL += "/#/";
-            }
-            newURL += slugify(appConfigItem.getName());
-            
+            newURL += "#/" + slugify(appConfigItem.getName());
+
             updateURLWithoutReloading(newURL);
         }
-        
+
         GwtProgramLoader programLoader = new GwtProgramLoader();
         programLoader.fetchProgram(appConfigItem, p -> createWorker(appConfigItem, p));
     }
 
-    private ArrayBuffer convertProgramToArrayBuffer(Program program) {
+    private ArrayBuffer convertProgramToArrayBuffer(AppConfigItem appConfigItem, Program program) {
         int programDataLength = (program != null? program.getProgramData().length : 0);
         ArrayBuffer programArrayBuffer = TypedArrays.createArrayBuffer(programDataLength + 16384 + 8192);
         Uint8Array programUint8Array = TypedArrays.createUint8Array(programArrayBuffer);
         int index = 0;
-        byte[] basicRom = Gdx.files.internal("roms/basic11b.rom").readBytes();
+        RomConfig.Option romOpt = RomConfig.resolveRom(
+                appConfigItem, Gdx.app.getPreferences("joric.preferences"));
+        byte[] basicRom = Gdx.files.internal("roms/" + romOpt.filename).readBytes();
         for (int i=0; i < basicRom.length; index++, i++) {
             programUint8Array.set(index, (basicRom[i] & 0xFF));
         }
@@ -126,7 +150,7 @@ public class GwtJOricRunner extends JOricRunner {
      */
     public void createWorker(AppConfigItem appConfigItem, Program program) {
         // Convert program bytes to ArrayBuffer.
-        ArrayBuffer programArrayBuffer = convertProgramToArrayBuffer(program);
+        ArrayBuffer programArrayBuffer = convertProgramToArrayBuffer(appConfigItem, program);
         
         worker = Worker.create("/worker/worker.nocache.js");
         
@@ -260,6 +284,7 @@ public class GwtJOricRunner extends JOricRunner {
                 .setPath("/")
                 .setHash(null)
                 .removeParameter("url")
+                .removeParameter("rom")
                 .buildString();
         updateURLWithoutReloading(newURL);
     }

@@ -1,6 +1,7 @@
 package emu.joric.gwt;
 
 import com.badlogic.gdx.Gdx;
+import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.typedarrays.shared.Int8Array;
 import com.google.gwt.typedarrays.shared.TypedArrays;
 
@@ -187,8 +188,39 @@ public class GwtDialogHandler implements DialogHandler {
     }-*/;
     
     @Override
+    public void promptForOption(final String title, final String message, final String[] options,
+            final String currentSelection, final TextInputResponseHandler textInputResponseHandler) {
+        Gdx.app.postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                dialogOpen = true;
+                // JSNI can't receive a Java String[] directly; wrap the options
+                // into a native JS array via JsArrayString.
+                JsArrayString jsOptions = (JsArrayString) JsArrayString.createArray();
+                for (String option : options) {
+                    jsOptions.push(option);
+                }
+                showHtmlPromptForOption(title, message, jsOptions, currentSelection, textInputResponseHandler);
+            }
+        });
+    }
+
+    private final native void showHtmlPromptForOption(String title, String message, JsArrayString options,
+            String currentSelection, TextInputResponseHandler textInputResponseHandler)/*-{
+        var that = this;
+        this.dialog.promptForOption(title, message, options, currentSelection).then(function (res) {
+            if (res && res.option) {
+                textInputResponseHandler.@emu.joric.ui.TextInputResponseHandler::inputTextResult(ZLjava/lang/String;)(true, res.option);
+            } else {
+                textInputResponseHandler.@emu.joric.ui.TextInputResponseHandler::inputTextResult(ZLjava/lang/String;)(false, null);
+            }
+            that.@emu.joric.gwt.GwtDialogHandler::dialogOpen = false;
+        });
+    }-*/;
+
+    @Override
     public boolean isDialogOpen() {
         return dialogOpen;
     }
-    
+
 }

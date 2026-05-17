@@ -56,6 +56,9 @@ www-test/
 ## TeaVM:
 # Not sure yet...
 
+## Cloudflare Wrangler:
+.wrangler/
+
 ## IntelliJ, Android Studio:
 .idea/
 *.ipr

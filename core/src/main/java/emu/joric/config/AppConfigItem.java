@@ -18,6 +18,15 @@ public class AppConfigItem {
 
     private String ram = "RAM_48K";
 
+    /**
+     * Optional ROM id (e.g. "atmos" or "oric1") declaring which Oric ROM this
+     * program needs. Matches {@link emu.joric.RomConfig.Option#id}. When
+     * null/absent, the program launches with the Atmos default. Only consulted
+     * for curated launches — local-file loads use the persisted preference
+     * instead.
+     */
+    private String rom;
+
     private FileLocation fileLocation = FileLocation.INTERNAL;
 
     private String status = "WORKING";
@@ -183,5 +192,20 @@ public class AppConfigItem {
 
     public void setFileData(byte[] fileData) {
         this.fileData = fileData;
+    }
+
+    /**
+     * @return the ROM id for this program, or null if none specified (falls
+     *         back to the normal ROM resolution rules).
+     */
+    public String getRom() {
+        return rom;
+    }
+
+    /**
+     * @param rom the ROM id (matching {@link emu.joric.RomConfig.Option#id}).
+     */
+    public void setRom(String rom) {
+        this.rom = rom;
     }
 }
