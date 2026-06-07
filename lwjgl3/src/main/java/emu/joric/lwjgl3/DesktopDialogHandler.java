@@ -16,6 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 
@@ -104,17 +105,30 @@ public class DesktopDialogHandler implements DialogHandler {
     
     @Override
     public void confirm(final String message, final ConfirmResponseHandler responseHandler) {
-        Gdx.app.postRunnable(new Runnable() {
+        // The Swing dialog must run on the AWT Event Dispatch Thread (EDT),
+        // not on the libGDX main thread. The Swing API normally expects its 
+        // components to be accessed from the AWT EDT. On macOS the libGDX main 
+        // thread is also the AppKit main thread (because of -XstartOnFirstThread),
+        // so if we made Swing dialog calls from there they would deadlock against 
+        // the EDT. So we dispatch via SwingUtilities.invokeLater, and post the 
+        // response back to the libGDX main thread so the response handler interacts 
+        // with libGDX state safely.
+        SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 dialogOpen = true;
-                int output = JOptionPane.showConfirmDialog(null, message, "Please confirm", JOptionPane.YES_NO_OPTION);
+                final int output = JOptionPane.showConfirmDialog(null, message, "Please confirm", JOptionPane.YES_NO_OPTION);
                 dialogOpen = false;
-                if (output != 0) {
-                    responseHandler.no();
-                } else {
-                    responseHandler.yes();
-                }
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (output != 0) {
+                            responseHandler.no();
+                        } else {
+                            responseHandler.yes();
+                        }
+                    }
+                });
             }
         });
     }
@@ -122,7 +136,9 @@ public class DesktopDialogHandler implements DialogHandler {
     @Override
     public void openFileDialog(String title, final String startPath,
             final OpenFileResponseHandler openFileResponseHandler) {
-        Gdx.app.postRunnable(new Runnable() {
+        // See confirm() for why the Swing dialog is dispatched onto the EDT
+        // and the response is posted back to the libGDX main thread.
+        SwingUtilities.invokeLater(new Runnable() {
 
             @Override
             public void run() {
@@ -138,14 +154,21 @@ public class DesktopDialogHandler implements DialogHandler {
                 jfc.addChoosableFileFilter(filter);
 
                 dialogOpen = true;
-                int returnValue = jfc.showOpenDialog(null);
+                final int returnValue = jfc.showOpenDialog(null);
+                final String selectedPath = (returnValue == JFileChooser.APPROVE_OPTION)
+                        ? jfc.getSelectedFile().getPath() : null;
                 dialogOpen = false;
-                if (returnValue == JFileChooser.APPROVE_OPTION) {
-                    System.out.println(jfc.getSelectedFile().getPath());
-                    openFileResponseHandler.openFileResult(true, jfc.getSelectedFile().getPath(), null);
-                } else {
-                    openFileResponseHandler.openFileResult(false, null, null);
-                }
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (selectedPath != null) {
+                            System.out.println(selectedPath);
+                            openFileResponseHandler.openFileResult(true, selectedPath, null);
+                        } else {
+                            openFileResponseHandler.openFileResult(false, null, null);
+                        }
+                    }
+                });
             }
         });
     }
@@ -153,105 +176,133 @@ public class DesktopDialogHandler implements DialogHandler {
     @Override
     public void promptForTextInput(final String message, final String initialValue,
             final TextInputResponseHandler textInputResponseHandler) {
-        Gdx.app.postRunnable(new Runnable() {
+        // See confirm() for why the Swing dialog is dispatched onto the EDT
+        // and the response is posted back to the libGDX main thread.
+        SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 dialogOpen = true;
-                String text = (String) JOptionPane.showInputDialog(null, message, "Please enter value",
+                final String text = (String) JOptionPane.showInputDialog(null, message, "Please enter value",
                         JOptionPane.INFORMATION_MESSAGE, null, null, initialValue != null ? initialValue : "");
                 dialogOpen = false;
-                
-                if (text != null) {
-                    textInputResponseHandler.inputTextResult(true, text);
-                } else {
-                    textInputResponseHandler.inputTextResult(false, null);
-                }
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (text != null) {
+                            textInputResponseHandler.inputTextResult(true, text);
+                        } else {
+                            textInputResponseHandler.inputTextResult(false, null);
+                        }
+                    }
+                });
             }
         });
     }
     
     @Override
-    public void showAboutDialog(String aboutMessage, TextInputResponseHandler textInputResponseHandler) {
-        dialogOpen = true;
-        
-        JButton spacerButton = new JButton(
-                "                                                                  ");
-        spacerButton.setVisible(false);
-        JButton exportButton = new JButton(getExportIcon());
-        JButton importButton = new JButton(getImportIcon());
-        JButton resetButton = new JButton(getResetIcon());
-        JButton clearButton = new JButton(getClearIcon());
-        JButton okButton = new JButton("OK");
-        //Object[] options = { exportButton, importButton, resetButton, clearButton, spacerButton, okButton };
-        Object[] options = { okButton };
-        
-        final JOptionPane pane = new JOptionPane(
-                aboutMessage, 
-                JOptionPane.INFORMATION_MESSAGE,
-                JOptionPane.DEFAULT_OPTION, 
-                loadIcon("png/joric-64x64.png"),
-                options, okButton);
-        
-        MouseAdapter mouseListener = new MouseAdapter() {
+    public void showAboutDialog(final String aboutMessage, final TextInputResponseHandler textInputResponseHandler) {
+        // See confirm() for why the Swing dialog is dispatched onto the EDT
+        // and the response is posted back to the libGDX main thread. Unlike
+        // the other dialog methods this one wasn't previously wrapped in
+        // Gdx.app.postRunnable, but the cause was the same: it ran on
+        // whatever thread called it, which is the libGDX main thread from
+        // the in-emulator UI.
+        SwingUtilities.invokeLater(new Runnable() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-                JButton button = (JButton)e.getComponent();
-                if (button == exportButton) {
-                    pane.setValue("EXPORT");
-                }
-                else if (button == importButton) {
-                    pane.setValue("IMPORT");
-                }
-                else if (button == resetButton) {
-                    pane.setValue("RESET");
-                }
-                else if (button == clearButton) {
-                    pane.setValue("CLEAR");
-                }
-                else {
-                    pane.setValue("OK");
-                }
+            public void run() {
+                dialogOpen = true;
+
+                JButton spacerButton = new JButton(
+                        "                                                                  ");
+                spacerButton.setVisible(false);
+                final JButton exportButton = new JButton(getExportIcon());
+                final JButton importButton = new JButton(getImportIcon());
+                final JButton resetButton = new JButton(getResetIcon());
+                final JButton clearButton = new JButton(getClearIcon());
+                final JButton okButton = new JButton("OK");
+                //Object[] options = { exportButton, importButton, resetButton, clearButton, spacerButton, okButton };
+                Object[] options = { okButton };
+
+                final JOptionPane pane = new JOptionPane(
+                        aboutMessage,
+                        JOptionPane.INFORMATION_MESSAGE,
+                        JOptionPane.DEFAULT_OPTION,
+                        loadIcon("png/joric-64x64.png"),
+                        options, okButton);
+
+                MouseAdapter mouseListener = new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        JButton button = (JButton)e.getComponent();
+                        if (button == exportButton) {
+                            pane.setValue("EXPORT");
+                        }
+                        else if (button == importButton) {
+                            pane.setValue("IMPORT");
+                        }
+                        else if (button == resetButton) {
+                            pane.setValue("RESET");
+                        }
+                        else if (button == clearButton) {
+                            pane.setValue("CLEAR");
+                        }
+                        else {
+                            pane.setValue("OK");
+                        }
+                    }
+                };
+
+                exportButton.addMouseListener(mouseListener);
+                importButton.addMouseListener(mouseListener);
+                resetButton.addMouseListener(mouseListener);
+                clearButton.addMouseListener(mouseListener);
+                okButton.addMouseListener(mouseListener);
+
+                pane.setComponentOrientation(JOptionPane.getRootFrame().getComponentOrientation());
+                JDialog dialog = pane.createDialog("About JOric");
+                dialog.setIconImage(loadImage("png/joric-32x32.png"));
+                dialog.show();
+                dialog.dispose();
+
+                final Object paneValue = pane.getValue();
+                dialogOpen = false;
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (paneValue != null) {
+                            textInputResponseHandler.inputTextResult(true, (String)paneValue);
+                        } else {
+                            textInputResponseHandler.inputTextResult(false, null);
+                        }
+                    }
+                });
             }
-        };
-        
-        exportButton.addMouseListener(mouseListener);
-        importButton.addMouseListener(mouseListener);
-        resetButton.addMouseListener(mouseListener);
-        clearButton.addMouseListener(mouseListener);
-        okButton.addMouseListener(mouseListener);
-        
-        pane.setComponentOrientation(JOptionPane.getRootFrame().getComponentOrientation());
-        JDialog dialog = pane.createDialog("About JOric");
-        dialog.setIconImage(loadImage("png/joric-32x32.png"));
-        dialog.show();
-        dialog.dispose();
-        
-        if (pane.getValue() != null) {
-            textInputResponseHandler.inputTextResult(true, (String)pane.getValue());
-        } else {
-            textInputResponseHandler.inputTextResult(false, null);
-        }
-        
-        dialogOpen = false;
+        });
     }
-    
+
     @Override
     public void promptForOption(final String title, final String message, final String[] options,
             final String currentSelection, final TextInputResponseHandler textInputResponseHandler) {
-        Gdx.app.postRunnable(new Runnable() {
+        // See confirm() for why the Swing dialog is dispatched onto the EDT
+        // and the response is posted back to the libGDX main thread.
+        SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 dialogOpen = true;
                 String dialogTitle = (title != null && !title.isEmpty()) ? title : "JOric";
-                Object result = JOptionPane.showInputDialog(null, message, dialogTitle,
+                final Object result = JOptionPane.showInputDialog(null, message, dialogTitle,
                         JOptionPane.QUESTION_MESSAGE, null, options, currentSelection);
                 dialogOpen = false;
-
-                if (result != null) {
-                    textInputResponseHandler.inputTextResult(true, result.toString());
-                } else {
-                    textInputResponseHandler.inputTextResult(false, null);
-                }
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (result != null) {
+                            textInputResponseHandler.inputTextResult(true, result.toString());
+                        } else {
+                            textInputResponseHandler.inputTextResult(false, null);
+                        }
+                    }
+                });
             }
         });
     }
