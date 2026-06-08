@@ -81,6 +81,20 @@ public class AY38912PSG implements AYPSG {
   private int sampleBufferOffset = 0;
   private float cyclesToNextSample;
   private SourceDataLine audioLine;
+
+  // Diagnostic logging in writeSample (drop events, top-up events, periodic
+  // stats) is gated on this flag. Disabled by default so the released build
+  // is silent. Flip to true when investigating audio drift / glitches on a
+  // specific OS or audio backend; the JIT will eliminate the dead branches
+  // when false so there is no runtime cost in the disabled state.
+  private static final boolean DIAGNOSTIC_LOGGING = false;
+
+  // Counters for top-up / drop events in writeSample, used only by the
+  // periodic stats logging gated by DIAGNOSTIC_LOGGING. Increments are also
+  // gated so the fields stay at zero in normal runs.
+  private long flushCount = 0;
+  private long topupCount = 0;
+  private long dropCount = 0;
   
   /**
    * The AY-3-8912 in the Oric gets its data from the 6522 VIA chip.
@@ -133,17 +147,25 @@ public class AY38912PSG implements AYPSG {
     addressLatch = 0;
     
     try {
-      // PCM SIGNED, 16 bit, mono, 2 bytes/frame, little-endian, 50ms buffer size (i.e. delay)
-      int audioBufferSize = ((((SAMPLE_RATE/ 20) * 2) / 10) * 10);
+      // PCM SIGNED, 16 bit, mono, 2 bytes/frame, little-endian, 200ms buffer
+      // size. writeSample manages the buffer usage, targeting 50-60% fullness
+      // which gives us ~120ms latency (same as our web version) with a good
+      // margin for jitter and drift that should minimise audio glitches.
+      int audioBufferSize = ((((SAMPLE_RATE/ 5) * 2) / 10) * 10);
       AudioFormat format = new AudioFormat(SAMPLE_RATE, 16, 1, true, false);
       DataLine.Info info = new DataLine.Info(SourceDataLine.class, format, audioBufferSize);
       audioLine = (SourceDataLine)AudioSystem.getLine(info);
-      audioLine.open();
+      // We need to pass audioBufferSize to open(format, bufferSize) explicitly 
+      // since the value in the DataLine.Info above is only a hint for line 
+      // selection. audioLine.open() with no args uses whatever the
+      // implementation-defined default is (e.g. ~32KB on macOS Java Sound, 
+      // regardless of what we requested in the Info).
+      audioLine.open(format, audioBufferSize);
       audioLine.start();
-      
+
       sampleBuffer = new byte[audioBufferSize / 10];
       sampleBufferOffset = 0;
-      
+
     } catch (LineUnavailableException lue) {
       audioLine = null;
     }
@@ -480,10 +502,68 @@ public class AY38912PSG implements AYPSG {
     sampleBuffer[sampleBufferOffset + 0] = (byte)(sample & 0x00FF);
     sampleBuffer[sampleBufferOffset + 1] = (byte)((sample & 0xFF00) >> 8);
     
-    // If the sample buffer is full, write it out to the audio line.
+    // If the sample buffer is full, flush (write) it out to the audio line
+    // with drift management: drop the flush if the audio line buffer is 
+    // already nearly full (indicating over-production drift), or top up 
+    // with silence to the mid-point if it's nearly empty (under-production
+    // drift, or initial startup pre-fill). Drift in either direction can
+    // arise from small mismatches between the emulator's effective
+    // sample-production rate (based on system clock) and the 
+    // audio hardware's consumption rate (based on audio hardware clock, 
+    // which may or may not be the same as the system clock depending on
+    // the hardware). Drift correction actions can result in audible
+    // clicks/pops if real audio is being played (non-silence), but in 
+    // normal operation of the emulator should occur very infrequently
+    // since the drift rate should be very small and the drift corrections
+    // are applied in relatively large chunks (equivalent to one full 
+    // sampleBuffer at a time) rather than in smaller more frequent increments.
     if ((sampleBufferOffset += 2) == sampleBuffer.length) {
-      audioLine.write(sampleBuffer, 0, sampleBuffer.length);
+      if (DIAGNOSTIC_LOGGING) flushCount++;
+      int audioBufferSize = audioLine.getBufferSize();
+      int flushBytes = sampleBuffer.length;
+      int midPointBytes = audioBufferSize / 2;
+      int topupThresholdBytes = midPointBytes - 2 * flushBytes;
+      int dropThresholdBytes = midPointBytes + 3 * flushBytes;
+      int fullnessBytes = audioBufferSize - audioLine.available();
+
+      if (fullnessBytes > dropThresholdBytes) {
+        // The audioLine buffer is overly full. Drop this flush. Audio line will 
+        // drain by one sampleBuffer's worth of playback before the next flush
+        // occurs, pulling fullness back toward the desired mid-point.
+        if (DIAGNOSTIC_LOGGING) {
+          dropCount++;
+          System.out.println("AY38912PSG: drop flush, fullness="
+                  + (fullnessBytes * 1000L / (SAMPLE_RATE * 2)) + "ms");
+        }
+      } else if (fullnessBytes < topupThresholdBytes) {
+        // The audioLine buffer is overly empty. Top up with silence to bring 
+        // fullness exactly to the mid-point, then perform the flush.
+        int topupBytes = midPointBytes - fullnessBytes;
+        topupBytes = (topupBytes / 2) * 2;   // ensure even (16-bit alignment)
+        if (topupBytes > 0) {
+          byte[] silence = new byte[topupBytes];
+          audioLine.write(silence, 0, silence.length);
+        }
+        audioLine.write(sampleBuffer, 0, sampleBuffer.length);
+        if (DIAGNOSTIC_LOGGING) {
+          topupCount++;
+          System.out.println("AY38912PSG: top-up flush, fullness="
+                  + (fullnessBytes * 1000L / (SAMPLE_RATE * 2)) + "ms, topup="
+                  + (topupBytes * 1000L / (SAMPLE_RATE * 2)) + "ms");
+        }
+      } else {
+        // Normal flush.
+        audioLine.write(sampleBuffer, 0, sampleBuffer.length);
+      }
       sampleBufferOffset = 0;
+
+      // Periodic stats every 500 flushes (~10s at 20ms/flush).
+      if (DIAGNOSTIC_LOGGING && (flushCount % 500) == 0) {
+        int currentFullnessBytes = audioBufferSize - audioLine.available();
+        System.out.println("AY38912PSG: stats, flushes=" + flushCount
+                + ", top-ups=" + topupCount + ", drops=" + dropCount
+                + ", currentFullness=" + (currentFullnessBytes * 1000L / (SAMPLE_RATE * 2)) + "ms");
+      }
     }
   }
 }
