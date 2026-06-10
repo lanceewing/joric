@@ -30,8 +30,9 @@ public class PSGAudioWorklet {
     public PSGAudioWorklet(SharedQueue sampleSharedQueue, GwtJOricRunner gwtJOricRunner) {
         this.sampleSharedQueue = sampleSharedQueue;
         this.gwtJOricRunner = gwtJOricRunner;
-        
-        initialise(sampleSharedQueue.getSharedArrayBuffer());
+
+        initialise(sampleSharedQueue.getSharedArrayBuffer(),
+                GwtAYPSG.MAX_SAMPLE_RATE, GwtAYPSG.FALLBACK_SAMPLE_RATE);
     }
 
     /**
@@ -44,8 +45,12 @@ public class PSGAudioWorklet {
      * call to resume within a user gesture.
      * 
      * @param audioBufferSAB The SharedArrayBuffer to get the sound sample data from.
+     * @param maxSampleRate The maximum supported sample rate. If the device's native
+     * rate is higher, the AudioContext is opened at this rate instead.
+     * @param fallbackSampleRate The rate to report if AudioContext creation fails.
      */
-    private native void initialise(JavaScriptObject audioBufferSAB)/*-{
+    private native void initialise(JavaScriptObject audioBufferSAB,
+            int maxSampleRate, int fallbackSampleRate)/*-{
         var ua = navigator.userAgent.toLowerCase();
         var isIOS = (
             (ua.indexOf("iphone") >= 0 && ua.indexOf("like iphone") < 0) ||
@@ -66,12 +71,32 @@ public class PSGAudioWorklet {
         
         try {
             // If this is not executing within a user gesture, then it will be suspended.
-            this.audioContext = new AudioContext({sampleRate: 22050});
+            // The AudioContext is opened at the device's preferred sample rate, so that
+            // no resampling happens at the context boundary, unless that rate is above
+            // the maximum that the sample generation supports, in which case it is opened
+            // at that maximum instead and the browser resamples to the device rate.
+            this.audioContext = new AudioContext();
+            if (this.audioContext.sampleRate > maxSampleRate) {
+                console.log("Device sample rate of " + this.audioContext.sampleRate +
+                    " is above the maximum supported. Recreating AudioContext at " +
+                    maxSampleRate + ".");
+                this.audioContext.close();
+                this.audioContext = new AudioContext({sampleRate: maxSampleRate});
+            }
         }
         catch (e) {
             console.log("Failed to create AudioContext. Error was: " + e);
         }
-        
+
+        // The sample generation rate is driven by the rate the AudioContext was
+        // actually able to open at. The fallback should never be needed, since if
+        // the AudioContext failed to create then there is no audio output anyway,
+        // but the sample generation maths needs a sane rate regardless.
+        // Math.round because the Web Audio API exposes sampleRate as a float,
+        // and the Java side expects an exact int.
+        this.sampleRate = (this.audioContext ? Math.round(this.audioContext.sampleRate) : fallbackSampleRate);
+        console.log("AudioContext sample rate is " + this.sampleRate + ".");
+
         if (this.audioContext) {
             if (this.audioContext.state == "running") {
                 // For Chrome, it may be that the state is already running at startup. We
@@ -155,6 +180,16 @@ public class PSGAudioWorklet {
     
     public native boolean isReady()/*-{
         return this.ready;
+    }-*/;
+
+    /**
+     * Returns the sample rate of the AudioContext, i.e. the rate at which sound
+     * samples will be consumed, and therefore the rate they should be generated at.
+     *
+     * @return The sample rate of the AudioContext.
+     */
+    public native int getSampleRate()/*-{
+        return this.sampleRate;
     }-*/;
     
     /**

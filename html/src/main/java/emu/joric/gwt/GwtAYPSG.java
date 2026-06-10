@@ -18,14 +18,32 @@ public class GwtAYPSG implements AYPSG {
 
     // The Oric runs at 1 MHz.
     private static final int CLOCK_1MHZ = 1000000;
-    private static final int SAMPLE_RATE = 22050;
     private static final int CYCLES_PER_SECOND = 1000000;
-    
-    // The number of cycles it takes to generate a single sample.
-    public static final double CYCLES_PER_SAMPLE = ((float) CYCLES_PER_SECOND / (float) SAMPLE_RATE);
 
-    // Number of samples to queue before being output to the audio hardware.
-    public static final int SAMPLE_LATENCY = 3072;
+    // Samples are generated at the AudioContext's native rate, to avoid the
+    // browser resampling at the context boundary. The cap exists because the
+    // chip emulation's fixed point maths overflows a 32-bit int above 48 kHz
+    // (the envelope period reaches (0xFFFF * updateStep) << 1, which is ~77%
+    // of Integer.MAX_VALUE at 48 kHz), and rates above 48 kHz would provide no
+    // real audible benefit anyway. The fallback rate is used only if creation 
+    // of the AudioContext fails, in which case there is no audio output at all,
+    // but the sample generation maths must remain sane. 22050 was the fixed
+    // rate that was used before host-native rate support was added.
+    public static final int MAX_SAMPLE_RATE = 48000;
+    public static final int FALLBACK_SAMPLE_RATE = 22050;
+
+    // Target time by which sample generation runs ahead of audio output. This
+    // protects against scheduling delays in the web worker (e.g. a skipped
+    // animation frame) and jitter between us and the hosts audio system, at 
+    // the cost of latency between the emulation writing a register and the 
+    // result being heard. The equivalent number of samples is derived from
+    // this in sampleLatency.
+    public static final int SAMPLE_LATENCY_MS = 140;
+
+    // The actual sample rate, and values derived from it. See configureSampleRate.
+    private int sampleRate;
+    private double cyclesPerSample;
+    private int sampleLatency;
     
     // Not entirely sure what these volume levels should be. With LEVEL_DIVISOR set
     // to 4, and volumes A, B, and C all at 15, then max sample is at 32760, which 
@@ -84,15 +102,18 @@ public class GwtAYPSG implements AYPSG {
     private double cyclesToNextSample;
     private SharedQueue sampleSharedQueue;
 
-    // One-pole DC-blocker state and coefficient used to model the AC coupling capacitor
-    // on Oric audio output to remove the DC offset that the audio chip's emulated unipolar
-    // signal would otherwise carry into the AudioWorklet output.
-    // R = 0.995 gives a -3 dB corner at ~17.5 Hz @ 22050 Hz sample rate, which should be
-    // below any expected normally audible Oric content.
-    private static final float DC_BLOCKER_R = 0.995f;
+    // One-pole DC-blocker state and corner frequency used to model the AC coupling
+    // capacitor on Oric audio output to remove the DC offset that the audio chip's
+    // emulated unipolar signal would otherwise carry into the AudioWorklet output.
+    // The filter coefficient R is derived from the sample rate (in configureSampleRate)
+    // to keep the -3 dB corner at ~17.5 Hz regardless of rate, which should be below
+    // any expected normally audible Oric content. (17.5 Hz is equivalent to the
+    // R = 0.995 that was used when the sample rate was fixed at 22050 Hz.)
+    private static final float DC_BLOCKER_CORNER_HZ = 17.5f;
+    private float dcBlockerR;
     private float dcBlockerX1;
     private float dcBlockerY1;
-    
+
     // TODO: Remove these after debugging timing issue.
     private long cycleCount;
     private long startTime;
@@ -113,27 +134,52 @@ public class GwtAYPSG implements AYPSG {
      * @param gwtJOricRunner 
      */
     public GwtAYPSG(GwtJOricRunner gwtJOricRunner) {
-        this((JavaScriptObject)null);
+        this((JavaScriptObject)null, FALLBACK_SAMPLE_RATE);
         initialiseAudioWorklet(gwtJOricRunner);
+        // Now that the AudioContext exists, reconfigure for whatever rate it
+        // actually opened at.
+        configureSampleRate(audioWorklet.getSampleRate());
     }
 
     /**
      * Constructor for GwtAYPSG (invoked by the web worker).
-     * 
+     *
      * @param audioBufferSAB SharedArrayBuffer for the audio ring buffer.
+     * @param sampleRate The sample rate of the AudioContext created by the UI thread.
      */
-    public GwtAYPSG(JavaScriptObject audioBufferSAB) {
+    public GwtAYPSG(JavaScriptObject audioBufferSAB, int sampleRate) {
         this.startTime = TimeUtils.millis();
-        
+
         if (audioBufferSAB == null) {
-            audioBufferSAB = SharedQueue.getStorageForCapacity(22050);
+            // Sized to hold 1 second at the maximum supported sample rate. The
+            // capacity is primarily headroom; the latency that is heard is 
+            // governed by SAMPLE_LATENCY_MS.
+            audioBufferSAB = SharedQueue.getStorageForCapacity(MAX_SAMPLE_RATE);
         }
         this.sampleSharedQueue = new SharedQueue(audioBufferSAB);
 
-        // 1024 is about 46ms of sample data, and is 8 frames of data for the
-        // audio worklet processor.
+        // Samples are pushed to the shared queue in chunks of 512, i.e. 4 of
+        // the AudioWorklet's fixed 128-sample render quanta. This is push
+        // granularity only, so is independent of sample rate; the latency that
+        // is heard is governed by SAMPLE_LATENCY_MS.
         this.sampleBuffer = TypedArrays.createFloat32Array(512);
         this.sampleBufferOffset = 0;
+
+        configureSampleRate(sampleRate);
+    }
+
+    /**
+     * Sets the sample rate and the values derived from it. For the UI thread
+     * instance, this is the rate of the AudioContext it created. For the web
+     * worker instance, it is the rate received in the Initialise message.
+     *
+     * @param sampleRate The sample rate that samples will be played at.
+     */
+    private void configureSampleRate(int sampleRate) {
+        this.sampleRate = sampleRate;
+        this.cyclesPerSample = ((double) CYCLES_PER_SECOND) / sampleRate;
+        this.sampleLatency = (sampleRate * SAMPLE_LATENCY_MS) / 1000;
+        this.dcBlockerR = 1.0f - (float)((2 * Math.PI * DC_BLOCKER_CORNER_HZ) / sampleRate);
     }
     
     /**
@@ -148,7 +194,7 @@ public class GwtAYPSG implements AYPSG {
         this.via = via;
         keyboard.setPsg(this);
 
-        updateStep = (int) (((long) step * 8L * (long) SAMPLE_RATE) / (long) CLOCK_1MHZ);
+        updateStep = (int) (((long) step * 8L * (long) sampleRate) / (long) CLOCK_1MHZ);
         output = new int[] { 0, 0, 0, 0xFF };
         count = new int[] { updateStep, updateStep, updateStep, 0x7fff, updateStep };
         period = new int[] { updateStep, updateStep, updateStep, updateStep, 0 };
@@ -164,7 +210,7 @@ public class GwtAYPSG implements AYPSG {
         busDirection = 0;
         addressLatch = 0;
 
-        cyclesToNextSample = CYCLES_PER_SAMPLE;
+        cyclesToNextSample = cyclesPerSample;
 
         dcBlockerX1 = 0f;
         dcBlockerY1 = 0f;
@@ -227,7 +273,7 @@ public class GwtAYPSG implements AYPSG {
         // If enough cycles have elapsed since the last sample, then output another.
         if (--cyclesToNextSample <= 0) {
             
-            cyclesToNextSample += CYCLES_PER_SAMPLE;
+            cyclesToNextSample += cyclesPerSample;
             
             // No point writing samples until we know that the AudioWorklet is ready.
             if (writeSamplesEnabled) {
@@ -263,7 +309,7 @@ public class GwtAYPSG implements AYPSG {
                 logToJSConsole("Cleared " + totalCleared + " old samples.");
                 
                 // Now fill with silence, so that we do not slow down emulation rate.
-                int silentSampleCount = GwtAYPSG.SAMPLE_LATENCY - (GwtAYPSG.SAMPLE_RATE / 60);
+                int silentSampleCount = sampleLatency - (sampleRate / 60);
                 sampleSharedQueue.push(TypedArrays.createFloat32Array(silentSampleCount));
             }
         }
@@ -565,7 +611,7 @@ public class GwtAYPSG implements AYPSG {
         // likely a closer approximation of the original hardware circuit bahaviour.)
         float x = sample / 16384.0f;
         float y = Math.max(-1f, Math.min(1f,
-                        x - dcBlockerX1 + DC_BLOCKER_R * dcBlockerY1));
+                        x - dcBlockerX1 + dcBlockerR * dcBlockerY1));
         dcBlockerX1 = x;
         dcBlockerY1 = y;
         sampleBuffer.set(sampleBufferOffset, y);
@@ -598,6 +644,34 @@ public class GwtAYPSG implements AYPSG {
 
     public SharedQueue getSampleSharedQueue() {
         return sampleSharedQueue;
+    }
+
+    /**
+     * Returns the sample rate that samples are being generated at.
+     *
+     * @return The sample rate that samples are being generated at.
+     */
+    public int getSampleRate() {
+        return sampleRate;
+    }
+
+    /**
+     * Returns the target number of samples for the shared queue, i.e.
+     * SAMPLE_LATENCY_MS worth of samples at the current sample rate.
+     *
+     * @return The target number of samples for the shared queue.
+     */
+    public int getSampleLatency() {
+        return sampleLatency;
+    }
+
+    /**
+     * Returns the number of cycles it takes to generate a single sample.
+     *
+     * @return The number of cycles it takes to generate a single sample.
+     */
+    public double getCyclesPerSample() {
+        return cyclesPerSample;
     }
     
     JavaScriptObject getSharedArrayBuffer() {

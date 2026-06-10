@@ -70,9 +70,10 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
                 JavaScriptObject keyMatrixSAB = getNestedObject(eventObject, "keyMatrixSAB");
                 JavaScriptObject pixelDataSAB = getNestedObject(eventObject, "pixelDataSAB");
                 JavaScriptObject audioDataSAB = getNestedObject(eventObject, "audioDataSAB");
+                int sampleRate = getNestedInt(eventObject, "sampleRate");
                 keyboardMatrix = new GwtKeyboardMatrix(keyMatrixSAB);
                 pixelData = new GwtPixelData(pixelDataSAB);
-                psg = new GwtAYPSG(audioDataSAB);
+                psg = new GwtAYPSG(audioDataSAB, sampleRate);
                 break;
                 
             case "Start":
@@ -168,20 +169,19 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
     
     /**
      * This method is the main emulator loop that is run for each animation frame. The
-     * web worker uses requestAnimationFrame to request that this method is called on 
+     * web worker uses requestAnimationFrame to request that this method is called on
      * each frame. As this is GWT, it does so via a native method below. This particular
      * implementation uses an approach where it only emulates as many cycles required to
-     * fill the sample buffer up to a certain number of samples, e.g. 3072. This value
-     * will be tweaked during testing on different browsers and devices to choose the 
-     * most appropriate. It needs to balance protecting against delays in the web worker
-     * generating samples, perhaps due to an animation frame being skipped, and not 
-     * introducing too much delay in the sound that is heard. A value of 3072 would be 
-     * a delay of 3072/22050*1000=139ms. That fraction of a second may not be noticeable
-     * but going much higher would become a perceivable latency/lag. In an ideal world,
-     * the web worker would write out 128 samples and the Web Audio thread would read
-     * that and output it immediately, but in reality both sides do sometimes pause
-     * slightly, and so we need a "buffer" of already prepared samples for the audio
-     * thread, thus the 3072 sample figure.
+     * fill the sample buffer up to a certain number of samples, which is the number of
+     * samples that GwtAYPSG.SAMPLE_LATENCY_MS represents at the current sample rate.
+     * That value needs to balance protecting against delays in the web worker
+     * generating samples, perhaps due to an animation frame being skipped, and not
+     * introducing too much delay in the sound that is heard. The 140ms value may not
+     * be noticeable but going much higher would become a perceivable latency/lag. In
+     * an ideal world, the web worker would write out 128 samples and the Web Audio
+     * thread would read that and output it immediately, but in reality both sides do
+     * sometimes pause slightly, and so we need a "buffer" of already prepared samples
+     * for the audio thread.
      * 
      * @param timestamp
      */
@@ -205,9 +205,10 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
                 // to a value that would leave the available samples in the queue 
                 // at a roughly fixed number. This is to avoid under or over generating
                 // samples, being always a given number of samples ahead in the buffer.
+                int sampleLatency = psg.getSampleLatency();
                 int currentBufferSize = psg.getSampleSharedQueue().availableRead();
-                int samplesToGenerate = (currentBufferSize >= GwtAYPSG.SAMPLE_LATENCY? 0 : GwtAYPSG.SAMPLE_LATENCY - currentBufferSize);
-                expectedCycleCount = (int)(samplesToGenerate * GwtAYPSG.CYCLES_PER_SAMPLE);
+                int samplesToGenerate = (currentBufferSize >= sampleLatency? 0 : sampleLatency - currentBufferSize);
+                expectedCycleCount = (int)(samplesToGenerate * psg.getCyclesPerSample());
                 
                 // While the emulation cycle rate is throttling by the audio thread 
                 // output rate, we keep resetting the startTime, in case sound is turned
@@ -323,6 +324,10 @@ public class JOricWebWorker extends DedicatedWorkerEntryPoint implements Message
     }-*/;
 
     private native String getNestedString(JavaScriptObject obj, String fieldName)/*-{
+        return obj.object[fieldName];
+    }-*/;
+
+    private native int getNestedInt(JavaScriptObject obj, String fieldName)/*-{
         return obj.object[fieldName];
     }-*/;
 
