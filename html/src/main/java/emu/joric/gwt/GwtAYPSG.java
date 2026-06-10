@@ -197,12 +197,18 @@ public class GwtAYPSG implements AYPSG {
         updateStep = (int) (((long) step * 8L * (long) sampleRate) / (long) CLOCK_1MHZ);
         output = new int[] { 0, 0, 0, 0xFF };
         count = new int[] { updateStep, updateStep, updateStep, 0x7fff, updateStep };
-        period = new int[] { updateStep, updateStep, updateStep, updateStep, 0 };
+        // Every period must be non-zero: writeSample's counter catch-up loops
+        // never terminate on a zero period.
+        period = new int[] { updateStep, updateStep, updateStep, updateStep, updateStep };
         registers = new int[16];
 
         volumeA = volumeB = volumeC = volumeEnvelope = 0;
         disableToneA = disableToneB = disableToneC = disableAllNoise = false;
-        countEnv = hold = alternate = attack = holding = 0;
+        countEnv = hold = alternate = attack = 0;
+        // The envelope starts out holding, as if the reset-default shape 0
+        // (decay then hold) had already completed its decay to 0. It starts
+        // moving when a program first writes the envelope shape register.
+        holding = 1;
         enable = 0;
         outNoise = 0;
         random = 1;
@@ -430,6 +436,12 @@ public class GwtAYPSG implements AYPSG {
         case 0x0B:
         case 0x0C: {
             int val = (((registers[0x0C] << 8) | registers[0x0B]) * updateStep) << 1;
+            // On the real chip an envelope period register value of 0 runs at
+            // twice the speed of period 1, i.e. a full 16-step envelope cycle
+            // in 128us at 1 MHz. (This is unlike the tone and noise periods,
+            // where 0 behaves the same as 1.) Period 1 is (updateStep << 1)
+            // here, so period 0 maps to half of that, which is updateStep.
+            val = (val == 0 ? updateStep : val);
             int last = period[ENVELOPE];
             period[ENVELOPE] = val;
             int newCount = count[ENVELOPE] - (val - last);
@@ -560,7 +572,7 @@ public class GwtAYPSG implements AYPSG {
             left -= add;
         } while (left > 0);
 
-        if (holding == 0 && period[ENVELOPE] != 0) {
+        if (holding == 0) {
             if ((count[ENVELOPE] -= step) <= 0) {
                 int ce = countEnv;
                 int envelopePeriod = period[ENVELOPE];
