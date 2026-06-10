@@ -196,9 +196,10 @@ public class GwtJOricRunner extends JOricRunner {
         // then another message to Start the machine with the given game data. The 
         // game data is "transferred", whereas the others are not but rather shared.
         worker.postObject("Initialise", createInitialiseObject(
-                keyMatrixSAB, 
+                keyMatrixSAB,
                 pixelDataSAB,
-                audioDataSAB));
+                audioDataSAB,
+                gwtPSG.getSampleRate()));
         worker.postArrayBufferAndObject("Start", 
                 programArrayBuffer,
                 createStartObject(
@@ -217,20 +218,23 @@ public class GwtJOricRunner extends JOricRunner {
      * Creates a JavaScript object, wrapping the objects to send to the web worker to
      * initialise the Machine.
      * 
-     * @param keyMatrixSAB 
-     * @param pixelDataSAB 
-     * @param audioDataSAB 
-     * 
+     * @param keyMatrixSAB
+     * @param pixelDataSAB
+     * @param audioDataSAB
+     * @param sampleRate The sample rate that sound samples should be generated at.
+     *
      * @return The created object.
      */
     private native JavaScriptObject createInitialiseObject(
-            JavaScriptObject keyMatrixSAB, 
+            JavaScriptObject keyMatrixSAB,
             JavaScriptObject pixelDataSAB,
-            JavaScriptObject audioDataSAB)/*-{
-        return { 
+            JavaScriptObject audioDataSAB,
+            int sampleRate)/*-{
+        return {
             keyMatrixSAB: keyMatrixSAB,
             pixelDataSAB: pixelDataSAB,
-            audioDataSAB: audioDataSAB
+            audioDataSAB: audioDataSAB,
+            sampleRate: sampleRate
         };
     }-*/;
     
