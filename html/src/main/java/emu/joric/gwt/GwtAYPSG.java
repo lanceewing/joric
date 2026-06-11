@@ -340,7 +340,12 @@ public class GwtAYPSG implements AYPSG {
             int val = (((registers[(address << 1) + 1] & 0x0f) << 8) | registers[address << 1]) * updateStep;
             int last = period[address];
             period[address] = val = ((val < 0x8000) ? 0x8000 : val);
-            int newCount = count[address] - (val - last);
+            // Adjust the time remaining to the next flip-flop toggle so that the
+            // time already elapsed since the last toggle is preserved, i.e. the
+            // period write moves only the target, as on the real chip. If the
+            // elapsed time already exceeds the new period, the clamp below makes
+            // the overdue toggle happen straight away.
+            int newCount = count[address] + (val - last);
             count[address] = newCount < 1 ? 1 : newCount;
             break;
         }
@@ -351,7 +356,7 @@ public class GwtAYPSG implements AYPSG {
             val *= 2;
             int last = period[NOISE];
             period[NOISE] = val = val == 0 ? updateStep : val;
-            int newCount = count[NOISE] - (val - last);
+            int newCount = count[NOISE] + (val - last);
             count[NOISE] = newCount < 1 ? 1 : newCount;
             break;
         }
@@ -386,7 +391,7 @@ public class GwtAYPSG implements AYPSG {
             int val = (((registers[0x0C] << 8) | registers[0x0B]) * updateStep) << 1;
             int last = period[ENVELOPE];
             period[ENVELOPE] = val;
-            int newCount = count[ENVELOPE] - (val - last);
+            int newCount = count[ENVELOPE] + (val - last);
             count[ENVELOPE] = newCount < 1 ? 1 : newCount;
             break;
         }
