@@ -45,16 +45,72 @@ public class GwtAYPSG implements AYPSG {
     private double cyclesPerSample;
     private int sampleLatency;
     
-    // Not entirely sure what these volume levels should be. With LEVEL_DIVISOR set
-    // to 4, and volumes A, B, and C all at 15, then max sample is at 32760, which 
-    // is just under the limit.
-    private final static int LEVEL_DIVISOR = 4;
-    private final static int[] VOLUME_LEVELS = { 
-            0x0000 / LEVEL_DIVISOR, 0x0055 / LEVEL_DIVISOR, 0x0079 / LEVEL_DIVISOR,
-            0x00AB / LEVEL_DIVISOR, 0x00F1 / LEVEL_DIVISOR, 0x0155 / LEVEL_DIVISOR, 0x01E3 / LEVEL_DIVISOR,
-            0x02AA / LEVEL_DIVISOR, 0x03C5 / LEVEL_DIVISOR, 0x0555 / LEVEL_DIVISOR, 0x078B / LEVEL_DIVISOR,
-            0x0AAB / LEVEL_DIVISOR, 0x0F16 / LEVEL_DIVISOR, 0x1555 / LEVEL_DIVISOR, 0x1E2B / LEVEL_DIVISOR,
-            0x2AAA / LEVEL_DIVISOR };
+    // The three channels' output stages are connected in parallel on the Oric,
+    // into a load of R4 (1K) in parallel with the R2 + R3 branch (4K7 + 470),
+    // so the channels interact: a loud channel pulls the shared output node
+    // harder and suppresses the contribution of the others. This is modelled
+    // as a resistor network. Each volume level presents a different effective
+    // pull-up resistance at the channel output; the values below are from
+    // bench measurements of a real AY chip (as fitted in MAME's ay8910.cpp,
+    // BSD-3-Clause, derived from Matthew Westcott's December 2001 public
+    // domain voltage measurements).
+    private static final double[] CHANNEL_RES = {
+            15950, 15350, 15090, 14760, 14275, 13620, 12890, 11370,
+            10600,  8590,  7190,  5985,  4820,  3945,  3017,  2345 };
+    private static final double RES_R_UP = 800000;
+    private static final double RES_R_DOWN = 8000000;
+    private static final double ORIC_LOAD_R = 838;
+
+    // Calibration of the channels' drive strength against real Oric-1
+    // hardware (June 2026): with one and then two channels output disabled
+    // with their volume parked at 15, the playing channel's measured 
+    // acoustic level dropped by around 6.2 dB and 10.7 dB respectively.
+    // Applying a conductance scale factor of 2.32 to the resistor network
+    // channel conductances reproduces both measurements (and, as independent
+    // corroboration, brings the model's solo channel volume curve to within
+    // 0.3 dB of Westcott's bench-measured DAC levels across the audible range).
+    // The measurements of the Oric-1 were carried out with relatively basic
+    // equipment - so there is scope for refining these numbers further in
+    // future if greater accuracy is ever desired.
+    private static final double CONDUCTANCE_SCALE = 2.32;
+
+    // The mixed output level for every combination of the three channels'
+    // volume levels, in sample units, baseline subtracted. Normalised so that
+    // a single channel at volume 15 (with the others silent) produces the
+    // same sample value as it always has (10920); the network model then
+    // makes a full three channel chord come out around 5 dB quieter than the
+    // simple mathematical sum of the three would.
+    private static final float[] MIX_TABLE = buildMixTable();
+
+    private static double mixNode(int a, int b, int c) {
+        int n = (a != 0 ? 1 : 0) + (b != 0 ? 1 : 0) + (c != 0 ? 1 : 0);
+        double gw = n / RES_R_UP;
+        double gt = n / RES_R_UP + 3.0 / RES_R_DOWN + 1.0 / ORIC_LOAD_R;
+        double g;
+        g = CONDUCTANCE_SCALE / CHANNEL_RES[a]; gw += g; gt += g;
+        g = CONDUCTANCE_SCALE / CHANNEL_RES[b]; gw += g; gt += g;
+        g = CONDUCTANCE_SCALE / CHANNEL_RES[c]; gw += g; gt += g;
+        return gw / gt;
+    }
+
+    private static float[] buildMixTable() {
+        float[] table = new float[16 * 16 * 16];
+        double base = mixNode(0, 0, 0);
+        double scale = 10920.0 / (mixNode(15, 0, 0) - base);
+        for (int a = 0; a < 16; a++) {
+            for (int b = 0; b < 16; b++) {
+                for (int c = 0; c < 16; c++) {
+                    table[(a << 8) | (b << 4) | c] =
+                            (float) ((mixNode(a, b, c) - base) * scale);
+                }
+            }
+        }
+        return table;
+    }
+
+    private static float lerp(float from, float to, float weight) {
+        return from + (to - from) * weight;
+    }
 
     // Constants for index values into output, count, and period arrays.
     private static final int A = 0;
@@ -109,6 +165,11 @@ public class GwtAYPSG implements AYPSG {
     // to keep the -3 dB corner at ~17.5 Hz regardless of rate, which should be below
     // any expected normally audible Oric content. (17.5 Hz is equivalent to the
     // R = 0.995 that was used when the sample rate was fixed at 22050 Hz.)
+    // Note that this corner is lower than the genuine Oric speaker path, whose
+    // coupling works out at ~90Hz based on the available schematics - so the
+    // real machine had a shorter decay tail after DC level steps (its line/DIN
+    // output corner was much lower, ~3Hz). Either way, a high-pass passes the
+    // step transient itself at full height; the corner only shapes the tail.
     private static final float DC_BLOCKER_CORNER_HZ = 17.5f;
     private float dcBlockerR;
     private float dcBlockerX1;
@@ -615,9 +676,24 @@ public class GwtAYPSG implements AYPSG {
             }
         }
 
-        int sample = Math.min(((VOLUME_LEVELS[volumeA] * cnt[A]) >> 13) +
-                      ((VOLUME_LEVELS[volumeB] * cnt[B]) >> 13) +
-                      ((VOLUME_LEVELS[volumeC] * cnt[C]) >> 13), 0x7FFF);
+        // Each channel spent some fraction of this sample with its output gate
+        // high (cnt / step). The output is the time weighted average of the
+        // mix table's value over the eight on/off combinations of the three
+        // channels, i.e. a trilinear blend between the table entries for each
+        // channel being silent (index 0) or at its volume level. Averaging
+        // the (non-linear) network output over the states is slightly more
+        // faithful than evaluating it once at the averages.
+        float wA = cnt[A] * (1.0f / 32768.0f);
+        float wB = cnt[B] * (1.0f / 32768.0f);
+        float wC = cnt[C] * (1.0f / 32768.0f);
+        int ia = volumeA << 8;
+        int ib = volumeB << 4;
+        int ic = volumeC;
+        float aLow = lerp(lerp(MIX_TABLE[0], MIX_TABLE[ic], wC),
+                          lerp(MIX_TABLE[ib], MIX_TABLE[ib | ic], wC), wB);
+        float aHigh = lerp(lerp(MIX_TABLE[ia], MIX_TABLE[ia | ic], wC),
+                           lerp(MIX_TABLE[ia | ib], MIX_TABLE[ia | ib | ic], wC), wB);
+        int sample = (int) lerp(aLow, aHigh, wA);
 
         // Use a simple DC blocker to convert to -1.0 to 1.0, which is what the
         // AudioWorkletProcessor needs. The output clamp is folded into the same
