@@ -14,6 +14,16 @@ public class DesktopLauncher {
     
     public static void main(String[] args) {
         if (StartupHelper.startNewJvmIfRequired()) return; // This handles macOS support and helps on Windows.
+        // Pre-initialize AWT before libGDX claims the main thread. On macOS,
+        // -XstartOnFirstThread gives the main thread to GLFW, but AWT also
+        // requires the main thread to initialise its AppKit backend the
+        // first time it's used. If we let that first use happen later (e.g.
+        // when a JFileChooser is opened by DesktopDialogHandler), AppKit
+        // init hangs forever waiting for a main thread that GLFW now owns.
+        // Calling Toolkit.getDefaultToolkit() here forces AppKit init to
+        // happen while the main thread is still ours, so later AWT calls
+        // from any thread find it already initialised.
+        java.awt.Toolkit.getDefaultToolkit();
         createApplication(convertArgsToMap(args));
     }
 

@@ -44,7 +44,18 @@ import emu.joric.ui.MachineInputProcessor;
  */
 public abstract class JOricRunner {
     
-    protected static final int NANOS_PER_FRAME = (1000000000 / MachineType.PAL.getFramesPerSecond());
+    // Derived from the Oric PAL frame structure: 312 scanlines x 64 cycles
+    // per scanline at 1 MHz = 19,968,000 ns per frame (equivalent to
+    // ~50.08 FPS). Computing this from MachineType.PAL.getFramesPerSecond()
+    // would round to 50 FPS exactly, causing the desktop emulator to run
+    // ~0.16% slower than a real PAL Oric. On its own that's a small
+    // accuracy issue, but downstream it would make the audio sample production
+    // rate run 0.16% slower than the audio hardware's consumption rate,
+    // causing the audio buffer to slowly drain and producing periodic
+    // audible glitches as the buffer drops too low. See the drift
+    // management logic in AY38912PSG.writeSample for how the audio side
+    // handles any residual audio timing drift.
+    protected static final int NANOS_PER_FRAME = 19_968_000;
     
     protected MachineScreen machineScreen;
     
