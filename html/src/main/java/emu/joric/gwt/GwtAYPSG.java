@@ -405,9 +405,14 @@ public class GwtAYPSG implements AYPSG {
         // Noise period.
         case 0x06: {
             int val = (value & 0x1f) * updateStep;
+            // A noise period of 0 behaves the same as a noise period of 1: the
+            // data sheet notes that the lowest period value is 1 for both tone
+            // and noise, and this behaviour has been verified using original
+            // Oric-1 hardware.
+            val = (val == 0 ? updateStep : val);
             val *= 2;
             int last = period[NOISE];
-            period[NOISE] = val = val == 0 ? updateStep : val;
+            period[NOISE] = val;
             int newCount = count[NOISE] + (val - last);
             count[NOISE] = newCount < 1 ? 1 : newCount;
             break;
