@@ -458,9 +458,6 @@ public class GwtAYPSG implements AYPSG {
             } else {
                 hold = value & 0x01;
                 alternate = value & 0x02;
-                if (hold != 0) {
-                    attack = alternate;
-                }
             }
             count[ENVELOPE] = period[ENVELOPE];
             countEnv = 0x0f;
