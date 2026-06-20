@@ -1,6 +1,7 @@
 package emu.joric.lwjgl3;
 
 import java.awt.Image;
+import java.awt.Window;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -15,6 +16,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -32,7 +34,50 @@ import emu.joric.ui.TextInputResponseHandler;
 public class DesktopDialogHandler implements DialogHandler {
 
     private boolean dialogOpen;
-    
+
+    // The Swing dialogs are shown on the AWT event dispatch thread (see the
+    // comment in confirm() for why), which is not the libGDX/GLFW main thread
+    // that owns the application window. On Windows the OS will then open a
+    // dialog *behind* the application window, because a thread that does not
+    // own the foreground window is not allowed to bring a new window to the
+    // front. To work around this each dialog is given a temporary owner window
+    // (see createDialogOwner) that is brought to the foreground.
+    //
+    // When true, that owner is made always-on-top, which reliably foregrounds
+    // the dialog but also keeps it pinned above every other window for as long
+    // as it is open. When false (the default), a gentler toFront()/requestFocus()
+    // is used instead, which does not pin the dialog above other applications
+    // (nicer if e.g. you want to switch away to check a filename) but may be
+    // less reliable at foregrounding on some platforms. Flip this to true if
+    // dialogs still appear behind the application window.
+    private static final boolean DIALOG_ALWAYS_ON_TOP = false;
+
+    /**
+     * Creates a temporary, effectively invisible owner window for a dialog and
+     * brings it to the foreground, so the dialog appears in front of the
+     * application rather than behind it (see DIALOG_ALWAYS_ON_TOP). The UTILITY
+     * window type keeps the owner out of the taskbar and the alt-tab list, and
+     * the 1x1 centred size keeps it out of sight while still centring the dialog
+     * on screen. The caller must dispose() the returned frame once the dialog
+     * has closed. Must be called on the AWT event dispatch thread.
+     *
+     * @return the temporary owner frame to pass as the dialog's parent.
+     */
+    private JFrame createDialogOwner() {
+        JFrame owner = new JFrame();
+        owner.setUndecorated(true);
+        owner.setType(Window.Type.UTILITY);
+        owner.setSize(1, 1);
+        owner.setLocationRelativeTo(null);
+        owner.setAlwaysOnTop(DIALOG_ALWAYS_ON_TOP);
+        owner.setVisible(true);
+        if (!DIALOG_ALWAYS_ON_TOP) {
+            owner.toFront();
+            owner.requestFocus();
+        }
+        return owner;
+    }
+
     private Icon importIcon;
     private Icon exportIcon;
     private Icon clearIcon;
@@ -117,7 +162,13 @@ public class DesktopDialogHandler implements DialogHandler {
             @Override
             public void run() {
                 dialogOpen = true;
-                final int output = JOptionPane.showConfirmDialog(null, message, "Please confirm", JOptionPane.YES_NO_OPTION);
+                JFrame owner = createDialogOwner();
+                final int output;
+                try {
+                    output = JOptionPane.showConfirmDialog(owner, message, "Please confirm", JOptionPane.YES_NO_OPTION);
+                } finally {
+                    owner.dispose();
+                }
                 dialogOpen = false;
                 Gdx.app.postRunnable(new Runnable() {
                     @Override
@@ -154,7 +205,13 @@ public class DesktopDialogHandler implements DialogHandler {
                 jfc.addChoosableFileFilter(filter);
 
                 dialogOpen = true;
-                final int returnValue = jfc.showOpenDialog(null);
+                JFrame owner = createDialogOwner();
+                final int returnValue;
+                try {
+                    returnValue = jfc.showOpenDialog(owner);
+                } finally {
+                    owner.dispose();
+                }
                 final String selectedPath = (returnValue == JFileChooser.APPROVE_OPTION)
                         ? jfc.getSelectedFile().getPath() : null;
                 dialogOpen = false;
@@ -182,8 +239,14 @@ public class DesktopDialogHandler implements DialogHandler {
             @Override
             public void run() {
                 dialogOpen = true;
-                final String text = (String) JOptionPane.showInputDialog(null, message, "Please enter value",
-                        JOptionPane.INFORMATION_MESSAGE, null, null, initialValue != null ? initialValue : "");
+                JFrame owner = createDialogOwner();
+                final String text;
+                try {
+                    text = (String) JOptionPane.showInputDialog(owner, message, "Please enter value",
+                            JOptionPane.INFORMATION_MESSAGE, null, null, initialValue != null ? initialValue : "");
+                } finally {
+                    owner.dispose();
+                }
                 dialogOpen = false;
                 Gdx.app.postRunnable(new Runnable() {
                     @Override
@@ -259,10 +322,15 @@ public class DesktopDialogHandler implements DialogHandler {
                 okButton.addMouseListener(mouseListener);
 
                 pane.setComponentOrientation(JOptionPane.getRootFrame().getComponentOrientation());
-                JDialog dialog = pane.createDialog("About JOric");
+                JFrame owner = createDialogOwner();
+                JDialog dialog = pane.createDialog(owner, "About JOric");
                 dialog.setIconImage(loadImage("png/joric-32x32.png"));
-                dialog.show();
-                dialog.dispose();
+                try {
+                    dialog.show();
+                } finally {
+                    dialog.dispose();
+                    owner.dispose();
+                }
 
                 final Object paneValue = pane.getValue();
                 dialogOpen = false;
@@ -290,8 +358,14 @@ public class DesktopDialogHandler implements DialogHandler {
             public void run() {
                 dialogOpen = true;
                 String dialogTitle = (title != null && !title.isEmpty()) ? title : "JOric";
-                final Object result = JOptionPane.showInputDialog(null, message, dialogTitle,
-                        JOptionPane.QUESTION_MESSAGE, null, options, currentSelection);
+                JFrame owner = createDialogOwner();
+                final Object result;
+                try {
+                    result = JOptionPane.showInputDialog(owner, message, dialogTitle,
+                            JOptionPane.QUESTION_MESSAGE, null, options, currentSelection);
+                } finally {
+                    owner.dispose();
+                }
                 dialogOpen = false;
                 Gdx.app.postRunnable(new Runnable() {
                     @Override
