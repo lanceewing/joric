@@ -146,8 +146,9 @@ class RingBuffer {
  */
 class SoundRenderer extends AudioWorkletProcessor {
     
-    // To output 22050 samples per second, 128 each call.
-    static CALLS_PER_SECOND = (22050 / 128);
+    // The number of process() calls per second, given 128 samples each call.
+    // The sampleRate global is provided by the AudioWorkletGlobalScope.
+    static CALLS_PER_SECOND = (sampleRate / 128);
     
     // The number of calls since the last debug logging reset.
     callCount = 0;
@@ -203,8 +204,8 @@ class SoundRenderer extends AudioWorkletProcessor {
         let timeThisCall = currentTime * 1000;
         
         // The inputs is ignored. We get up to samples from the ring buffer instead.
-        // We have only one output, with one channel (mono), sample rate 22050.
-        // Sample values are float values between -1 and 1.
+        // We have only one output, with one channel (mono), at the AudioContext's
+        // sample rate. Sample values are float values between -1 and 1.
         
         let logDebugOutput = false;
         
