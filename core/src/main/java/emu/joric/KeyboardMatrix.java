@@ -152,7 +152,38 @@ public abstract class KeyboardMatrix extends InputAdapter {
     private TreeMap<Long, Integer> delayedReleaseKeys = new TreeMap<Long, Integer>();
     
     private int lastKeyDownKeycode;
-    
+
+    /**
+     * Sym/Meta-key (libGDX Keys.SYM) state. "Meta" is the DOM / cross-platform
+     * name for the Command key on Mac, the Windows key on Windows, and the
+     * Super key on Linux. libGDX's lwjgl3 backend maps all three to
+     * Keys.SYM. The Oric had no equivalent key, and Sym/Meta+key combinations
+     * are conventionally OS / application shortcuts on every modern
+     * platform, so we deliberately drop them at the matrix level: while
+     * a Sym/Meta key is held, non-Sym/non-Meta keyDowns are suppressed (so
+     * they never set a matrix bit).
+     *
+     * State is updated by:
+     *   - lwjgl3 desktop: keyDown(Keys.SYM) / keyUp(Keys.SYM). The desktop
+     *     backend correctly translates GLFW_KEY_LEFT/RIGHT_SUPER into
+     *     Keys.SYM, so these paths fire naturally.
+     *   - GWT/web: a DOM-level listener installed by GwtKeyboardMatrix
+     *     that reads event.metaKey directly and funnels through the same
+     *     setSymPressed entry point. Necessary because libGDX's GWT
+     *     backend currently maps the Meta key to Keys.UNKNOWN (see
+     *     DefaultGwtInput.java's `// FIXME` on KEY_LEFT_WINDOW_KEY), so
+     *     the keyDown(Keys.SYM) path never fires in the browser.
+     *
+     * Note: on Android, libGDX's Keys.SYM actually corresponds to the
+     * historical Symbol key (a Function-style modifier on early hardware
+     * Android keyboards such as the HTC G1 and Motorola Droid), now very
+     * rare (essentially extinct?) hardware. Treating it in the same way as
+     * a Meta key seems logical: pressing Sym+A on such hardware would otherwise
+     * produce a stray A on the Oric (just like CMD+A on Mac would if we did
+     * not have this code to suppress it).
+     */
+    private boolean symPressed;
+
     /**
      * Constructor for UserInput.
      */
@@ -168,8 +199,24 @@ public abstract class KeyboardMatrix extends InputAdapter {
     }
 
     public boolean keyDown(int keycode) {
+        // Track Sym/Meta-key press. See the symPressed field comment for why.
+        // Keys.SYM is not in keyConvHashMap (the Oric has no Sym/Meta keys),
+        // so without this special-casing the early return below would skip
+        // the tracking. This path fires on the lwjgl3 desktop backend; the
+        // GWT backend delivers Keys.UNKNOWN instead, so for GWT we use
+        // a JSNI listener in GwtKeyboardMatrix to set this state.
+        if (keycode == Keys.SYM) {
+            setSymPressed(true);
+            return false;
+        }
+        // While the Sym/Meta key is held, suppress the keyDown so the matrix
+        // bit is never set in the first place.
+        if (symPressed) {
+            return false;
+        }
+
         if (!keyConvHashMap.containsKey(keycode)) return false;
-        
+
         if (keycode == 0) {
             // The framework wasn't able to identify the key, so we'll have to 
             // deduce it from the key typed character.
@@ -192,8 +239,15 @@ public abstract class KeyboardMatrix extends InputAdapter {
     }
 
     public boolean keyUp(int keycode) {
+        // Track Sym/Meta-key release. See keyDown's comment on why this
+        // special-case sits above the early return.
+        if (keycode == Keys.SYM) {
+            setSymPressed(false);
+            return false;
+        }
+
         if (!keyConvHashMap.containsKey(keycode)) return false;
-        
+
         if (keycode != 0) {
             long currentTime = TimeUtils.nanoTime();
             long minKeyReleaseTime = minKeyReleaseTimes[keycode];
@@ -269,7 +323,20 @@ public abstract class KeyboardMatrix extends InputAdapter {
         }
     }
     
+    /**
+     * Sets the Sym/Meta-key pressed state. Funnel point for the two code
+     * paths that detect Sym/Meta changes: lwjgl3 desktop's keyDown/keyUp for
+     * Keys.SYM, and the GWT JSNI DOM listener reading event.metaKey.
+     *
+     * Visibility is protected so the GWT subclass's JSNI block can
+     * invoke it directly (JSNI ignores Java visibility but protected
+     * documents the intent).
+     */
+    protected void setSymPressed(boolean pressed) {
+        symPressed = pressed;
+    }
+
     public abstract int getKeyMatrixRow(int row);
-    
+
     public abstract void setKeyMatrixRow(int row, int value);
 }

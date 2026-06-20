@@ -21,9 +21,10 @@ public class GwtKeyboardMatrix extends KeyboardMatrix {
     public GwtKeyboardMatrix() {
         keyMatrix = createKeyMatrixArray();
         // Install a DOM-level Meta-key watcher. See
-        // registerMetaKeyWatcher's Javadoc for the macOS keyup-
-        // suppression behaviour it works around. Only the UI-thread
-        // constructor calls this - the web-worker constructor below
+        // registerMetaKeyWatcher's Javadoc for the libGDX GWT backend
+        // gaps it works around (Meta-key tracking and, on macOS,
+        // recovery from swallowed keyups). Only the UI-thread
+        // constructor calls this; the web-worker constructor below
         // has no DOM to listen to.
         registerMetaKeyWatcher();
     }
@@ -52,34 +53,45 @@ public class GwtKeyboardMatrix extends KeyboardMatrix {
     }-*/;
 
     /**
-     * Installs DOM-level keydown/keyup listeners that synthesise
-     * keyup events for non-Meta keys whose natural keyup was
-     * swallowed by macOS while a Meta key was held.
+     * Installs DOM-level keydown/keyup listeners that work around two
+     * Meta-key issues in libGDX's GWT backend. The first applies on
+     * every OS; the second is macOS-specific:
      *
-     * macOS suppresses keyUp events for non-modifier keys whose keyUp
-     * would occur while a Meta (CMD) key is held. THis is an OS-level
-     * behaviour inherited by Chrome, Safari and Firefox (open
-     * browser bugs dating back to 2011, still unresolved as of
-     * writing). The consequence in libGDX's GWT backend
-     * (DefaultGwtInput.java) is that its internal pressedKeys[]
-     * array gets stuck `true` for the un-released key. Typical
-     * symptom for Oric input behaviour: after CMD+X, X stays pressed,
-     * generating auto-repeat X inputs until the next plain X press.
+     *   1. The GWT backend maps the Meta key to Keys.UNKNOWN instead of
+     *      Keys.SYM like the lwjgl3 desktop does (see the long-
+     *      standing // FIXME in DefaultGwtInput.java). As a result
+     *      KeyboardMatrix's keyUp/keyDown Keys.SYM-driven Meta tracking 
+     *      never fires on web. So here we read event.metaKey directly on 
+     *      every DOM-level keydown/keyup and funnel it to the base class
+     *      via setSymPressed(boolean), driving the "suppress non-Meta
+     *      keyDowns while the Meta key is held" logic that lives there.
      *
-     * The workaround is to listen at the DOM level (capture phase, so 
-     * we run before libGDX's own document-level bubble-phase listener).
-     * On every keydown/keyup, observe event.metaKey to track Meta
-     * pressed/released. On the released transition, dispatch a
-     * synthetic keyup for every non-Meta key whose keydown we saw
-     * without a subsequent keyup. The synthetic events flow through
-     * libGDX's normal keyup handler, which clears its internal
-     * pressedKeys[] state. (Note that in the case where a non-Meta
-     * key is still held down when Meta is released, MacOS appears
-     * to generate suitable key events so they effectively appear as
-     * new key presses without the Meta modifier.)
+     *   2. macOS suppresses keyUp events for non-modifier keys whose 
+     *      keyUp would occur while a Meta (CMD) key is held. This is 
+     *      an OS-level behaviour inherited by Chrome, Safari and Firefox
+     *      (open browser bugs dating back to 2011, still unresolved as of
+     *      writing). The consequence in libGDX's GWT backend 
+     *      (DefaultGwtInput.java) is that its internal pressedKeys[]
+     *      array gets stuck `true` for the un-released key. Typical
+     *      symptom for Oric input behaviour: after CMD+X, X stays 
+     *      pressed, generating auto-repeat X inputs until the next plain
+     *      X press.
+     * 
+     * Listen with useCapture=true so this handler runs before
+     * libGDX's own document-level listener (which uses
+     * useCapture=false per DefaultGwtInput.hookEvents), ensuring the
+     * base class's symPressed flag is up to date by the time the
+     * libGDX-translated keyDown reaches the base class's suppress
+     * check.
+     *
+     * (Note that in the case where a non-Meta key is still held down
+     * when Meta is released, macOS appears to generate suitable key
+     * events so they effectively appear as new key presses without
+     * the Meta modifier. So we don't need any special code to handle
+     * that case.)
      */
     private native void registerMetaKeyWatcher()/*-{
-        var metaPressed = false;
+        var self = this;
         // DOM keyCodes of non-Meta keys we've seen keydown but not
         // (yet) keyup for. Excludes the Meta key DOM codes (91, 92,
         // 93 - values vary slightly across browsers and key
@@ -87,9 +99,9 @@ public class GwtKeyboardMatrix extends KeyboardMatrix {
         var trackedKeys = {};
 
         var update = function(e) {
-            var wasMetaPressed = metaPressed;
+            var wasMetaPressed = self.@emu.joric.KeyboardMatrix::symPressed;
             var isMetaPressed = !!e.metaKey;
-            metaPressed = isMetaPressed;
+            self.@emu.joric.KeyboardMatrix::setSymPressed(Z)(isMetaPressed);
             var code = e.keyCode;
 
             // Track DOM press/release for non-Meta keys.
