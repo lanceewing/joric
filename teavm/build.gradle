@@ -1,0 +1,79 @@
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+dependencies {
+  implementation project(':core')
+  implementation "com.github.xpenatan.gdx-teavm:backend-web:$gdxTeaVMVersion"
+}
+
+tasks.register('buildTeaVM', JavaExec) {
+  group = 'build'
+  description = 'Builds the TeaVM web bootstrap into build/dist.'
+  dependsOn classes
+  classpath = sourceSets.main.runtimeClasspath
+  mainClass = 'emu.joric.teavm.BuildTeaVMJOric'
+  doLast {
+    copy {
+      from('webapp') {
+        include 'index.html'
+      }
+      into "$buildDir/dist/webapp"
+    }
+    copy {
+      from '../html/webapp'
+      include '.htaccess'
+      include 'dialog.js'
+      include 'favicon.ico'
+      include 'jszip.min.js'
+      include 'manifest.json'
+      include 'sound-renderer.js'
+      include 'styles.css'
+      include '_headers'
+      include '.swshtaccess'
+      into "$buildDir/dist/webapp"
+    }
+    copy {
+      from '../html/webapp/functions'
+      into "$buildDir/dist/webapp/functions"
+    }
+    copy {
+      from '../html/webapp/icons'
+      into "$buildDir/dist/webapp/icons"
+    }
+    copy {
+      from '../html/webapp/worker/.swshtaccess'
+      into "$buildDir/dist/webapp/scripts"
+    }
+  }
+}
+
+tasks.register('dist') {
+  group = 'build'
+  description = 'Alias for the TeaVM dist build.'
+  dependsOn 'buildTeaVM'
+}
+
+tasks.register('distZip', Zip) {
+  group = 'build'
+  description = 'Packages the TeaVM dist output as a zip archive.'
+  dependsOn 'buildTeaVM'
+  from("$buildDir/dist/webapp")
+  archiveVersion = projectVersion
+  archiveBaseName.set("${appName}-teavm-web-dist")
+  destinationDirectory.set(file("build"))
+}
+
+tasks.register('serveTeaVM', JavaExec) {
+  group = 'application'
+  description = 'Builds and serves the TeaVM dist with COOP/COEP headers for SharedArrayBuffer support.'
+  dependsOn 'buildTeaVM'
+  classpath = sourceSets.main.runtimeClasspath
+  mainClass = 'emu.joric.teavm.TeaVMDevServer'
+  args "$buildDir/dist/webapp", (findProperty('teavmPort') ?: '8081').toString()
+  standardInput = System.in
+}
+
+tasks.named('build') {
+  dependsOn 'buildTeaVM'
+}
+
+eclipse.project.name = appName + '-teavm'
