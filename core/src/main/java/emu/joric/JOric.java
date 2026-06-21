@@ -91,9 +91,6 @@ public class JOric extends Game {
         if (appConfigItem != null) {
             homeScreen.processProgramSelection(appConfigItem);
         }
-        
-        // Stop the back key from immediately exiting the app.
-        Gdx.input.setCatchBackKey(true);
     }
 
     /**
