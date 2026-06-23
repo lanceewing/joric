@@ -305,6 +305,14 @@
       "ram": "RAM_48K"
     },
     {
+      "name": "CyberNova",
+      "filePath": "https://oric.games/programs?url=https://defence-force.org/download/oric/Cybernova.zip",
+      "fileType": "DISK",
+      "iconPath": "screenshots/C/CyberNova/CyberNova.png",
+      "machineType": "PAL",
+      "ram": "RAM_48K"
+    },
+    {
       "name": "Cyclotron",
       "filePath": "https://oric.games/programs?url=https://cdn.oric.org/games/software/c/cyclotron_4k/Cyclotron.tap",
       "fileType": "TAPE",
